@@ -63,7 +63,7 @@ class PetOwner(db.Model):
 
 
 def __repr__(self):
-    """Show info about PetOwner"""
+    """Show info about pet owner"""
 
     return f'PetOwner id={self.id}, email={self.email}, password={self.password}, first_name = {self.first_name}, last_name = {self.last_name}, profile_pic = {self.profile_pic}, num_pets = {self.num_pets}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}'
     
@@ -98,7 +98,7 @@ class Pet(db.Model):
 
 
 def __repr__(self):
-    """Show info about Pet"""
+    """Show info about pet"""
 
     return f'Pet id ={self.id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship}'
 
@@ -150,7 +150,7 @@ class Bookings(db.Model):
 
 
 def __repr__(self):
-    """Show info about Booking"""
+    """Show info about booking"""
 
     return f'Booking id ={self.id}, start_date = {self.start_date}, end_date = {self.end_date}, start_time = {self.start_time}, end_time = {self.end_time}'
 
