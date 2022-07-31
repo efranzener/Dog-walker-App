@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime, timedelta
-# import datetime
 import os
 
 app = Flask(__name__)
@@ -35,7 +34,7 @@ class Sitter(db.Model):
 def __repr__(self):
     """Show info about sitter"""
 
-    return f'Sitter id = {self.id}, email={self.email}, password={self.password}, first_name = {self.first_name}, last_name = {self.last_name}, profile_pic = {self.profile_pic}, summary = {self.summary}, experience = {self.years_of_experience}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}, minute_rate = {self.minute_rate}'
+    return f'<Sitter id = {self.id}, email={self.email}, password={self.password}, first_name = {self.first_name}, last_name = {self.last_name}, profile_pic = {self.profile_pic}, summary = {self.summary}, experience = {self.years_of_experience}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}, minute_rate = {self.minute_rate}>'
 
 
 class PetOwner(db.Model):
@@ -65,7 +64,7 @@ class PetOwner(db.Model):
 def __repr__(self):
     """Show info about pet owner"""
 
-    return f'PetOwner id={self.id}, email={self.email}, password={self.password}, first_name = {self.first_name}, last_name = {self.last_name}, profile_pic = {self.profile_pic}, num_pets = {self.num_pets}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}'
+    return f"<PetOwner id={self.id}, email={self.email}, password={self.password}, first_name = {self.first_name}, last_name = {self.last_name}, profile_pic = {self.profile_pic}, num_pets = {self.num_pets}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
     
 
 class Pet(db.Model):
@@ -88,7 +87,6 @@ class Pet(db.Model):
     microchipped = db.Column(db.Boolean, nullable = False)
     additional_info = db.Column(db.Text)
     pet_owner_id = db.Column(db.Integer, db.ForeignKey("pet_owners.id"))
-    sitter_id = db.Column(db.Integer, db.ForeignKey("sitters.id"))
     emergency_phone = db.Column(db.String(15), nullable = False)
     emergency_contact_name = db.Column(db.String(100), nullable = False)
     emergency_contact_relationship = db.Column(db.String(100), nullable = False)
@@ -100,7 +98,7 @@ class Pet(db.Model):
 def __repr__(self):
     """Show info about pet"""
 
-    return f'Pet id ={self.id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship}'
+    return f"<Pet id ={self.id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship}>"
 
 
 class Vet(db.Model):
@@ -125,10 +123,10 @@ class Vet(db.Model):
 def __repr__(self):
     """Show info about Vet"""
 
-    return f'Vet id ={self.id}, first_name = {self.first_name}, last_name = {self.last_name}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}'
+    return f"<Vet id ={self.id}, first_name = {self.first_name}, last_name = {self.last_name}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
     
 
-class Bookings(db.Model):
+class Booking(db.Model):
     """A booking info"""
 
     __tablename__ = "bookings"
@@ -138,13 +136,13 @@ class Bookings(db.Model):
     sitter_id = db.Column(db.Integer, db.ForeignKey("sitters.id"))
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.id"))
     start_date = db.Column(db.DateTime, default=datetime.now(), nullable = False)
-    end_date = db.Column(db.DateTime, default=datetime.now() + timedelta(days=8), nullable = False)
-    start_time = db.Column(db.DateTime, default=datetime.time(hour=0, minute=0, second=0), nullable = False)
-    end_time = db.Column(db.DateTime, default=datetime.time(hour=0, minute=0, second=0), nullable = False)
+    end_date = db.Column(db.DateTime, default=datetime.now() + timedelta(days=180), nullable = False)
+    start_time = db.Column(db.DateTime, default=datetime.now(), nullable = False)
+    end_time = db.Column(db.DateTime, default=datetime.now() + timedelta(hours=24), nullable = False)
     weekly = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     
-    pets = db.relationship("Pet", backref = 'bookings')
+    pet = db.relationship("Pet", backref = 'bookings')
     sitter = db.relationship("Sitter", backref = 'bookings')
     pet_owner = db.relationship("PetOwner", backref = 'bookings')
 
@@ -152,28 +150,32 @@ class Bookings(db.Model):
 def __repr__(self):
     """Show info about booking"""
 
-    return f'Booking id ={self.id}, start_date = {self.start_date}, end_date = {self.end_date}, start_time = {self.start_time}, end_time = {self.end_time}'
+    return f"<Booking id ={self.id}, start_date = {self.start_date}, end_date = {self.end_date}, start_time = {self.start_time}, end_time = {self.end_time}>"
 
 
 def connect_to_db(app, db_name):
     """Connect to database."""
 
+    os.system("dropdb dog_walker --if-exists")
+    os.system("createdb dog_walker")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql:///{db_name}"
-    app.config["SQLALCHEMY_ECHO"] = True
+    app.config["SQLALCHEMY_ECHO"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.app = app
     db.init_app(app)
 
+    db.create_all()
     print("Connected to the db!")
 
 
 if __name__ == "__main__":
-    from server import app
-
+    # from server import app
     # Call connect_to_db(app, echo=False) if your program output gets
     # too annoying; this will tell SQLAlchemy not to print out every
     # query it executes.
 
     connect_to_db(app, "dog_walker")
+
+
 
