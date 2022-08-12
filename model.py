@@ -1,6 +1,5 @@
 """Models for dog walker app"""
 
-
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime, timedelta
@@ -25,11 +24,11 @@ class Sitter(db.Model):
     summary = db.Column (db.Text)
     years_of_experience = db.Column(db.Integer, nullable=False)
     mobile = db.Column(db.String(15), nullable = False)
-    street_address = db.Column(db.String(100), nullable = False)
+    address = db.Column(db.String(100), nullable = False)
     city = db.Column(db.String(50), default = "Seattle",nullable = False)
     state = db.Column(db.String(20),default = "Washington", nullable = False)
     zip_code = db.Column(db.String(5), nullable = False)
-    minute_rate = db.Column(db.Float, nullable = False)
+    rate = db.Column(db.Float, nullable = False)
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     # bookings = a list of Booking objects
@@ -38,7 +37,7 @@ class Sitter(db.Model):
 def __repr__(self):
     """Show info about sitter"""
 
-    return f'<Sitter id = {self.id}, email={self.email}, password={self.password}, fname = {self.first_name}, lname = {self.last_name}, profile_pic = {self.profile_pic}, summary = {self.summary}, experience = {self.years_of_experience}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}, minute_rate = {self.minute_rate}>'
+    return f'<Sitter id = {self.id}, email={self.email}, password={self.password}, fname = {self.first_name}, lname = {self.last_name}, profile_pic = {self.profile_pic}, summary = {self.summary}, experience = {self.years_of_experience}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}, minute_rate = {self.minute_rate}>'
 
 
 
@@ -55,7 +54,7 @@ class PetOwner(db.Model):
     profile_pic = db.Column(db.String(300), nullable = False)
     num_pets = db.Column(db.Integer)
     mobile = db.Column(db.String(15), nullable = False)
-    street_address = db.Column(db.String(100), nullable = False)
+    address = db.Column(db.String(100), nullable = False)
     city = db.Column(db.String(50), default = "Seattle", nullable = False)
     state = db.Column(db.String(20), default = "Washington", nullable = False)
     zip_code = db.Column(db.String(5), nullable = False)
@@ -69,7 +68,7 @@ class PetOwner(db.Model):
 def __repr__(self):
     """Show info about pet owner"""
 
-    return f"<PetOwner id={self.id}, email={self.email}, password={self.password}, fname = {self.first_name}, lname = {self.last_name}, profile_pic = {self.profile_pic}, num_pets = {self.num_pets}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
+    return f"<PetOwner id={self.id}, email={self.email}, password={self.password}, fname = {self.first_name}, lname = {self.last_name}, profile_pic = {self.profile_pic}, num_pets = {self.num_pets}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
     
 
 
@@ -131,7 +130,7 @@ class Vet(db.Model):
 def __repr__(self):
     """Show info about Vet"""
 
-    return f"<Vet id ={self.id}, first_name = {self.first_name}, last_name = {self.last_name}, mobile = {self.mobile}, street_address = {self.street_address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
+    return f"<Vet id ={self.id}, first_name = {self.first_name}, last_name = {self.last_name}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
     
 
 class Booking(db.Model):
