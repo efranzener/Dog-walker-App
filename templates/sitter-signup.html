@@ -9,7 +9,7 @@
         <section>
             <div class="container">
                 <form action="/sitter-signup" method="POST">
-                    <div class="sitter signup step1">
+                    <div class="signup step-1 ">
                         <div class="form-group">
                             <label for="fname1">First Name</label>
                             <input type="text" name="fname1" id="fname1">
@@ -27,8 +27,8 @@
                             <input type="password" name="password" id="password1">
                         </div>
                         <div class="form-group">
-                            <label for="zipcode1" class="form-label">Zip</label>
-                            <input type="text" name="zipcode" id="zipcode1">
+                            <label for="mobile1" class="form-label">Mobile</label>
+                            <input type="text" name="mobile" id="mobile1">
                         </div>
                         <div class="form-group">
                             <label for="address" >Address</label>
@@ -42,30 +42,29 @@
                             <label for="state1">State</label>
                             <input type="text" name="state1" id="state1" >
                         </div>
-                        </div>
                         <div class="form-group">
                             <label for="zipcode1" class="form-label">Zip</label>
                             <input type="text" name="zipcode" id="zipcode1">
                         </div>
+                        <div>
                             <button type="button" class="next-btn">Next</button>
+                            <br>
+                            <br>
                         </div>
-                        <br>
                         <br>
                         <div class="progress">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+                            <div class="progress-bar" role="progressbar" aria-label="Example with label" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">33%</div>
                         </div>
                     </div>
-
-                    <div class="sitter signup step2">
+            
+                    <div class="signup step-2 active">
                         <div class="form-group">
                             <label for="experience">Years of Experience</label>
-                            <input type="number" min=0 name="experience" id="experience" placeholder="Insert the number that represents how many years of experience you have">
-                        </div>
+                            <input type="number" min=0 name="experience" id="experience" placeholder="1, 2, 3...">
                         <div class="form-group">
-                            <label for="summary">Summary</label>
-                            <input type="text" name="summary" id="summary" placeholder="Describe your experience">
+                            <label for="summary"> Describe your experience</label>
+                            <input type="text" name="summary" id="summary" placeholder="Optional">
                         </div>
-
                         <div>
                             <p>Please select your rate according to the lenght of the walk:</p> 
                             <div class="input-group mb-3">
@@ -87,29 +86,39 @@
                         </div>
                         <div>
                             <button type="button" class="previous-btn">Previous</button>
-                            <button type="button" class="submit-btn" >Submit</button>
+                            <button type="button" class="next-btn">Next</button>
                         </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-label="Example with label" style="width: 66%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100">66%</div>
+                        </div> 
                     </div>
 
-                    <div>
-                        <label class="profile pic" for="profilepic1">Profile Picture</label>
-                        <img src="" alt="..." class="img-thumbnail">
-                        <input id="profilepic1" type="file" name="profile_pic" placeholder="Profile Picture" required="capture">
+                    <div class="signup step-3">
+                        <div class="form-group">
+                            <label class="profile pic" for="profilepic1">Profile Picture</label>
+                            <img src="" alt="..." class="img-thumbnail">
+                            <input id="profilepic1" type="file" name="profile_pic" placeholder="Profile Picture" required="capture">
+                        </div>
+                        <div>
+                            <button type="button" class="submit-btn" >Submit</button>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-label="Example with label" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">100%</div>
+                        </div>
                     </div>
+                    
                 </form>
             </div>
 
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
-            </div>
-
         </section>
-        <script>
+        <script src="/main.js"></script>
+        <!-- <script>
             // Add the following code if you want the name of the file appear on select
             $(".custom-file-input").on("change", function() {
             var fileName = $(this).val().split("\\").pop();
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
             });
-        </script>
+        </script> -->
+    
 </div>
   {% endblock body %}

@@ -10,25 +10,29 @@ section{
     min-height: 100vh;
     width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: aliceblue
+    align-items: justify;
+    justify-content: justify;
+    background-color: white;
 }
 .container{
     width: 90%;
     max-width:400px;
     margin:0 auto;
-    background-color: ;
-    box-shadow: 0px 0px 20px lightgray;
+    background-color: white;
+    box-shadow: 0px 0px 20px lightblue;
     padding: 20px;
     border-radius:8px;
 }
 
-.step{
+.signup{
     display:none;
 }
-.step.active{
+.signup.active{
     display: block;
+}
+.form-group{
+    width: 100%;
+    margin-top: 20px;
 }
 .form-group input{
     width: 100%;
@@ -36,7 +40,7 @@ section{
     padding: 5px;
     font-size: 18px;
     margin-top: 5px;
-    border-radius: 4PX;
+    border-radius: 4px;
 }
 
 button.next-btn,
