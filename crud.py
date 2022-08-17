@@ -1,12 +1,33 @@
 """CRUD operations."""
 
-from model import db, Sitter, PetOwner, Pet, Vet, Booking, connect_to_db
+from model import db, User, Sitter, PetOwner, Pet, Vet, Booking, connect_to_db
 
 
-def create_sitter(fname, lname, email, password, profile_pic, years_of_experience, mobile, address, zip_code, rate, city='Seattle', state='Washington'):
+# def create_sitter(fname, lname, email, password, profile_pic, years_of_experience, mobile, address, zip_code, rate, summary="optional", city='Seattle', state='Washington'):
+#     """Create and return a new sitter."""
+
+#     sitter = Sitter(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, years_of_experience=years_of_experience, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, summary = summary, rate=rate)
+
+#     return sitter
+
+def create_user(fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington'):
+    """Create and return a new user."""
+
+    user = User(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
+    
+    return user
+
+def get_user_by_id(id):
+    """Return a user by primary key."""
+
+    return User.query.get(id)
+
+def create_sitter(user_id, summary, rate,  years_of_experience=0,):
     """Create and return a new sitter."""
 
-    sitter = Sitter(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, years_of_experience=years_of_experience, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code,rate=rate)
+    # user = User.query.get(id)
+
+    sitter = Sitter(user_id = user_id, summary = summary, rate=rate, years_of_experience=0)
 
     return sitter
 
@@ -24,15 +45,15 @@ def get_sitter_by_id(id):
 
 def get_sitter_by_email(email):
     """Return a sitter by email."""
-
+    
     return Sitter.query.filter(Sitter.email == email).first()
 
 
-def create_pet_owner(fname, lname, email, password, profile_pic, num_pets, mobile, address, zip_code, city='Seattle', state='Washington'):
+def create_pet_owner(user_id, num_pets):
     """Create and return a new pet_owner."""
 
-    pet_owner = PetOwner(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, num_pets=num_pets, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
-
+    pet_owner = PetOwner(user_id = user_id, num_pets = num_pets)
+    
     return pet_owner
 
 
