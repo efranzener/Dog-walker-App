@@ -17,22 +17,24 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key = True, autoincrement=True)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable = False)
     fname = db.Column(db.String(100), nullable = False)
     lname = db.Column(db.String(100), nullable = False)
     dob = db.Column(db.Date, nullable = False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable = False)
     profile_pic = db.Column(db.String(300))
     mobile = db.Column(db.String(15), nullable = False)
     address = db.Column(db.String(100), nullable = False)
     city = db.Column(db.String(50), default = "Seattle",nullable = False)
     state = db.Column(db.String(20),default = "Washington", nullable = False)
     zip_code = db.Column(db.String(5), nullable = False)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+
 
 def __repr__(self):
     """Show info about sitter"""
 
-    return f'<User user_id = {self.user_id}, email={self.email}, password={self.password}, fname = {self.first_name}, lname = {self.last_name}, dob = {self.dob}, profile_pic = {self.profile_pic}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>'
+    return f'<User user_id = {self.user_id}, fname = {self.first_name}, lname = {self.last_name}, dob = {self.dob}, email={self.email}, password={self.password}, profile_pic = {self.profile_pic}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>'
 
 # ***********************
 
@@ -204,17 +206,24 @@ def __repr__(self):
 def connect_to_db(app, db_uri="postgresql:///dog_walkers", echo=True):
     """Connect to database."""
 
+#   this is the code that runs with seed.py 
+    # app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    # app.config["SQLALCHEMY_ECHO"] = False
+    # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # db.app = app
+    # db.init_app(app)
+    
+    
+    # this is the test code without seeding the database, trying to add users through the sign up form
+    # os.system("dropdb dog_walkers --if-exists")
+    # os.system("createdb dog_walkers")
     app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     app.config["SQLALCHEMY_ECHO"] = False
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-
-   
-    
     db.app = app
     db.init_app(app)
-    
-
+    db.create_all()
     
 
 
@@ -225,4 +234,6 @@ if __name__ == "__main__":
     # query it executes.
 
     connect_to_db(app)
+   
+
 

@@ -17,17 +17,23 @@ def create_user(fname, lname, email, password, profile_pic, dob, mobile, address
     
     return user
 
-def get_user_by_id(id):
+def get_user_by_id(user_id):
     """Return a user by primary key."""
+   
 
-    return User.query.get(id)
+    return User.query.get(user_id)
 
-def create_sitter(user_id, summary, rate,  years_of_experience=0,):
+def get_user_by_email(email):
+    """Return a user by email."""
+
+    return User.query.filter(User.email == email).first()
+
+def create_sitter(user_id, summary, rate,  years_of_experience=0):
     """Create and return a new sitter."""
 
     # user = User.query.get(id)
 
-    sitter = Sitter(user_id = user_id, summary = summary, rate=rate, years_of_experience=0)
+    sitter = Sitter(user_id = user_id, summary = summary, rate=rate, years_of_experience=years_of_experience)
 
     return sitter
 
@@ -69,10 +75,10 @@ def get_pet_owner_by_email(email):
     return PetOwner.query.filter(PetOwner.email == email).first()
 
 
-def create_pet(name, profile_pic, breed, age, size, allergies, allergies_kind, friendly_w_dogs, friendly_w_kids, spayed_neutered, microchipped, emergency_phone, emergency_contact_name, emergency_contact_relationship, pet_owner_id):
+def create_pet(name, profile_pic, breed, age, size, allergies, allergies_kind, friendly_w_dogs, friendly_w_kids, spayed_neutered, microchipped, emergency_phone, emergency_contact_name, emergency_contact_relationship, pet_owners_id):
     """Create and return a new pet"""
  
-    pet = Pet(name=name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id = pet_owner_id)
+    pet = Pet(name=name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owners_id = pet_owners_id)
 
     return pet
 
@@ -90,10 +96,10 @@ def create_vet(fname: str, lname: str, mobile: int, address: str, zip_code: str,
     return vet
 
 
-def create_booking(weekly, pet: Pet, sitter, pet_owner):
+def create_booking(weekly, pet: Pet, sitter_id, pet_owners_id):
     """Create and return a new booking"""
 
-    booking = Booking(weekly=weekly, pet=pet, pet_owner=pet_owner, sitter=sitter)
+    booking = Booking(weekly=weekly, pet=pet, pet_owners_id=pet_owners_id, sitter_id=sitter_id)
 
     return booking
 
@@ -102,3 +108,4 @@ def create_booking(weekly, pet: Pet, sitter, pet_owner):
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
+    print("connected do db")

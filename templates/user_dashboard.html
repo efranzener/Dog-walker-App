@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %} Hello{{fname}} 
+<div class="form-group">
+    <form action = "/user_dashboard/{{user_id}}" method="POST">
+        <label>Ready to finish your profile? </label> 
+        <select id="account_type" name="account_type">
+            <option name = "sitter" value="sitter">I'm Sitter</option>
+            <option name = "pet_owner" value="pet_owner">I'm a Dog Owner</option>   
+            <input type="submit" value="Submit"> 
+        </select>
+    </form>    
+</div> 
+{%endblock body%}
+
+
+
