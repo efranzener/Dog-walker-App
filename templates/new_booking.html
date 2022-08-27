@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Are you ready to book a sitter?{% endblock title%}
+
+{% block body %}
+<div class="new-booking">
+    <section>
+        <div class="container">
+            <form action="/create_booking/{{pet_owner.id}}" method="POST">
+
+                <div class="form-group">
+
+                    </div>
+                        <label for="start_date" >Date</label>
+                        <input type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
+                    <div class="form-group">
+                        <label for="start_time" >Start time</label>
+                        <input type="time" min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
+                        <label for="end_time" >End time</label>
+                        <input type="time"  min="09:00" step="900" name="end_time" id="end_time" value="00:00" required >
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="weekly" class="form-label">Is this a recurring weekly booking?</label>
+                        <input type="radio" id="recurring" name="weekly" value= "true">
+                        <label for="recurring">Yes</label>
+                        <input type="radio" id="not_recurring" name="weekly" value="false">
+                        <label for="not_recurring">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date"> Please select an end date for the recurrence</label>
+                        <input type="date" name="" id="end_date" required>
+                    </div>
+                </div>
+
+                <div> 
+                    <select id="pet_id" name="pet_id">
+                        <option selected>Which of your dog(s) is this walk for?</option>
+                        {% for pet in pets %}
+                            <option name = "pet_id" value="{{pet.pet_id}}" required>{{pet.name}}</option>
+                        {% endfor %}
+                    </select>  
+                </div>
+
+                <div>   
+                    <select id="sitter_id" name="sitter_id">
+                        <option selected>Which sitter would you like to book the walk with?</option>
+                        {% for sitter in sitters %}
+                            <option name = "sitter_id" value="{{sitter.id}}" required>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
+                        {% endfor %}
+                    </select>   
+                </div>
+                <form>
+                    <button type="submit">Confirm booking</button>
+                </form>
+            </form>
+        </div>
+    </section>
+</div>
+
+
+{% endblock body %}

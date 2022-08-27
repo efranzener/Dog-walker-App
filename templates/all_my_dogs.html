@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+  <h1>My dogs</h1>
+
+  <ul>
+    {% for pet in my_pets %}
+      <li>
+        <img> {{pet.profile_pic}}
+        <br>
+        <p>My name is <strong>{{pet.name}}</strong></p>
+        <div>I'm a {{pet.breed}} and I'm {{pet.age}} years old.</div>
+      </li>
+    {% endfor %}
+  </ul>
+
+{%endblock body%}%

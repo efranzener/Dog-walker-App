@@ -2,7 +2,18 @@
 {% block title %}All sitters{% endblock title%}
 
 {% block body %}
-{% for sitter in sitters %}
-  <p>{{ sitter.fname}}</p>
-{% endfor %}
-{% endblock body %}
+
+
+<ul>
+    {% for sitter in sitters %}
+    <li>
+      <img {{sitter.user.profile_pic}}></img> 
+      <p><strong> {{ sitter.user.fname}} {{sitter.user.lname}} </strong></p>
+      <div>I have {{ sitter.years_of_experience}} years of experience <span> 
+      <div> Rates: My rates start at ${{sitter.rate}}</div>
+      <div> Minimum lenght of walk required for booking: 30 min</div>
+      <a href="/sitters/{{sitter.id}}">Click here if you would like to book me or just to learn more about me</a>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}
