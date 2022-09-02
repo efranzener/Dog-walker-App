@@ -1,3 +1,63 @@
 {% extends 'base.html' %}
 
-{% block body %} Hello {{user_id}} {%endblock body%}
+{% block body %}
+    <h3>Welcome to your profile page, {{user.fname}}!</h3>
+       
+        <div class="user_profile">
+            <section>
+                <div class="container">
+                    <form action="/user_profile/{{user.user_id}}/update" method = "POST">
+                        <div class="form-group">
+                            <label for="fname">First Name</label>
+                            <input type="text" name="fname" value="{{user.fname}}"id="fname">
+                        </div>
+                        <div class="form-group">
+                            <label for="lname">Last Name</label>
+                            <input type="text" name="lname" value="{{user.lname}}" id="lname">
+                        </div>
+                        <div class="form-group">
+                            <label for="dob">Date of birth</label>
+                            <input type="date" name="dob" value="{{user.dob}}" id="dob">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" >Email</label>
+                            <input type="email" name="email" value="{{user.email}}" id="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" value="{{user.password}}" id="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile" class="form-label">Mobile</label>
+                            <input type="text" name="mobile" value= "{{user.mobile}}" id="mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="address" >Address</label>
+                            <input type="text"  name="address" value="{{user.address}}" id="address" placeholder="1234 Main St, number ">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" name="city" value = "{{user.city}}"id="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" name="state" value={{user.state}} id="state" >
+                        </div>
+                        <div class="form-group">
+                            <label for="zip_code" class="form-labe2">Zip Code</label>
+                            <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
+                        </div>         
+                        <div class="form-group">
+                            <label class="profilepic" for="profilepic">Profile Picture</label>
+                            <img src="/static/{{user.profile_pic}}" alt="{{user.profile_pic}}" class="img-thumbnail">
+                            <input id="profilepic1" type="file" name="profilepic" placeholder="Profile Picture" required="capture">
+                        </div>                                          
+                        <form>
+                            <button type="submit">Save Changes</button>
+                        </form>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+{%endblock body%}

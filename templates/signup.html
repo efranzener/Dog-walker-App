@@ -8,7 +8,7 @@
     <div class="signup">
         <section>
             <div class="container">
-                <form action="/signup" method="POST">
+                <form action="/signup" method="POST" method = "POST" enctype = "multipart/form-data">
                     <div class="form-group">
                         <label for="fname2">First Name</label>
                         <input type="text" name="fname" id="fname2">
@@ -42,17 +42,21 @@
                         <input type="text" name="city" id="city">
                     </div>
                     <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" name="state" id="state" >
+                        <select id="state" name="state">
+                            <option selected>State</option>
+                            {% for state in states %}
+                                <option name = "state_selected" value="{{state}}" required>{{state}}</option>
+                            {% endfor %}
+                        </select>  
                     </div>
                     <div class="form-group">
                         <label for="zip_code" class="form-labe2">Zip Code</label>
                         <input type="text" name="zip_code" id="zip_code">
                     </div>         
                     <div class="form-group">
-                        <label class="profilepic" for="profilepic1">Profile Picture</label>
-                        <img src="" alt="..." class="img-thumbnail">
-                        <input id="profilepic1" type="file" name="profilepic" placeholder="Profile Picture" required="capture">
+                        <label class="profilepic" for="profilepic">Profile Picture</label>
+                        <img src="static/profile_pic1.jpg" alt="..." class="img-thumbnail">
+                        <input id="profilepic" type="file" name="profilepic" placeholder="Profile Picture" required>
                     </div>                                          
                     <form>
                         <button type="submit">Sign up</button>

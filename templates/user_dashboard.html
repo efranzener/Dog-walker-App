@@ -6,7 +6,7 @@
     <nav class="navbar navbar-expand-lg bg-light">
       <ul class="nav justify-content-center">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/sitter_signup/{{user.user_id}}">Sign up as a Sitter</a>
+          <a class="nav-link active" aria-current="page" href="/user_profile/{{user.user_id}}">Update profile</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="/petowner_signup/{{user.user_id}}">Sign up as a Dog Owner</a>
@@ -22,15 +22,18 @@
             <a class="nav-link active" aria-current="page" href="/new_booking/{{user.user_id}}">Create new booking</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">See all my bookings</a>
+            <a class="nav-link active" aria-current="page" href="/my_bookings/{{user.user_id}}">See all my bookings</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/sitters">Search sitters</a>
+            <a class="nav-link active" aria-current="page" href="/sitters/{{user.user_id}}">Search sitters</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
           </li>
       </ul>
     </nav>
   </div>
-
+  
 
 <div class="form-group">
     <form action = "/user_dashboard/{{user.user_id}}" method="POST">

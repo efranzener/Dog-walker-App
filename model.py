@@ -21,7 +21,8 @@ class User(db.Model):
     dob = db.Column(db.Date, nullable = False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable = False)
-    profile_pic = db.Column(db.String(300))
+    
+    profile_pic = db.Column(db.String(20), nullable=False, default='default.jpg')
     mobile = db.Column(db.String(15), nullable = False)
     address = db.Column(db.String(100), nullable = False)
     city = db.Column(db.String(50), default = "Seattle",nullable = False)

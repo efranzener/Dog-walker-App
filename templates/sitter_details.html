@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}{{ sitter.user.fname}} {{sitter.user.lname}} - Profile{% endblock %}
+
+{% block body %}
+
+  {% if session.get('user_email') %}
+    <h3> Hi {{session['user_email']}} </h3>
+    </h2>{{ sitter.user.fname}} {{sitter.user.lname}}</h1>
+
+      <p>
+      <img {{sitter.user.profile_pic}}></img> 
+      <div>I have {{ sitter.years_of_experience}} years of experience </div>
+
+      <p> {{sitter.summary}}</p>
+
+    <div> Rates: My rates start at ${{sitter.rate}}</div>
+    <div> Minimum lenght of walk required for booking: 30 min</div>
+    <a href="/new_booking/{{user.user_id}}">Book a walk with me</a> 
+    <br> 
+
+
+  {% endif %}
+
+<img src="{{ sitter.user.profile_pic}}">
+{% endblock %}
