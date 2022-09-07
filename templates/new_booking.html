@@ -7,9 +7,7 @@
     <section>
         <div class="container">
             <form action="/create_booking/{{pet_owner.id}}" method="POST">
-
                 <div class="form-group">
-
                     </div>
                         <label for="start_date" >Date</label>
                         <input type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
@@ -51,10 +49,11 @@
                     </select>   
                 </div>
                 <form>
-                    <button type="submit">Confirm booking</button>
+                    <button>Confirm booking</button>
                 </form>
             </form>
         </div>
+        <button  class="btn btn-outline-secondary" onclick="history.back()">Back to previous page </button>
     </section>
 </div>
 

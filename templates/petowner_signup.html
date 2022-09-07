@@ -4,18 +4,25 @@
 {% block title %}Create an Account{% endblock title%}
 
 {% block body %}
-    <h2>Hello {{fname}}, {{email}}</h2>
-    <h2>Finish up your account to start booking</h2>
+    {% if 'user_email' in session%}
 
-    <section>
-        <form action = "/petowner_signup/{{user_id}}" method="POST" >
+        <h2>Hello {{user.fname}}!</h2>
+        <h5>Pet Owner Sign Up</h>
+        <form action = "/petowner_signup/{{user.user_id}}" method="POST" >
             <div class="form-group">
                 <label for="num_pets">How many dogs do you have?</label>
-                    <input type="number" min=0 name="num_pets" id="num_pets" placeholder="1, 2, 3...">
-                    <button type="submit" class="btn"> Confirm </button>
+                <input type="number" min=0 name="num_pets" id="num_pets" placeholder="1, 2, 3..." required>
             </div>
+            <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
         </form>
-    </section>
-   
-       
+        <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>  
+        <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}" role="button">Create New Booking</a>
+        <a class="btn btn-outline-secondary" aria-current="page" href="/sitters/{{user.user_id}}" role="button">Find Sitters</a>          
+        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+    {%else%}
+    
+    <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          
+
+    {%endif%}
+         
 {% endblock body %}

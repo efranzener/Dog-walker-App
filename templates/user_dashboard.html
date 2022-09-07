@@ -2,51 +2,48 @@
 
 {% block body %}
 
-<div class="container">
-    <nav class="navbar navbar-expand-lg bg-light">
-      <ul class="nav justify-content-center">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/user_profile/{{user.user_id}}">Update profile</a>
+  <div>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Account
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/user_profile/{{user.user_id}}">Profile Page</a>
+              <a class="dropdown-item" href="/petowner_signup/{{user.user_id}}">Pet Owner Sign up</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/sitter_signup/{{user.user_id}}">Sitter Sign Up</a>
+            </div>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Bookings
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">See all my bookings</a>
+            <a class="dropdown-item" href="/create_booking/{{user.user_id}}">Create new booking</a>
+         </div>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">See all my dogs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Register a new dog</a>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find sitters</a>          
+          </li>
         </li>
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/petowner_signup/{{user.user_id}}">Sign up as a Dog Owner</a>
-          </li>
+        <a class="nav-link" aria-current="page" href="/logout">Logout</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/all_my_dogs/{{user.user_id}}">See all my dogs</a>
-        </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/add_dog/{{user.user_id}}">I have a new dog to add</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/new_booking/{{user.user_id}}">Create new booking</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/my_bookings/{{user.user_id}}">See all my bookings</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/sitters/{{user.user_id}}">Search sitters</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/logout">Logout</a>
-          </li>
-      </ul>
+        </ul>
+      </div>
     </nav>
-  </div>
-  
-
-<div class="form-group">
-    <form action = "/user_dashboard/{{user.user_id}}" method="POST">
-        <label>Ready to finish your profile? </label> 
-        <select id="account_type" name="account_type">
-            <option selected>Choose...</option>
-            <option name = "finished" value="finished">I already did!</option>
-            <option name = "sitter" value="sitter">Finish my Sitter profile</option>
-            <option name = "pet_owner" value="pet_owner">Finish my Dog Owner profile</option>   
-            <input type="submit" value="Submit"> 
-        </select>
-    </form>    
-</div> 
+  </div> 
 
 
 {%endblock body%}

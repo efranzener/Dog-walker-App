@@ -17,7 +17,7 @@ def create_user(fname, lname, email, password, profile_pic, dob, mobile, address
     return user
 
 
-def create_sitter(user_id, summary, rate,  years_of_experience=0):
+def create_sitter(user_id, summary, rate,  years_of_experience):
     """Create and return a new sitter."""
 
     sitter = Sitter(user_id = user_id, summary = summary, rate=rate, years_of_experience=years_of_experience)
@@ -51,6 +51,9 @@ def create_vet(fname: str, lname: str, mobile: int, address: str, zip_code: str,
 
     vet = Vet(fname=fname, lname=lname, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, pet_id = pet_id)
     
+    db.session.add(vet)
+    db.session.commit() 
+     
     return vet
 
 
@@ -59,6 +62,9 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
 
     booking = Booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly)
    
+    db.session.add(booking)
+    db.session.commit() 
+     
     return booking
 
 
@@ -68,6 +74,7 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
     
     
 ######## GET #########
+    
 
 def sitter_exists(user_id):
     """ return whether sitter exists or not """
@@ -151,16 +158,16 @@ def get_sitter_bookings_by_user_id(user_id):
     """Return all the sitter bookings from a specific user_id"""
 
     sitter = get_sitter_by_user_id(user_id)
-    # user = get_user_by_id(user_id)
-    sitter_bookings = []
+    
+    s_bookings = []
     if (Booking.query.filter(Booking.sitter_id == sitter.id).first()) != None:
 
-        sitter_bookings = (Booking.query.filter(Booking.sitter_id == sitter.id).all())
-        print("My sitter bookings are:", sitter_bookings)
+        s_bookings = (Booking.query.filter(Booking.sitter_id == sitter.id).all())
+        print("My sitter bookings are:", s_bookings)
     else:
-        print("You don't have any sitter bookings yet", sitter_bookings)
+        print("You don't have any sitter bookings yet", s_bookings)
 
-    return sitter_bookings
+    return s_bookings
 
 
 def get_owner_bookings_by_user_id(user_id):
@@ -168,15 +175,15 @@ def get_owner_bookings_by_user_id(user_id):
 
     pet_owner = get_petowner_by_user_id(user_id)
     # user = get_user_by_id(user_id)
-    pet_owner_bookings = []
+    owner_bookings = []
     if (Booking.query.filter(Booking.pet_owner_id == pet_owner.id).first()) != None:
 
-        pet_owner_bookings = Booking.query.filter(Booking.pet_owner_id == pet_owner.id).all()
-        print("My pet owner bookings are:", pet_owner_bookings)
+        owner_bookings = Booking.query.filter(Booking.pet_owner_id == pet_owner.id).all()
+        print("My pet owner bookings are:", owner_bookings)
     else: 
-        print("Sorry you don't have any bookings yet", pet_owner_bookings)
+        print("Sorry you don't have any bookings yet", owner_bookings)
 
-    return pet_owner_bookings
+    return owner_bookings
 
 
 def get_sitters():

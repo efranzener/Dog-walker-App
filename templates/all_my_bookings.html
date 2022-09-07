@@ -1,55 +1,57 @@
 {% extends 'base.html' %}
-
 {% block body %}
     {% if session.get('user_email') %}
-
+    
     <h1>Hello {{ user.fname }}!</h1>
         <div>
             <h3> Bookings </h3>
-        {%if sitter_bookings %}
-            <h5> I'm <strong>booked<string> as a sitter on these:</h5>
-            {% for booking in sitter_bookings %}
-                <div>
-                    <img> {{booking.pet.profile_pic}}
-                </div>
+        {%if sitter_bookings or pet_owner_bookings%}
 
-                <div>
-                    <div> Bookings with: {{booking.pet.name}}</div>
-                    <div> Bookings date and time: {{booking.start_time}}</div>
-                    {% if booking.weekly == True%}
-                        <div> Recurring service: Yes</div>
-                    {% else %}
+            {%if sitter_bookings %}
+                <h5> I'm <strong>booked<string> as a sitter on these:</h5>
+                {% for booking in sitter_bookings %}
+                    <div>
+                        <img> {{booking.pet.profile_pic}}
+                    </div>
+
+                    <div>
+                        <div> Bookings with: {{booking.pet.name}}</div>
+                        <div> Bookings date and time: {{booking.start_time}}</div>
+                        {% if booking.weekly == True%}
+                            <div> Recurring service: Yes</div>
+                        {% else %}
+                            <div> Recurring service: No</div>
+                        {%endif %}
+                    </div>
+                {%endfor%}
+            {%endif%}
+            
+                <p></p>
+            
+            {%if pet_owner_bookings %}
+                <h5> I <strong> booked </strong> a sitter on these:</h5>
+                {% for booking in pet_owner_bookings %}
+                    <div>
+                        <img> {{booking.pet.profile_pic}}
+                    </div>
+
+                    <div>
+                        <div> Booking with: {{booking.sitter.user.fname}}</div>
+                        <div> For: {{booking.pet.name}} </div>
+                        <div> Bookings dates and times: {{booking.start_time}}</div>
+                    {% if booking.weekly != True %}
                         <div> Recurring service: No</div>
+                    {% else %}
+                        <div> Recurring service: Yes</div>
+                        <div></div>
+                        <div></div>
                     {%endif %}
-                    
-                </div>
-            {%endfor%}
+                    </div>
+                {% endfor %}
+            {%endif%}
+            
         {%endif%}
-        
-            <p></p>
-        
-        {%if pet_owner_bookings %}
-            <h5> I <strong> booked </strong> a sitter on these:</h5>
-            {% for booking in pet_owner_bookings %}
-                <div>
-                    <img> {{booking.pet.profile_pic}}
-                </div>
-
-                <div>
-                    <div> Booking with: {{booking.sitter.user.fname}}</div>
-                    <div> For: {{booking.pet.name}} </div>
-                    <div> Bookings dates and times: {{booking.start_time}}</div>
-                {% if booking.weekly != True %}
-                    <div> Recurring service: No</div>
-                {% else %}
-                    <div> Recurring service: Yes</div>
-                    <div></div>
-                    <div></div>
-                {%endif %}
-                </div>
-            {% endfor %}
-        {%endif%}
-        </div>
-        
+    </div>
     {%endif%}
+    <button onclick="history.back()">Back to homepage</button>
 {%endblock body%}%

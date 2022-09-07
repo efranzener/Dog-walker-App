@@ -1,63 +1,60 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <h3>Welcome to your profile page, {{user.fname}}!</h3>
-       
-        <div class="user_profile">
-            <section>
-                <div class="container">
-                    <form action="/user_profile/{{user.user_id}}/update" method = "POST">
-                        <div class="form-group">
-                            <label for="fname">First Name</label>
-                            <input type="text" name="fname" value="{{user.fname}}"id="fname">
-                        </div>
-                        <div class="form-group">
-                            <label for="lname">Last Name</label>
-                            <input type="text" name="lname" value="{{user.lname}}" id="lname">
-                        </div>
-                        <div class="form-group">
-                            <label for="dob">Date of birth</label>
-                            <input type="date" name="dob" value="{{user.dob}}" id="dob">
-                        </div>
-                        <div class="form-group">
-                            <label for="email" >Email</label>
-                            <input type="email" name="email" value="{{user.email}}" id="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" value="{{user.password}}" id="password">
-                        </div>
-                        <div class="form-group">
-                            <label for="mobile" class="form-label">Mobile</label>
-                            <input type="text" name="mobile" value= "{{user.mobile}}" id="mobile">
-                        </div>
-                        <div class="form-group">
-                            <label for="address" >Address</label>
-                            <input type="text"  name="address" value="{{user.address}}" id="address" placeholder="1234 Main St, number ">
-                        </div>
-                        <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" name="city" value = "{{user.city}}"id="city">
-                        </div>
-                        <div class="form-group">
-                            <label for="state">State</label>
-                            <input type="text" name="state" value={{user.state}} id="state" >
-                        </div>
-                        <div class="form-group">
-                            <label for="zip_code" class="form-labe2">Zip Code</label>
-                            <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
-                        </div>         
-                        <div class="form-group">
-                            <label class="profilepic" for="profilepic">Profile Picture</label>
-                            <img src="/static/{{user.profile_pic}}" alt="{{user.profile_pic}}" class="img-thumbnail">
-                            <input id="profilepic1" type="file" name="profilepic" placeholder="Profile Picture" required="capture">
-                        </div>                                          
-                        <form>
-                            <button type="submit">Save Changes</button>
-                        </form>
-                    </form>
+    
+    {%if 'user_email' in session%}
+        <div class="card text-center">
+            <div class="card-header">
+                <h5>Welcome to your profile page, {{user.fname}}!</h5>
+            </div>
+            <div class="card-center">
+                <img class="rounded-circle" src="{{profile_pic}}" alt="profile image">
+                <div class="card-center">
+                    <h5 class="card-title">Personal Information</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group">First Name: {{user.fname}}</li>
+                        <li class="list-group">Last Name: {{user.lname}}</li>
+                        <li class="list-group">Date of Birth: {{user.dob}}</li>
+                        <li class="list-group">Mobile: {{user.mobile}}</li>
+                        <li class="list-group">Email: {{user.email}}</li>
+                        <li class="list-group">Address: {{user.address}}</li>
+                        <li class="list-group">City: {{user.city}}</li>
+                        <li class="list-group">State: {{user.state}}</li>
+                        <li class="list-group">Zip Code: {{user.zip_code}}</li>
+                    </ul>
+                        <a href="/user_profile/{{user.user_id}}/update" class="btn btn-outline-secondary">Update User Profile</a>
                 </div>
-            </section>
+                <div class="card-body">
+                    <h5 class="card-title">Sitter Profile</h5>
+                    {%if sitter %}
+                    
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group">Summary: {{sitter.years_of_experience}}</li>
+                            <li class="list-group">Rate: {{sitter.rate}}/ 30 min walk</li>
+                        </ul>
+                        <a class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update my Sitter Profile</a>
+                    {%else: %}
+                        <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+                    {%endif%}
+                </div>
+                <div>
+                <h5 class="card-title">Pet Owner Profile</h5>
+                {%if pet_owner %}
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group">Number of Dogs: {{pet_owner.num_pets}}</li>
+                    </ul>
+                    <a class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update my Pet Owner Profile</a>
+                {%else: %}
+                    <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create my Pet Owner Profile</a>
+                {%endif%}
+                </div>                                                    
+            <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
+            <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+            </div>
         </div>
+    {%else%}
+        <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          
+
+    {% endif%}
 
 {%endblock body%}
