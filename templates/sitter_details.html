@@ -8,9 +8,12 @@
     </h2>{{ sitter.user.fname}} {{sitter.user.lname}}</h1>
 
       <p>
-      <img {{sitter.user.profile_pic}}></img> 
-      <div>I have {{ sitter.years_of_experience}} years of experience </div>
-
+        {%if profile_pic%}
+        <img class="rounded-circle" src="{{profile_pic}}" alt="profile image">
+        {%else%}
+        <img src="https://res.cloudinary.com/dggbnnudv/image/upload/v1662615978/VowVow/dog-763058__340_hb5nde.jpg" alt="profile image" class="img-thumbnail">
+        <div>I have {{ sitter.years_of_experience}} years of experience </div>
+        {%endif %}
       <p> {{sitter.summary}}</p>
 
     <div> Rates: My rates start at ${{sitter.rate}}</div>

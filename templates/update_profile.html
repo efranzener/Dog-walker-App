@@ -9,9 +9,9 @@
             <section>
                 <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
                     <div class="form-group">
-                        <label class="profilepic" for="profilepic">Profile Picture</label>
-                        <img src="{{profile_pic}}" alt="{{user.profile_pic}}" class="img-thumbnail">
-                        <input id="profilepic1" type="file" name="profilepic" placeholder="Profile Picture" capture="user" accept="image/*" required>
+                        <label class="profilepic" for="profilepic"></label>
+                            <img src="{{profile_pic}}"  value="{{user.fname}}" alt="profile image" class="rounded">
+                            <input id="profilepic" type="file" name="profilepic" value="{{user.profile_pic}}" accept="image/*">
                     </div>  
                     <div class="form-group">
                         <label for="fname">First Name</label>
@@ -53,9 +53,7 @@
                         <label for="zip_code" class="form-labe2">Zip Code</label>
                         <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
                     </div>          
-                    <form>
                         <button class="btn btn-outline-secondary">Save Changes</button>
-                    </form>
                 </form>
             </section>
         </div>
@@ -77,7 +75,7 @@
                         <div class="input-group mb-3">
                             <span class="input-group-text">30 min</span>
                             <span class="input-group-text">$</span>
-                            <input name="rate" type="number" min=0 step="0.25" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
+                            <input name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
                         </div>
                     </div>
                     <form>
@@ -86,7 +84,9 @@
                 </form>
             </section>
         {%else %}
-            <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+            <div>
+                <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+            </div>
         {% endif%}
         </div>
         <div>
@@ -97,8 +97,9 @@
                         <div class="form-group">
                             <label for="num_pets">How many dogs do you have?</label>
                                 <input type="number" min=0 name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
-                            <button type="submit" class="btn btn-outline-dark"> Confirm update </button>
                         </div>
+                        <button type="submit" class="btn btn-outline-secondary"> Confirm update </button>
+
                     </form>
                 </section>
             {%else %}

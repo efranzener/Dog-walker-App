@@ -103,6 +103,19 @@ def pet_exists(pet_owner_id, name):
     else:
         return False
     
+def get_pet_by_name(pet_owner_id, name):
+    """check if that pet already has been registered"""
+     
+    return Pet.query.filter(Pet.name == name, Pet.pet_owner_id == pet_owner_id).first()
+     
+    
+def get_all_other_users(user_id):
+    """Return all users excepts the current user_id"""
+
+    return User.query.filter(user_id != user_id).all()
+
+
+    
 def get_sitter_by_user_id(user_id):
     """Return a sitter by user_id"""
 

@@ -2,9 +2,9 @@
 {% block body %}
     {% if session.get('user_email') %}
     
-    <h1>Hello {{ user.fname }}!</h1>
+    <h3>Hello {{ user.fname }}!</h3>
         <div>
-            <h3> Bookings </h3>
+            <h5> Bookings </h5>
         {%if sitter_bookings or pet_owner_bookings%}
 
             {%if sitter_bookings %}

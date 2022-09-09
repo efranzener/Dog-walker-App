@@ -7,7 +7,7 @@
 <ul>
     {% for sitter in sitters %}
     <li>
-      <img {{sitter.user.profile_pic}}></img> 
+      <img {{profile_pic}}></img> 
       <p><strong> {{ sitter.user.fname}} {{sitter.user.lname}} </strong></p>
       <div>I have {{ sitter.years_of_experience}} years of experience <span> 
       <div> Rates: My rates start at ${{sitter.rate}}</div>

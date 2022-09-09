@@ -16,7 +16,7 @@
             <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
         </form>
         <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>  
-        <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}" role="button">Create New Booking</a>
+        <a class="btn btn-outline-secondary" aria-current="page" href="{{ url_for("get_booking_form", user_id= user.user_id) }}" role="button">Create New Booking</a>
         <a class="btn btn-outline-secondary" aria-current="page" href="/sitters/{{user.user_id}}" role="button">Find Sitters</a>          
         <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
     {%else%}
