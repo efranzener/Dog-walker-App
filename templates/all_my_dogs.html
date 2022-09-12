@@ -5,15 +5,23 @@
   <h1>My dogs</h1>
 
   <ul>
-    {% for pet in my_pets %}
-      <li>
-        <img> {{pet.profile_pic}}
-        <br>
-        <p>My name is <strong>{{pet.name}}</strong></p>
-        <div>I'm a {{pet.breed}} and I'm {{pet.age}} years old.</div>
-      </li>
+    {% for pet in pets %}
+      
+        <div class="card-group" style="width: 18rem;">
+          <div class="card" >
+                <img class="card-img-top" src="{{pet["pic"] }}" >
+                <div class="card-body">
+            <li>
+              <h5>My name is <strong>{{ pet["name"] }}</strong></h5>
+              <p>I'm a {{pet["size"]}} {{ pet["breed"] }} and I'm {{ pet["age"] }} years old.</p>
+            </li>
+          </div>
+        </div>
     {% endfor %}
   </ul>
-  <button  class="btn btn-outline-secondary" onclick="history.back()">Back to previous page </button>
-
+  <div class="container">                                                
+    <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
+    <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+    <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
+</div>
 {%endblock body%}%

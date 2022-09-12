@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from http import server
+from tracemalloc import reset_peak
 from flask import (Flask, render_template, request, flash, session, redirect, url_for, logging, jsonify)
 from model import connect_to_db, db
 import crud
@@ -22,8 +23,8 @@ import os.path
 
 # GOOGLE CALENDAR API IMPORTS
 from google.auth.transport.requests import Request
-# from google.oauth2.credentials import Credentials
-# from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -78,7 +79,7 @@ def get_signup():
     
     return render_template("signup.html", states=states)
 
-
+@app.route('/get_available sitters')
 def get_user_consent(user_id):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
@@ -107,9 +108,62 @@ def get_user_consent(user_id):
     include_granted_scopes='true')
     session['state'] = state
 
-    print("Im the authorization url{authorization_url}")
+    print("Im the authorization url", {authorization_url})
     return(authorization_url)
     # return redirect(url_for("get_user_dashboard", user_id = user.id))
+
+#TESTING
+
+def get_consent():
+    """Shows basic usage of the Google Calendar API.
+    Prints the start and name of the next 10 events on the user's calendar.
+    """
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                client_secrets_file=CLIENT_SECRETS_FILE, scopes = SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+           
+    return 
+
+
+
+@app.route('/all_sitters')
+def get_available_sitters():
+    
+    service = build('calendar', 'v3', credentials=get())
+
+    # Call the Calendar API
+    event = service.events().get(calendarId='testuser.numone@gmail.com', eventId='Busy').execute()
+
+    print (event['summary'])
+    # calendar = service.calendars().get(calendarId='{user.email}').execute()
+    
+    
+
+
+            
+
+            # Prints the start and name of the next 10 events
+        #     for event in calendar:
+        #         start = event['start'].get('dateTime', event['start'].get('date'))
+        #         print(start, event['summary'])
+
+        # except HttpError as error:
+        #     print('An error occurred: %s' % error)
 
 
 @app.route('/signup', methods=["POST"])
@@ -136,20 +190,20 @@ def create_account():
         
     # set UUID
     profile_pic = str(uuid.uuid1()) + "_" + file_name
-    
+
     user = crud.get_user_by_email(email)
     
     if user:
         flash("Cannot create an account with that email. Please try again.", "danger")    
     else:
         upload_result = cloudinary.uploader.upload(profile_file, public_id=profile_pic)
+        
         user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=password, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
         
         flash("Account sucessfully created! Please login.", "sucess")
      
         
     return redirect('/')
-
 
 
 @app.route('/login', methods=["POST"])
@@ -174,49 +228,30 @@ def process_login():
         
         return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
 
-# #TESTING
-# @app.route('/test')
-# def test_api_request():
-    
-#     if 'credentials' not in session:
-#         return redirect('/')
 
-#     # Load credentials from the session.
-#     credentials = google.oauth2.credentials.Credentials(session['credentials'])
-
-#     calendar = googleapiclient.discovery.build(
-#       API_SERVICE_NAME, API_VERSION, credentials=credentials)
-
-#     # events = drive.files().list().execute()
-#     calendar = service.calendars().get(calendarId='testuser.numtwo').execute()
-
-#     print (calendar['summary'])
-
-#     # Save credentials back to session in case access token was refreshed.
-#     # ACTION ITEM: In a production app, you likely want to save these
-#     #              credentials in a persistent database instead.
-#     session['credentials'] = credentials_to_dict(credentials)
-
-#     return jsonify(events)
-
-
-
-# ********************
 @app.route('/user_dashboard/<user_id>')
 def get_user_dashboard(user_id):
     """Show user dashboard"""
 
     user = crud.get_user_by_id(user_id)
     
-    # google calendar id is the first part of the user email. In order to get that, we split the user email using the split() method
-    split_email = user.email.split("@")
+
+    return render_template("user_dashboard.html", user = user)
+
+@app.route('/calendar/<user_id>')
+def get_user_calendar(user_id):
+    """show user their own calendar"""
     
-    # create a variable to store the calendar id(splitted email)
-    calendar_id = split_email[0]
-
-
-    return render_template("user_dashboard.html", user = user, calendar_id = calendar_id)
-
+    if 'user_email' in session:
+        
+        user = crud.get_user_by_id(user_id)
+         # google calendar id is the first part of the user email. In order to get that, we split the user email using the split() method
+        split_email = user.email.split("@")
+        
+        # create a variable to store the calendar id(splitted email)
+        calendar_id = split_email[0]
+        
+    return render_template('calendar.html', user = user, calendar_id = calendar_id)
     
 
 @app.route("/sitter_signup/<user_id>")
@@ -278,24 +313,26 @@ def get_profile_page(user_id):
         if sitter:
             sitter = crud.get_sitter_by_user_id(user_id)
         
-        # set cloudinary public_id to current user profile pic 
-        public_id =  user.profile_pic
+       
+        res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+        data = res.json()
+        items = data['resources']
         
-        #uses the public id to call cloudinary api to check if current profile picture is uploaded in cloudinary
-        try:   
-            cloud_pic = cloudinary.api.resource(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        
-        #  if profile pic not uploaded in cloudinary, set profile pic to user.profile_pic (assigned as public id)
-        except:
-            profile_pic = public_id
-        
-        # if profile pic in cloudinary, set it to the secure_url, in order to retrive it
-        else:
-            if 'secure_url' in cloud_pic:
-                profile_pic = cloud_pic['secure_url']
-        
-        return render_template("user_profile_page.html",
-                           profile_pic=profile_pic, pet_owner = pet_owner, sitter = sitter, user = user)
+        current_pic = {}
+        for item in items:
+            if user.profile_pic == item['public_id']:
+                current_pic = {
+                    'profile_pic': user.profile_pic,
+                    'public_id': item['public_id'],
+                    'pic_url': item['url']
+                }
+                
+        print("i'm the current user.profile pic", user.profile_pic, "my public id", item['public_id'] )   
+             
+        print("i'm the old user profile pic", current_pic) 
+            
+        return render_template("user_profile_page.html", profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, user = user)
+    
     
     return redirect('/')
     
@@ -318,23 +355,24 @@ def get_profile_update_form(user_id):
         if sitter:
             sitter=crud.get_sitter_by_id(user_id)
          
-        # set cloudinary public_id to current user profile pic 
-        public_id =  user.profile_pic                
-        #uses the public id to call cloudinary api to check if current profile picture is uploaded in cloudinary
-        try:   
-            cloud_pic = cloudinary.api.resource(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        #  if profile pic not uploaded in cloudinary, set profile pic to user.profile_pic (assigned as public id)
         
-        except:
-            profile_pic = public_id
-        # if
-        # profile pic in cloudinary, set it to the secure_url, in order to retrive it
-            print("i'm the profile pid line 332", public_id)
-        else:
-            if 'secure_url' in cloud_pic:
-                profile_pic = cloud_pic['secure_url']
-                print("im the secure url", cloud_pic['secure_url'])
-        return render_template('update_profile.html',  profile_pic = profile_pic, pet_owner = pet_owner, sitter = sitter, user = user)
+        res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+        data = res.json()
+        items = data['resources']
+        
+        current_pic = {}
+        for item in items:
+            if user.profile_pic == item['public_id']:
+                current_pic = {
+                    'profile_pic': user.profile_pic,
+                    'public_id': item['public_id'],
+                    'pic_url': item['url']
+                }
+                
+            print("i'm the current user.profile pic", user.profile_pic)        
+            print("i'm the old user profile pic", current_pic) 
+            
+        return render_template('update_profile.html',  profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, user = user)
     else:
         return redirect('/')
     
@@ -350,8 +388,6 @@ def update_user_profile(user_id):
     if 'user_email' in session:
         
         user = crud.get_user_by_id(user_id)
-        
-        print("I'm the current profile_file", user.profile_pic)
 
         user.fname = request.form.get("fname")
         user.lname= request.form.get("lname")
@@ -363,36 +399,39 @@ def update_user_profile(user_id):
         user.city = request.form.get("city")
         user.state = request.form.get("state")
         user.zip_code = request.form.get("zip_code")
-        profile_file = request.files['profilepic']
-        file_name = secure_filename(profile_file.filename)
-        print("I'm profile_file", profile_file, file_name)
+        new_profile_file = request.files['profilepic']
+        file_name = secure_filename(new_profile_file.filename)
+        print("I'm profile_file", new_profile_file, file_name)
         
-        # set UUID
-        user.profile_pic = str(uuid.uuid1()) + "_" + file_name
-        db.session.commit()
-        
-        flash("Your user information was sucessfully updated", "success")
-       
-        # set cloudinary public_id to current user profile pic 
-        public_id =  user.profile_pic        
-        
-        #uses the public id to call cloudinary api to check if current profile picture is uploaded in cloudinary
-        try:   
-            cloud_pic = cloudinary.api.resource(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        #  if profile pic not uploaded in cloudinary, set profile pic to user.profile_pic (assigned as public id)
-        except:
-            flash("please add a profile_picture")
-            user.profile_pic = public_id
-        # if profile pic in cloudinary, set it to the secure_url, in order to retrive it
-       
-        else:
-            if 'secure_url' in cloud_pic:
-                user.profile_pic = cloud_pic['secure_url']
+        if new_profile_file:
+            # set UUID
+            user.profile_pic = str(uuid.uuid1()) + "_" + file_name
+            upload_result = cloudinary.uploader.upload(new_profile_file, public_id=user.profile_pic)
 
-        # save new profile pic into claudinary
-        upload_result = cloudinary.uploader.upload(profile_file, public_id=user.profile_pic)
+        else:
+            user.profile_pic = user.profile_pic
+            
+            # cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+        res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+        data = res.json()
+        items = data['resources']
         
-        return redirect(url_for('get_profile_page', user_id = user_id))
+        current_pic = {}
+        for item in items:
+            if user.profile_pic == item['public_id']:
+                current_pic = {
+                    'profile_pic': user.profile_pic,
+                    'public_id': item['public_id'],
+                    'pic_url': item['url']
+                }
+                
+        print("i'm the current user.profile pic", user.profile_pic)        
+        print("i'm the old user profile pic", current_pic) 
+        
+        db.session.commit()
+        flash("Your user information was sucessfully updated", "success")
+                
+        return redirect(url_for("get_profile_page", user_id = user_id))
     else:
         redirect('/')
     
@@ -516,7 +555,7 @@ def create_pet_profile(user_id):
             emergency_contact_name = request.form.get("emergency_contact")
             emergency_contact_relationship = request.form.get("emergency_relationship")
             emergency_phone = request.form.get("emergency_phone")
-            profile_file = request.files("profile_pic")
+            profile_file = request.files["profilepic"]
     
             # return a secure filename ready to be stored
             file_name= secure_filename(profile_file.filename)
@@ -535,23 +574,28 @@ def create_pet_profile(user_id):
                 
                 flash("Pet sucessfully added!", "success") 
             
-        total_pets += 1    
-           
-        return render_template("add_dog.html", total_pets = total_pets, fname =user.fname,  pets_registered = pets_registered, num_pets = num_pets, user = user, user_id = user.user_id, pet_owner=pet_owner)
+            total_pets += 1    
+            
 
     flash(f"You currently have {total_pets} dogs registered under your profile", "info")
     
     return redirect(url_for("show_all_dogs", user_id=user_id))
 
 
+# @app.route("/booking_form/<user_id>")
 @app.route("/create_booking/<user_id>")
-def get_booking_form(user_id):
+def get_booking_form(user_id, sitter_id=0):
     """get booking form"""
-            
-    if "user_email" not in session:
-        return redirect('/')
+   
+    sitter_id = sitter_id
     
-    else: 
+    if "select_sitter":
+            sitter_id = request.args.get('sitter_id')
+            sitter = crud.get_sitter_by_id(sitter_id)
+            print("my sitter_id after if statement", sitter_id)
+            
+    if "user_email" in session:
+
         if crud.petowner_exists(user_id):
             pet_owner = crud.get_petowner_by_user_id(user_id)
             pet_owner_id = pet_owner.id
@@ -564,7 +608,9 @@ def get_booking_form(user_id):
 
             return redirect(url_for("petowner_signup", user_id = user_id))
         
-        return render_template("new_booking.html", pet_owner = pet_owner, sitters = sitters, user_id = user_id, pets = pets)    
+        return render_template("new_booking.html", pet_owner = pet_owner, sitter = sitter, sitters = sitters, user_id = user_id, pets = pets)    
+    
+    return redirect('/')
     
     
 @app.route("/create_booking/<pet_owner_id>", methods=["POST"])
@@ -572,7 +618,7 @@ def create_booking(pet_owner_id):
     """ create a new booking"""
     
     if "user_email" in session:
-        
+            
         email = session.get('user_email')
         user = crud.get_user_by_email(email)
         user_id = user.user_id
@@ -581,7 +627,7 @@ def create_booking(pet_owner_id):
         
 
         pet_owner_id = pet_owner_id
-        sitter_id = request.form.get("sitter_id")
+        sitter_id = request.form.get("sitter.id")
         pet_id = request.form.get("pet_id")
         start_date = request.form.get("start_date")
         end_date = request.form.get("end_date")
@@ -612,51 +658,38 @@ def all_sitters(user_id):
     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
     api_secret = API_SECRET)
 
-    sitters = crud.get_all_other_sitters(user_id)
+    user = crud.get_user_by_id(user_id)
+    all_sitters = crud.get_all_other_sitters(user_id)
     users = crud.get_all_other_users(user_id)
-    # for user in users:
-    sitter_pics = []
     
-    for sitter in sitters:
-        public_id = sitter.user.profile_pic
-        
-        try:   
-            cloud_pic = cloudinary.api.resource(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        #  if profile pic not uploaded in cloudinary, set profile pic to user.profile_pic (assigned as public id)
-        except:
-            profile_pic = public_id
-        # if profile pic in cloudinary, set it to the secure_url, in order to retrive it
-       
-        else:
-            if 'secure_url' in cloud_pic:
-                profile_pic = cloud_pic['secure_url']
-
-        # cloud_pic = cloudinary.api.resources_by_ids(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        if 'secure_url' in cloud_pic:
-            profile_pic = cloud_pic['secure_url']
-        
-        sitter_pics.append(profile_pic)
-                 
-    return render_template("all_sitters.html", sitter_pics=sitter_pics, sitters=sitters)
-
-
-@app.route('/sitter_details/<sitter_id>')
-def show_sitter_details(sitter_id):
-    """Display a specific sitter information, using it's primary key"""
     
-    sitter = crud.get_sitter_by_id(sitter_id)
-    user = crud.get_user_by_sitter_id(sitter_id)
-    
-    public_id =  user.profile_pic   
-    resources = cloudinary.api.resources_by_ids()
-    if resources['public_id'] == public_id:
-        print(f"im resources pi", resources['public_id'])
-        cloud_pic = cloudinary.api.resource(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME, public_id=public_id)
-        if 'secure_url' in cloud_pic:
-            profile_pic = cloud_pic['secure_url']
+    cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+    res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+    data = res.json()
+    pics = data['resources']
+    sitters=[]
+            
+    for sitter in all_sitters:
+        split_email = sitter.user.email.split("@")
+        pet_sitter={}
+        for item in pics:
+            if sitter.user.profile_pic == (item['public_id']):
+                pet_sitter['id'] = sitter.id
+                pet_sitter['fname'] = sitter.user.fname
+                pet_sitter['lname'] = sitter.user.lname
+                pet_sitter['pic'] = item['url']
+                pet_sitter['experience'] = sitter.years_of_experience
+                pet_sitter['rate'] = sitter.rate
+                pet_sitter['calendar_id'] = split_email[0]
+                pet_sitter['user_id'] = sitter.user.user_id
+                
+            
+        sitters.append(pet_sitter) 
         
-    return render_template("sitter_details.html", sitter = sitter, user = user, profile_pic = profile_pic)
+    print("im all the sitters", sitters)
+    
+    return render_template("all_sitters.html", sitters = sitters, user = user)
+
 
 
 @app.route("/all_my_dogs/<user_id>")
@@ -677,14 +710,32 @@ def show_all_dogs(user_id):
                 flash("Sorry you don't have any dogs registered yet", "danger")
                 
                 return render_template("add_dog.html", user = user, pet_owner = pet_owner, total_pets = total_pets, pet_owner_id = pet_owner_id )
-            else:                 
+            else:
+                cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+                res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+                data = res.json()
+                pics = data['resources']
+                pets=[]
                 
-                return render_template("all_my_dogs.html", my_pets = my_pets, pet_owner_id = pet_owner_id)
+                for pet in my_pets:
+                    dog={}
+                    for item in pics:
+                        if pet.profile_pic == (item['public_id']):
+                            dog['name'] = pet.name
+                            dog['id'] = pet.pet_id
+                            dog['pic'] = item['url']
+                            dog['age'] = pet.age
+                            dog['breed'] = pet.breed
+                            dog['size'] = pet.size
+                    pets.append(dog) 
+                    print("my dog is", dog)
+                print("my pets are", pets)
+
+                return render_template("all_my_dogs.html", pets = pets, my_pets = my_pets, user = user, pet_owner_id = pet_owner_id)
 
         else:
             
             return redirect(url_for("petowner_signup", user_id = user_id))
-
 
     
     return redirect('/')
@@ -714,14 +765,6 @@ def get_all_bookings(user_id):
             
         return render_template("all_my_bookings.html", user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
 
-
-
-# @app.route("/calendar")
-# def calendar():
-#    """remove the user from the session if it is there"""
-   
-
-#    return render_template("calendar_appointment-booking.html")
 
 
 # #############################################

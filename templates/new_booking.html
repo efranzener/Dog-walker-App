@@ -42,10 +42,14 @@
 
                 <div>   
                     <select id="sitter_id" name="sitter_id">
-                        <option selected>Which sitter would you like to book the walk with?</option>
-                        {% for sitter in sitters %}
-                            <option name = "sitter_id" value="{{sitter.id}}" required>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
-                        {% endfor %}
+                        {%if sitter%}
+                            <option name="sitter_id" value="{{sitter.id}}" selected>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
+                        {%else%}
+                            <option selected>Which sitter would you like to book the walk with?</option>
+                            {% for sitter in sitters %}
+                                <option name = "sitter_id" value="{{sitter.id}}" required>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
+                            {% endfor %}
+                        {%endif%}
                     </select>   
                 </div>
                 <form>
@@ -58,4 +62,4 @@
 </div>
 
 
-{% endblock body %}
+{%endblock%}

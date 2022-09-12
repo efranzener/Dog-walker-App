@@ -53,5 +53,8 @@
         {%endif%}
     </div>
     {%endif%}
-    <button onclick="history.back()">Back to homepage</button>
+    <div class="container">                                                
+        <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
+        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+        <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
 {%endblock body%}%

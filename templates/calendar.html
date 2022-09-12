@@ -3,22 +3,13 @@
 {% block title %}Calendar{% endblock title%}
 
 {% block body %}
-<div class="md-calendar-booking">
-    <div class="mbsc-form-group">
-        <div class="mbsc-form-group-title">Single date & appointment booking</div>
-        <div id="demo-booking-single"></div>
+    {% if 'user_email' in session%}
+    <h3> This is your current calendar </h3>
+    <div id="my_calendar">
+        <iframe src="https://calendar.google.com/calendar/embed?src={{calendar_id}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="yes"></iframe>
+    </div> 
+    {% endif%}
+    <div>
+    <button onclick="history.back()">Back to homepage</button>
     </div>
-    <div class="mbsc-form-group">
-        <div class="mbsc-form-group-title">Select date & time</div>
-        <div id="demo-booking-datetime" class="booking-datetime"></div>
-    </div>
-    <div class="mbsc-form-group">
-        <div class="mbsc-form-group-title">Booking multiple appointments</div>
-        <div id="demo-booking-multiple"></div>
-    </div>
-</div>
-
-
-
-
 {% endblock body %}

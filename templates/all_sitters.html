@@ -2,20 +2,65 @@
 {% block title %}All sitters{% endblock title%}
 
 {% block body %}
-
-
+  
 <ul>
     {% for sitter in sitters %}
-    <li>
-      <img {{profile_pic}}></img> 
-      <p><strong> {{ sitter.user.fname}} {{sitter.user.lname}} </strong></p>
-      <div>I have {{ sitter.years_of_experience}} years of experience <span> 
-      <div> Rates: My rates start at ${{sitter.rate}}</div>
-      <div> Minimum lenght of walk required for booking: 30 min</div>
-      <a href="/sitter_details/{{sitter.id}}">Click here if you would like to book me or just to learn more about me</a>
-    </li>
+      <div class="card-group" style="width: 18rem;">
+        <div class="card" >
+          <img class="card-img-top" src="{{sitter["pic"] }}" >
+          <div class="card-body">
+            <li>
+              <p><strong> {{ sitter["fname"]}} {{sitter["lname"]}} </strong></p>
+              <div>I have {{ sitter["experience"]}} years of experience </div>
+              <div> Rates: My rates start at ${{sitter["rate"]}}</div>
+              <div> Minimum lenght of walk required for booking: 30 min</div>
+                                              
+                  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#myModal">Calendar of availability</button>
+
+                  <div id="myModal" class="modal fade" role="dialog">
+                  {% for sitter in sitters %}
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Sitter {{sitter.fname}} {{sitter.lname}} calendar of availability</h4>
+                        </div>
+                        <div class="modal-body">
+                          <iframe src="https://calendar.google.com/calendar/embed?src={{sitter['calendar_id']}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  {%endfor%}
+
+                  </div>
+                </div>
+              </div>
+                  </div>
+                  </div>  
+                </div>
+              </div>
+              <form action="/create_booking/{{user.user_id}}">
+                <div id = "create booking">
+                  <button name="sitter_id" type="submit" class="btn btn-secondary" value="{{sitter["id"]}}">Book a Walk with me</button>
+                </div>
+              </form>
+            </li>
+          </div>
+        </div>
+      </div>
   {% endfor %}
 </ul>
-<button  class="btn btn-outline-secondary" onclick="history.back()">Back to previous page </button>
+<div class="container">                                                
+  <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
+  <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+  <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
+</div>
+<script>
 
-{% endblock %}
+</script>
+{%endblock%}
+    

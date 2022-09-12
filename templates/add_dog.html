@@ -13,7 +13,7 @@
 <div class="add_dog">
     <section>
         <div class="container">
-            <form action="/add_dog/{{pet_owner.user_id}}" method="POST">
+            <form action="/add_dog/{{pet_owner.user_id}}" method="POST" enctype = "multipart/form-data">
                 <div class="form-group">
                     <label for="fname2">Name</label>
                     <input type="text" name="name" id="name">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="form-group">
                     <label for="age" >Age</label>
-                    <input type="number" name="age" id="age" placeholder="1, 2, 3 years old">
+                    <input type="number" min="0" name="age" id="age" placeholder="1, 2, 3 years old">
                 </div>
                 <div class="form-group">
                     <label for="size" >Size</label>
@@ -92,9 +92,9 @@
                     <input type="text" name="emergency_phone" id="emergency_phone">
                 </div>           
                 <div class="form-group">
-                    <label class="profilepic" for="profilepic1">Profile Picture</label>
+                    <label class="profilepic" for="profilepic">Profile Picture</label>
                     <img src="" alt="..." class="img-thumbnail">
-                    <input id="profilepic1" type="file" name="profilepic" placeholder="Profile Picture" required="capture">
+                    <input id="profilepic" type="file" name="profilepic" accept="image/png, image/jpeg" placeholder="Dog Profile Picture" required>
                 </div>                             
                 <form>
                     <button type="submit">Add my dog</button>
