@@ -2,22 +2,32 @@
 {% block title %}All sitters{% endblock title%}
 
 {% block body %}
+
+<div class="card" style="width: 18rem;">
+  <form class="form-inline" action="/search_availability/{{current_user.user_id}}" method="POST">                    
+    <div class="container">
+      <h5> Search for a dog walker </h5>
+        <label for="start_date">Date</label>
+        <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
+        <label for="start_time" >Start of 30 min walk</label>
+        <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
+        </div>
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </div>
+  </form>
+</div>
   
-<ul>
     {% for sitter in sitters %}
       <div class="card-group" style="width: 18rem;">
         <div class="card" >
           <img class="card-img-top" src="{{sitter["pic"] }}" >
           <div class="card-body">
-            <li>
               <p><strong> {{ sitter["fname"]}} {{sitter["lname"]}} </strong></p>
               <div>I have {{ sitter["experience"]}} years of experience </div>
               <div> Rates: My rates start at ${{sitter["rate"]}}</div>
-              <div> Minimum lenght of walk required for booking: 30 min</div>
-                                              
-                  <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#myModal">Calendar of availability</button>
-
-                  <div id="myModal" class="modal fade" role="dialog">
+              <div> Minimum lenght of walk required for booking: 30 min</div>                             
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#myModal">Calendar of availability</button>
+                <div id="myModal" class="modal fade" role="dialog">
                   {% for sitter in sitters %}
                     <div class="modal-dialog">
                       <div class="modal-content">
@@ -32,31 +42,25 @@
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         </div>
                       </div>
-                      
                     </div>
                   {%endfor%}
-
+                </div>
+              
+              <div class = "container"> 
+                <form action="/create_booking/{{current_user.user_id}}">
+                  <div id = "create booking">
+                    <button name="sitter_id" type="submit" class="btn btn-secondary" value="{{sitter["id"]}}">Book a Walk with me</button>
                   </div>
-                </div>
+                </form>
               </div>
-                  </div>
-                  </div>  
-                </div>
-              </div>
-              <form action="/create_booking/{{user.user_id}}">
-                <div id = "create booking">
-                  <button name="sitter_id" type="submit" class="btn btn-secondary" value="{{sitter["id"]}}">Book a Walk with me</button>
-                </div>
-              </form>
-            </li>
+          
           </div>
         </div>
       </div>
-  {% endfor %}
-</ul>
+    {% endfor %}
 <div class="container">                                                
   <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-  <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+  <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{current_user.user_id}}" role="button">Homepage</a> 
   <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
 </div>
 <script>

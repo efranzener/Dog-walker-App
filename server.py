@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 from http import server
+from ipaddress import v6_int_to_packed
 from tracemalloc import reset_peak
 from flask import (Flask, render_template, request, flash, session, redirect, url_for, logging, jsonify)
 from model import connect_to_db, db
@@ -12,14 +13,18 @@ from flask_wtf.file import FileField
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 from sqlalchemy.sql import exists
-from datetime import datetime
+from sqlalchemy import inspect
+import datetime as dt
+from datetime import datetime, timedelta
 import requests
 from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
+import pytz
 
 # import datetime
 import os.path
+import flask
 
 # GOOGLE CALENDAR API IMPORTS
 from google.auth.transport.requests import Request
@@ -28,8 +33,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+
 import google.oauth2.credentials
-import google_auth_oauthlib.flow
+import google_auth_oauthlib.flow 
 import googleapiclient.discovery
 
 # #######
@@ -50,7 +56,7 @@ CLOUD_NAME = os.environ['cloud_name']
 
 # Google Calendar API
 CLIENT_SECRETS_FILE = 'credentials.json'
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events']
 API_SERVICE_NAME = 'calendar'
 API_VERSION = 'v3'
 
@@ -79,91 +85,101 @@ def get_signup():
     
     return render_template("signup.html", states=states)
 
-@app.route('/get_available sitters')
-def get_user_consent(user_id):
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
-    
-    user = crud.get_user_by_id(user_id)
-    # creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    
-    # if os.path.exists('token.json'):
-    #     creds = Credentials.from_authorized_user_file('token.json', scopes=SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    # ########################
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(client_secrets_file=CLIENT_SECRETS_FILE, scopes=SCOPES)
-
-    flow.redirect_uri = f'http://localhost:5000/user_dashboard/{user_id}'
-    authorization_url, state = flow.authorization_url(
-    # Enable offline access so that you can refresh an access token without
-    # re-prompting the user for permission. Recommended for web server apps.
-    access_type='offline',
-    login_hint=f'{user.email}',
-    prompt='consent',
-    # Enable incremental authorization. Recommended as a best practice.
-    include_granted_scopes='true')
-    session['state'] = state
-
-    print("Im the authorization url", {authorization_url})
-    return(authorization_url)
-    # return redirect(url_for("get_user_dashboard", user_id = user.id))
-
-#TESTING
 
 def get_consent():
-    """Shows basic usage of the Google Calendar API.
-    Prints the start and name of the next 10 events on the user's calendar.
-    """
+    """get user consent to accessing sensitive data"""
+    
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-        
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                client_secrets_file=CLIENT_SECRETS_FILE, scopes = SCOPES)
+                'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
-           
-    return 
-
-
-
-@app.route('/all_sitters')
-def get_available_sitters():
+    try:
+        service = build('calendar', 'v3', credentials=creds)
+    except HttpError as error:
+        print('An error occurred: %s' % error)
+    return (service)
+        
     
-    service = build('calendar', 'v3', credentials=get())
+          
+def get_available_sitters(user_id):
+    
+    service = get_consent()
+    
+    # get available sitters if user want to search for a specific date and time
+    start_date = request.form.get("start_date")
+    start_time = request.form.get("start_time")
+    print("im the start_date", start_date)
+    starttime_with_date = start_date + "T" + start_time
+    starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
 
-    # Call the Calendar API
-    event = service.events().get(calendarId='testuser.numone@gmail.com', eventId='Busy').execute()
+    # create an interval to calculate end time, based on 30 min walks
+    interval = dt.timedelta(minutes=30)
+    end_time =  starttime_datetime + interval
+    
+    user = crud.get_user_by_id(user_id)
+    sitters = crud.get_all_other_sitters(user_id)
+    cal_ids = []
+    for sitter in sitters:
+        calendar_ids={
+            "id":sitter.user.email}
+        cal_ids.append(calendar_ids)
+       
+    tz = pytz.timezone('US/Central')    
+    start_datetime = tz.localize(starttime_datetime)
+    end_datetime = tz.localize(end_time)
+    body = {
+        "timeMin": start_datetime.isoformat(),
+        "timeMax": end_datetime.isoformat(),
+        "timeZone": 'US/Central',
+        "items": cal_ids
+    }
+    eventsResult = service.freebusy().query(body=body).execute()
+    print("events result: ", eventsResult)
+    cal_dict = eventsResult['calendars']
+    
+    available_sitters = []
+    for cal_name in cal_dict:
+        if cal_dict[cal_name] != []:
+            available_sitters.append(cal_name)
+            
+        print(jsonify(cal_dict))
+    return available_sitters
 
-    print (event['summary'])
-    # calendar = service.calendars().get(calendarId='{user.email}').execute()
+
+    
+    # service = build('calendar', 'v3', credentials=get())
+
+    # # Call the Calendar API
+    # event = service.events().get(calendarId='testuser.numone@gmail.com', eventId='Busy').execute()
+
+    # print (event['summary'])
+    # # calendar = service.calendars().get(calendarId='{user.email}').execute()
     
     
 
 
             
 
-            # Prints the start and name of the next 10 events
-        #     for event in calendar:
-        #         start = event['start'].get('dateTime', event['start'].get('date'))
-        #         print(start, event['summary'])
+    #         # Prints the start and name of the next 10 events
+    #     #     for event in calendar:
+    #     #         start = event['start'].get('dateTime', event['start'].get('date'))
+    #     #         print(start, event['summary'])
 
-        # except HttpError as error:
-        #     print('An error occurred: %s' % error)
+    #     # except HttpError as error:
+    #     #     print('An error occurred: %s' % error)
 
 
 @app.route('/signup', methods=["POST"])
@@ -221,7 +237,6 @@ def process_login():
     
     elif user and user.password == password:
         user_id = user.user_id
-        get_user_consent(user_id)
         session["user_email"] = user.email
         flash(f"Welcome, {user.fname}!", "primary")
         
@@ -582,18 +597,21 @@ def create_pet_profile(user_id):
     return redirect(url_for("show_all_dogs", user_id=user_id))
 
 
-# @app.route("/booking_form/<user_id>")
 @app.route("/create_booking/<user_id>")
 def get_booking_form(user_id, sitter_id=0):
     """get booking form"""
    
-    sitter_id = sitter_id
+    sitter_id = request.args.get('sitter_id')
     
-    if "select_sitter":
-            sitter_id = request.args.get('sitter_id')
+    if sitter_id:
+            print(sitter_id)
             sitter = crud.get_sitter_by_id(sitter_id)
+            print(sitter)
+            split_email = sitter.user.email.split("@")
+            sitter_calendar_id = split_email[0]
             print("my sitter_id after if statement", sitter_id)
-            
+    else:
+        sitter_id = 0         
     if "user_email" in session:
 
         if crud.petowner_exists(user_id):
@@ -608,7 +626,7 @@ def get_booking_form(user_id, sitter_id=0):
 
             return redirect(url_for("petowner_signup", user_id = user_id))
         
-        return render_template("new_booking.html", pet_owner = pet_owner, sitter = sitter, sitters = sitters, user_id = user_id, pets = pets)    
+        return render_template("new_booking.html", sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = sitter, sitters = sitters, user_id = user_id, pets = pets)    
     
     return redirect('/')
     
@@ -650,17 +668,81 @@ def create_booking(pet_owner_id):
         return redirect(url_for("get_user_dashboard", user_id = user_id))
     return redirect('/')
     
-  
+@app.route('/search_availability/<user_id>', methods=["POST"])
+def display_available_sitters(user_id):
+    """display sitters available on a specific time based on user search"""
+    
+    
+    if 'user_email' in session:
+        
+        available_sitters_email = get_available_sitters(user_id)
+        
+        if available_sitters_email == []:
+            flash("I'm sorry there is no sitters available in the time you selected, please try searching for a different time", "warning")
+        
+        else:
+            print("Im the available sitter", available_sitters_email)
+            cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
+            api_secret = API_SECRET)
+
+            current_user = crud.get_user_by_id(user_id)
+            cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+            res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+            data = res.json()
+            pics = data['resources']
+            sitters=[]
+            
+            all_users = []
+            all_sitters = []
+            #print('im the sitters', type(all_sitters))
+            
+        
+            for email in available_sitters_email:
+                available_user = crud.get_user_by_email(email)
+                available_sitter = crud.get_sitter_by_user_id(available_user.user_id)
+                all_users.append(available_user)
+                all_sitters.append(available_sitter)
+            print("available_sitters_email wasn't empty. all_users: ", all_users)
+            
+            for user in all_users:
+                print(user)
+                pet_sitter={}
+                for sitter in all_sitters:
+                    print(sitter)
+                    split_email = user.email.split("@")
+                    for item in pics:
+                        if user.profile_pic == (item['public_id']):
+                            pet_sitter['id'] = sitter.id
+                            pet_sitter['fname'] = user.fname
+                            pet_sitter['lname'] = user.lname
+                            pet_sitter['pic'] = item['url']
+                            pet_sitter['experience'] = sitter.years_of_experience
+                            pet_sitter['rate'] = sitter.rate
+                            pet_sitter['calendar_id'] = split_email[0]
+                            pet_sitter['user_id'] = user.user_id
+                        
+                print("im the user.profile_pic", user.profile_pic)
+        
+                sitters.append(pet_sitter) 
+            
+            print("im sitters after the loops", sitters)   
+            return render_template("all_sitters.html", sitters = sitters, current_user = current_user)
+
+        return redirect (url_for("all_sitters", user_id = user_id))
+    
+    return redirect('/')
+            
+    
+    
 @app.route('/sitters/<user_id>')
 def all_sitters(user_id):
     """View all sitters in db"""
     
+    
     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
     api_secret = API_SECRET)
 
-    user = crud.get_user_by_id(user_id)
-    all_sitters = crud.get_all_other_sitters(user_id)
-    users = crud.get_all_other_users(user_id)
+    current_user = crud.get_user_by_id(user_id)
     
     
     cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
@@ -668,10 +750,19 @@ def all_sitters(user_id):
     data = res.json()
     pics = data['resources']
     sitters=[]
-            
+    
+    all_users = []
+    all_sitters = []
+    
+    all_users = crud.get_all_other_users(user_id)
+    all_sitters = crud.get_all_other_sitters(user_id)
+        
+        
+    print('all_users', all_users)
+    
     for sitter in all_sitters:
-        split_email = sitter.user.email.split("@")
         pet_sitter={}
+        split_email = sitter.user.email.split("@")
         for item in pics:
             if sitter.user.profile_pic == (item['public_id']):
                 pet_sitter['id'] = sitter.id
@@ -683,12 +774,9 @@ def all_sitters(user_id):
                 pet_sitter['calendar_id'] = split_email[0]
                 pet_sitter['user_id'] = sitter.user.user_id
                 
-            
+                
         sitters.append(pet_sitter) 
-        
-    print("im all the sitters", sitters)
-    
-    return render_template("all_sitters.html", sitters = sitters, user = user)
+    return render_template("all_sitters.html", sitters = sitters, current_user = current_user)
 
 
 
@@ -766,15 +854,6 @@ def get_all_bookings(user_id):
         return render_template("all_my_bookings.html", user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
 
 
-
-# #############################################
-
-# # @app.route('users/<user_id>/availability')
-# # def get_users_calendar(user_id):
-    
-# #     calendar = service.calendars().get(calendarId='primary').execute()
-
-# # print calendar['summary']
 
 @app.route("/logout")
 def logout():

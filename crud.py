@@ -213,10 +213,6 @@ def get_sitter_by_id(sitter_id):
     return Sitter.query.get(sitter_id)
 
 
-def get_sitter_by_email(email):
-    """Return a sitter by email."""
-    
-    return Sitter.query.filter(Sitter.email == email).first()
 
 
 def get_sitter_by_user_id(user_id):
