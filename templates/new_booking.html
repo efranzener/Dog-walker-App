@@ -14,51 +14,44 @@
                         <label for="start_date" >Date</label>
                         <input type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
                     <div class="form-group">
-                        <label for="start_time" >Start time</label>
+                        <label for="start_time">Please select a start time for your dog's walk</label>
+                        <p><small> Each walk is 30 min<small></p>
                         <input type="time" min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
-                        <label for="end_time" >End time</label>
-                        <input type="time"  min="09:00" step="900" name="end_time" id="end_time" value="00:00" required >
                     </div>
                     </div>
-                    <div class="form-group">
-                        <label for="weekly" class="form-label">Is this a recurring weekly booking?</label>
-                        <input type="radio" id="recurring" name="weekly" value= "true">
-                        <label for="recurring">Yes</label>
-                        <input type="radio" id="not_recurring" name="weekly" value="false">
-                        <label for="not_recurring">No</label>
-                    </div>
-                    <div class="form-group">
-                        <label for="end_date"> Please select an end date for the recurrence</label>
-                        <input type="date" name="end_date" id="end_date" required pattern="\d{4}-\d{2}-\d{2}">
-                    </div>
-                </div>
-
+                
                 <div> 
-                    <select id="pet_id" name="pet_id">
-                        <option selected>Which of your dog(s) is this walk for?</option>
+                    <select id="pet_id" name="pet_id" required>
+                        <option value="">Which of your dog(s) is this walk for?</option>
                         {% for pet in pets %}
-                            <option name = "pet_id" value="{{pet.pet_id}}" required>{{pet.name}}</option>
+                            <option name = "pet_id" value="{{pet.pet_id}}">{{pet.name}}</option>
                         {% endfor %}
                     </select>  
                 </div>
 
                 <div>   
-                    <select id="sitter_id" name="sitter_id">
-                        {%if sitter%}
-                            <option name="sitter_id" value="{{sitter.user.user_id}}" selected>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
+                    <select id="sitter_id" name="sitter_id" required>
+                        {% if  sitter %}
+                            <option name="sitter_id" value="{{sitter.id}}" selected>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
                            
                                 <iframe src="https://calendar.google.com/calendar/embed?src={{sitter_calendar_id}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
                             
             
-                            {%else%}
-                            <option selected>Which sitter would you like to book the walk with?</option>
+                        {%else%}
+                        <option selected>Which sitter would you like to book the walk with?</option>
                             {% for sitter in sitters %}
                                 <option name = "sitter_id" value="{{sitter.id}}" required>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
-                                
-                               
                             {% endfor %}
                         {%endif%}
                     </select>   
+                </div>
+                <div>
+                    <label for="address">Pick up Address</label>
+                    <input type="text" name="address" value="{{user.address}}"id="address" autocomplete="address">
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <input type="description" name="description" value="description"id="description" placeholder="This is optional.Add here any additional info you'd like to share">
                 </div>
                 <form>
                     <button>Confirm booking</button>

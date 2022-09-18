@@ -239,6 +239,13 @@ def get_pet_by_id(id):
     return Pet.query.get(id)
 
 
+def delete_user(user_id):
+    
+    user = get_user_by_id(user_id)
+    db.session.delete(user)
+    db.session.commit()
+
+    return None
 
 
 

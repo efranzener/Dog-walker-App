@@ -137,37 +137,46 @@ def get_available_sitters(user_id):
             "id":sitter.user.email}
         cal_ids.append(calendar_ids)
        
-    tz = pytz.timezone('US/Central')    
+    tz = pytz.timezone('US/Pacific')    
     start_datetime = tz.localize(starttime_datetime)
     end_datetime = tz.localize(end_time)
     body = {
         "timeMin": start_datetime.isoformat(),
         "timeMax": end_datetime.isoformat(),
-        "timeZone": 'US/Central',
+        "timeZone": 'US/Pacific',
         "items": cal_ids
     }
     eventsResult = service.freebusy().query(body=body).execute()
-    print("events result: ", eventsResult)
+    print("events result: ", (type(eventsResult)))
+    print("events result: ", eventsResult.keys())
+
     cal_dict = eventsResult['calendars']
-    
+    print("I'm the cal dict keys", cal_dict.keys() )
+    print("I'm the cal dict values", cal_dict.values() )
+   
+
+
+    # cal_busy = cal_dict[cal_name]['busy']
+    # print("im the cal busy ", cal_busy)
     available_sitters = []
     for cal_name in cal_dict:
-        if cal_dict[cal_name] != []:
+        cal_busy = cal_dict[cal_name]['busy']
+        # print("I'm the cal busy", cal_busy)
+        # print("I'm the cal_name", cal_name)
+        # if cal_dict[cal_name] != []:
+        if cal_busy != []:
+            continue
+        else:
             available_sitters.append(cal_name)
-            
-        print(jsonify(cal_dict))
+    
+    # available_sitters = []
+    # for sitter in sitters:
+    #     if sitter.user.email not in busy_sitters:
+    #         available_sitters.append(sitter.user.email)     
+        
+    # print("I'm the available sitters", available_sitters, "with my calendar info", cal_dict[cal_name], cal_busy)
     return available_sitters
 
-
-    
-    # service = build('calendar', 'v3', credentials=get())
-
-    # # Call the Calendar API
-    # event = service.events().get(calendarId='testuser.numone@gmail.com', eventId='Busy').execute()
-
-    # print (event['summary'])
-    # # calendar = service.calendars().get(calendarId='{user.email}').execute()
-    
     
 
 
@@ -530,91 +539,97 @@ def update_petowner_profile(user_id):
 @app.route("/add_dog/<user_id>", methods=["GET", "POST"])
 def create_pet_profile(user_id):
     """create a new dog profile"""
-    cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
-    api_secret = API_SECRET)
-    upload_result = None
     
-    user = crud.get_user_by_id(user_id)
-    
-    if crud.petowner_exists(user_id):
-        pet_owner = crud.get_petowner_by_user_id(user_id)
-        num_pets = pet_owner.num_pets
-        pet_owner_id = pet_owner.id
-        pets_registered = crud.get_pets_by_ownerid(pet_owner_id)
-        total_pets = crud.get_total_pets_by_owner(pet_owner_id)
-
-    else:
-        flash("Please finish your pet owner profile to be able to add a pet", "info")
-
-        return redirect(url_for("petowner_signup", user_id = user_id))
-    
-    while total_pets != num_pets:
-                
-        if request.method == "GET":
-            return render_template("add_dog.html", total_pets = total_pets, fname = user.fname, pets_registered = pets_registered, num_pets = num_pets, user = user, user_id = user.user_id, pet_owner=pet_owner)
+    if 'user_email' in session:
+        cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
+        api_secret = API_SECRET)
+        upload_result = None
         
+        user = crud.get_user_by_id(user_id)
+        
+        if crud.petowner_exists(user_id):
+            pet_owner = crud.get_petowner_by_user_id(user_id)
+            num_pets = pet_owner.num_pets
+            pet_owner_id = pet_owner.id
+            pets_registered = crud.get_pets_by_ownerid(pet_owner_id)
+            total_pets = crud.get_total_pets_by_owner(pet_owner_id)
+
         else:
+            flash("Please finish your pet owner profile to be able to add a pet", "info")
+
+            return redirect(url_for("petowner_signup", user_id = user_id))
+        
+        while total_pets != num_pets:
+                    
+            if request.method == "GET":
+                return render_template("add_dog.html", total_pets = total_pets, fname = user.fname, pets_registered = pets_registered, num_pets = num_pets, user = user, user_id = user.user_id, pet_owner=pet_owner)
             
-            name = request.form.get("name")
-            breed = request.form.get("breed")
-            age = request.form.get("age")
-            size = request.form.get("size")
-            allergies = bool(request.form["allergies"])
-            allergies_kind = request.form.get("kind_allergies")
-            house_trained = bool(request.form["hstrained"])
-            friendly_w_dogs = bool(request.form["dog_friendly"])
-            friendly_w_kids = bool(request.form["kid_friendly"])
-            spayed_neutered = bool(request.form["spayed_neutered"])
-            microchipped = bool(request.form["microchipped"])
-            additional_info = request.form.get("additional_info")
-            emergency_contact_name = request.form.get("emergency_contact")
-            emergency_contact_relationship = request.form.get("emergency_relationship")
-            emergency_phone = request.form.get("emergency_phone")
-            profile_file = request.files["profilepic"]
-    
-            # return a secure filename ready to be stored
-            file_name= secure_filename(profile_file.filename)
-                
-            # set UUID
-            profile_pic = str(uuid.uuid1()) + "_" + file_name
-            
-            if crud.pet_exists(pet_owner_id, name):
-    
-                flash("pet_already created", "warning")
-                return url_for("show_all_dogs", user_id=user_id )
             else:
-                upload_result = cloudinary.uploader.upload(profile_file, public_id=profile_pic)
                 
-                pet = crud.create_pet(name= name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, house_trained=house_trained, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, additional_info=additional_info, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id=pet_owner.id)
+                name = request.form.get("name")
+                breed = request.form.get("breed")
+                age = request.form.get("age")
+                size = request.form.get("size")
+                allergies = bool(request.form["allergies"])
+                allergies_kind = request.form.get("kind_allergies")
+                house_trained = bool(request.form["hstrained"])
+                friendly_w_dogs = bool(request.form["dog_friendly"])
+                friendly_w_kids = bool(request.form["kid_friendly"])
+                spayed_neutered = bool(request.form["spayed_neutered"])
+                microchipped = bool(request.form["microchipped"])
+                additional_info = request.form.get("additional_info")
+                emergency_contact_name = request.form.get("emergency_contact")
+                emergency_contact_relationship = request.form.get("emergency_relationship")
+                emergency_phone = request.form.get("emergency_phone")
+                profile_file = request.files["profilepic"]
+        
+                # return a secure filename ready to be stored
+                file_name= secure_filename(profile_file.filename)
+                    
+                # set UUID
+                profile_pic = str(uuid.uuid1()) + "_" + file_name
                 
-                flash("Pet sucessfully added!", "success") 
-            
+                if crud.pet_exists(pet_owner_id, name):
+        
+                    flash("pet_already created", "warning")
+                    return url_for("show_all_dogs", user_id=user_id )
+                else:
+                    upload_result = cloudinary.uploader.upload(profile_file, public_id=profile_pic)
+                    
+                    pet = crud.create_pet(name= name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, house_trained=house_trained, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, additional_info=additional_info, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id=pet_owner.id)
+                    
+                    flash("Pet sucessfully added!", "success") 
+                
             total_pets += 1    
             
 
-    flash(f"You currently have {total_pets} dogs registered under your profile", "info")
-    
-    return redirect(url_for("show_all_dogs", user_id=user_id))
+            flash(f"You currently have {total_pets} dogs registered under your profile", "info")
 
+            return redirect(url_for("show_all_dogs", user_id=user_id))
+    return redirect('/')
 
 @app.route("/create_booking/<user_id>")
-def get_booking_form(user_id, sitter_id=0):
+def get_booking_form(user_id):
     """get booking form"""
    
-    sitter_id = request.args.get('sitter_id')
+    selected_sitter_id = request.args.get('sitter_id')
     
-    if sitter_id:
-            print(sitter_id)
-            sitter = crud.get_sitter_by_id(sitter_id)
-            print(sitter)
-            split_email = sitter.user.email.split("@")
-            sitter_calendar_id = split_email[0]
-            print("my sitter_id after if statement", sitter_id)
+    if selected_sitter_id:
+        
+        print("selected sitter id",selected_sitter_id)
+        selected_sitter = crud.get_sitter_by_id(selected_sitter_id)
+        print("Im the sitter", selected_sitter)
+        split_email = selected_sitter.user.email.split("@")
+        sitter_calendar_id = split_email[0]
+        print("my sitter_id after if statement", selected_sitter_id)
     else:
-        sitter_id = 0         
+        selected_sitter_id = 0   
+        sitter_calendar_id = 0 
+        selected_sitter = None
     if "user_email" in session:
 
         if crud.petowner_exists(user_id):
+            user = crud.get_user_by_id(user_id)
             pet_owner = crud.get_petowner_by_user_id(user_id)
             pet_owner_id = pet_owner.id
             sitters = crud.get_all_other_sitters(user_id)
@@ -626,46 +641,139 @@ def get_booking_form(user_id, sitter_id=0):
 
             return redirect(url_for("petowner_signup", user_id = user_id))
         
-        return render_template("new_booking.html", sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = sitter, sitters = sitters, user_id = user_id, pets = pets)    
+        return render_template("new_booking.html", user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
     
     return redirect('/')
+
+
+def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
+    """insert a new_booking into google calendar"""
     
+    service = get_consent()
+    
+    user = crud.get_user_by_id(user_id)
+    sitter = crud.get_user_by_id(sitter_id)
+    pet_owner = crud.get_petowner_by_user_id(user_id)
+    pet = crud.get_pet_by_id(pet_id)
+    sitter_user = crud.get_user_by_id(sitter.user_id)
+    pet_name = pet.name
+    sitter_name = (sitter_user.fname) +" "+(sitter_user.lname)
+    pet_owner_name = (user.fname) +" "+ (user.lname)
+    
+    start_date = request.form.get("start_date")
+    start_time = request.form.get("start_time")
+    print("im the start_date", start_date)
+    starttime_with_date = start_date + "T" + start_time
+    starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
+
+    # create an interval to calculate end time, based on 30 min walks
+    interval = dt.timedelta(minutes=30)
+    end_time =  starttime_datetime + interval
+
+    tz = pytz.timezone('US/Pacific')    
+    start_datetime = tz.localize(starttime_datetime)
+    end_datetime = tz.localize(end_time)
+    body = {
+        "summary":f"Dog Walk for {pet.name}" ,
+        "description":description,
+        "location": address,
+        "transparency": "opaque",
+        "visibility": "public",
+        "start":{
+            "dateTime": start_datetime.isoformat(),
+            "timeZone": 'US/Pacific',
+        },
+        "end": {
+            "dateTime": end_datetime.isoformat(),
+            "timeZone": 'US/Pacific',
+        },
+        
+        "attendes": [
+            {'email': user.email},
+            {'email': sitter_user.email},
+            
+            {'petname': pet_name},
+            {'petOwner': pet_owner_name},
+            {'Sitter': sitter_name}
+        ],
+        "reminders": {
+            "useDefault": True
+            }
+    }
+    
+    print("im the body tyme", type(body))
+    event = service.events().insert(calendarId=sitter_user.email,  body=body).execute()
+   
+    print (f"event created: %s" % event.get("htmlLink"))
+
+    
+    return event
+    
+    # service = build('calendar', 'v3', credentials=get())
+
+    # # Call the Calendar API
+    # event = service.events().get(calendarId='testuser.numone@gmail.com', eventId='Busy').execute()
+
+    # print (event['summary'])
+    # # calendar = service.calendars().get(calendarId='{user.email}').execute()
+    
+
     
 @app.route("/create_booking/<pet_owner_id>", methods=["POST"])
 def create_booking(pet_owner_id):
     """ create a new booking"""
     
+    
+    print("this is my pet_owner_id", pet_owner_id)
     if "user_email" in session:
             
         email = session.get('user_email')
         user = crud.get_user_by_email(email)
         user_id = user.user_id
-        # pet_owner = crud.get_petowner_by_id(pet_owner_id)
-        # sitters = crud.get_sitters()
-        
+       
 
         pet_owner_id = pet_owner_id
-        sitter_id = request.form.get("sitter.id")
+        sitter_id = request.form.get("sitter_id")
         pet_id = request.form.get("pet_id")
         start_date = request.form.get("start_date")
-        end_date = request.form.get("end_date")
         start_time = request.form.get("start_time")
-        end_time = request.form.get("end_time")   
-        weekly = bool(request.form["weekly"])
+        end_date = start_date
         
+        # infor for creating the booking in google calendar
+        address = request.form.get("address")
+        description = request.form.get("description")
+        
+       
+        print("this is my pet_owner_id", pet_owner_id)
+        print("this is my sitter id", sitter_id)
 
+
+        # weekly = bool(request.form["weekly"])
+        
         starttime_with_date = start_date + "T" + start_time
+        print("im the start)time", starttime_with_date)
         starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
-
-        endtime_with_date = start_date + "T" + end_time
-        endtime_datetime = datetime.strptime(endtime_with_date, "%Y-%m-%dT%H:%M")
-
-        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=weekly)
         
+
+        # create an interval to calculate end time, based on 30 min walks
+        interval = dt.timedelta(minutes=30)
+        endtime_with_date=  starttime_datetime + interval
+        
+
+        # endtime_with_date = start_date + "T" + end_time
+        # print("im the endtime", endtime_with_date)
+        
+        endtime_datetime = endtime_with_date
+        # datetime.strptime(endtime_with_date, "%Y-%m-%dT%H:%M")
+
+        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
+
         flash("booking sucessfully created", "success")
-
         
-        return redirect(url_for("get_user_dashboard", user_id = user_id))
+        create_cal_bokng(user_id, sitter_id, pet_id, address = address, description = description)
+        flash("booking sucessfully added to your calendar", "success")
+
+        return redirect(url_for("get_all_bookings", user_id = user_id))
     return redirect('/')
     
 @app.route('/search_availability/<user_id>', methods=["POST"])
@@ -677,9 +785,10 @@ def display_available_sitters(user_id):
         
         available_sitters_email = get_available_sitters(user_id)
         
+        print("available sitters look like", available_sitters_email)
+
         if available_sitters_email == []:
-            flash("I'm sorry there is no sitters available in the time you selected, please try searching for a different time", "warning")
-        
+            flash("I'm sorry there are no sitters available in the time you selected, please try searching for a different time", "warning")
         else:
             print("Im the available sitter", available_sitters_email)
             cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
@@ -702,7 +811,7 @@ def display_available_sitters(user_id):
                 available_sitter = crud.get_sitter_by_user_id(available_user.user_id)
                 all_users.append(available_user)
                 all_sitters.append(available_sitter)
-            print("available_sitters_email wasn't empty. all_users: ", all_users)
+            print("available_sitters_email was empty'. all_users: ", all_users)
             
             for user in all_users:
                 print(user)
@@ -837,18 +946,18 @@ def get_all_bookings(user_id):
     pet_owner_bookings = False
     if "user_email" in session: 
         
-        email = session['user_email']
-        user = crud.get_user_by_email(email)
+        user = crud.get_user_by_id(user_id)
         
-# check of pet_owner exists to then fetch pet_owner bookings, if  any.
+        # check of pet_owner exists to then fetch pet_owner bookings, if  any.
         if crud.petowner_exists(user_id):
+            
             pet_owner_bookings = crud.get_owner_bookings_by_user_id(user_id)
-
-# check of sitter exists to then fetch sitters bookings, if  any.
+                
+        # check of sitter exists to then fetch sitters bookings, if  any.
         if crud.sitter_exists(user_id):
             sitter_bookings = crud.get_sitter_bookings_by_user_id(user_id)
 
-        if not pet_owner_bookings or sitter_bookings:
+        elif not pet_owner_bookings or not sitter_bookings:
             flash("Sorry you don't have any bookings yet", "info")
             
         return render_template("all_my_bookings.html", user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
@@ -888,14 +997,24 @@ def delete_user(user_id):
     "delete a user profile from database"
     
     if 'user_email' in session:
-        
+
         delete_profile = request.form.get('delete')
         if 'DELETE' in delete_profile:
+            if crud.petowner_exists(user_id):
+                pet_owner = crud.get_petowner_by_user_id(user_id)
+                db.session.delete(pet_owner)
+                db.session.commit()
+
+            if crud.sitter_exists(user_id):
+                sitter = crud.get_sitter_by_user_id(user_id)
+                db.session.delete(sitter)
+                db.session.commit()
+
             user = crud.get_user_by_id(user_id)
             db.session.delete(user)
             db.session.commit()
             
-            flash("Your profile was sucessfully deleted. To keep using your services, please sign up again!", "sucess")
+            flash("All your profile(s) were sucessfully deleted. To keep using your services, please sign up again!", "sucess")
     else:
         flash("Something went wrong, please log in and try again.", "warning")
     

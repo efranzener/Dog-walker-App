@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block body %}
-    {% if session.get('user_email') %}
+    {% if 'user_email' in session %}
     
-    <h3>Hello {{ user.fname }}!</h3>
+    <h5>Hello {{ user.fname }}!</h5>
         <div>
-            <h5> Bookings </h5>
         {%if sitter_bookings or pet_owner_bookings%}
+        <h5> All your bookings </h5>
 
             {%if sitter_bookings %}
                 <h5> I'm <strong>booked<string> as a sitter on these:</h5>
@@ -13,7 +13,7 @@
                     <div>
                         <img> {{booking.pet.profile_pic}}
                     </div>
-
+                    <div><a target="_blank" href="https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=amtjaHExY3JnMzhwcXFvbDVscnF1MTFoN2MgdGVzdHVzZXIubnVtdGhyZWVAbQ&amp;tmsrc=testuser.numthree%40gmail.com"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en.gif"></a></div>
                     <div>
                         <div> Bookings with: {{booking.pet.name}}</div>
                         <div> Bookings date and time: {{booking.start_time}}</div>
@@ -49,12 +49,13 @@
                     </div>
                 {% endfor %}
             {%endif%}
-            
+        {%else%}    
+            <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}">Create new booking</a>
         {%endif%}
     </div>
     {%endif%}
     <div class="container">                                                
         <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a>
         <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
 {%endblock body%}%
