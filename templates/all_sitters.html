@@ -2,69 +2,78 @@
 {% block title %}All sitters{% endblock title%}
 
 {% block body %}
+<div>
+  <nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="#"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+        </li>
+        </li>  
+        <li>                                            
+          <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+        </li>
+        <li>
+          <a class="nav-link" aria-current="page" href="/logout">Logout</a>
+      </li>
+      </ul>
+    </div>
+  </nav>
+</div> 
+  
 
 <div class="card" style="width: 18rem;">
-  <form class="form-inline" action="/search_availability/{{current_user.user_id}}" method="POST">                    
-    <div class="container">
+  <form class="form-inline" action="/search_availability/{{user.user_id}}" method="POST">                    
+    <div class="search_box">
       <h5> Search for a dog walker </h5>
         <label for="start_date">Date</label>
         <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
         <label for="start_time" >Start of 30 min walk</label>
         <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
         </div>
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
     </div>
   </form>
 </div>
   
+   
+  
     {% for sitter in sitters %}
-      <div class="card-group" style="width: 18rem;">
-        <div class="card" >
-          <img class="card-img-top" src="{{sitter["pic"] }}" >
-          <div class="card-body">
-              <p><strong> {{ sitter["fname"]}} {{sitter["lname"]}} </strong></p>
-              <div>I have {{ sitter["experience"]}} years of experience </div>
-              <div> Rates: My rates start at ${{sitter["rate"]}}</div>
-              <div> Minimum lenght of walk required for booking: 30 min</div>                             
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#myModal">Calendar of availability</button>
-                <div id="myModal" class="modal fade" role="dialog">
-                  {% for sitter in sitters %}
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                          <h4 class="modal-title">Sitter {{sitter.fname}} {{sitter.lname}} calendar of availability</h4>
-                        </div>
-                        <div class="modal-body">
-                          <iframe src="https://calendar.google.com/calendar/embed?src={{sitter['calendar_id']}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
+      <div class="card" style="max-width: 20rem;">
+        <img class="rounded-circle" alt="sitter_picture" src="{{sitter["pic"] }}">
+        <div class="card-body">
+          <h6 class="card-title"> {{sitter["fname"]}} {{sitter["lname"]}} </h6>
+            <div class="card-text">I have {{sitter["experience"]}} years of experience </div>
+            <div class="card-text"> Rates: My rates start at ${{sitter["rate"]}}</div>
+            <div class="card-text"> Summary: {{sitter["summary"]}}</div>      
+        </div>                       
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter["lname"]}}">Calendar of availability</button>
+          <div id="{{sitter["lname"]}}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Sitter {{sitter["fname"]}} {{sitter["lname"]}} calendar of availability</h4>
                     </div>
-                  {%endfor%}
+                    <div class="modal-body">
+                      <iframe src="https://calendar.google.com/calendar/embed?src={{sitter['calendar_id']}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
-              
-              <div class = "container"> 
-                <form action="/create_booking/{{current_user.user_id}}">
-                  <div id = "create booking">
-                    <button name="sitter_id" type="submit" class="btn btn-secondary" value="{{sitter["id"]}}">Book a Walk with me</button>
-                  </div>
-                </form>
               </div>
-          
           </div>
-        </div>
+          <form action="/create_booking/{{user.user_id}}">
+            <div id = "create_booking">
+              <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter["id"]}}">Book me</button>
+            </div>
+          </form>
       </div>
     {% endfor %}
-<div class="container">                                                
-  <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-  <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{current_user.user_id}}" role="button">Homepage</a> 
-  <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
-</div>
-<script>
-
-</script>
 {%endblock%}
     

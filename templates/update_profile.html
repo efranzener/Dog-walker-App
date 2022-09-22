@@ -3,14 +3,35 @@
 {% block body %}
     
     {%if 'user_email' in session%}  
+        <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+                </li>
+                <li>                                            
+                    <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+                </li>
+                <li>
+                    <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </div> 
+        <section>
+            <h5> UPDATE PERSONAL DETAILS</h>
 
-        <h5> UPDATE PERSONAL DETAILS</h5>
-        <div class="user_profile">
-            <section>
+            <div class="container" style="width: 18rem;">
                 <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
                     <div class="form-group">
-                        <label class="profilepic" for="profilepic"></label>
-                            <img src="{{profile_url}}"  alt="profile image" class="rounded">
+                        <div class="card" style="max-width: 20rem;">
+                                <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
                             <input id="profilepic1" type="file" name="profilepic" value="{{profile_pic}}" accept="image/*">
                     </div>  
                     <div class="form-group">
@@ -55,59 +76,59 @@
                     </div>          
                         <button class="btn btn-outline-secondary">Save Changes</button>
                 </form>
-            </section>
-        </div>
-        <div>
-        {%if sitter %}
+            </div>
+        </section>
+        <div class="container" style="width: 18rem;">
+            {%if sitter %}
             <h5> UPDATE SITTER PROFILE </h5>
             <section>
-                <form action = "/sitter_profile/{{user.user_id}}/update" method="POST" >
-                    <div class="form-group">
-                        <label for="experience">Years of Experience</label>
-                        <input type="number" min=0 name="experience" id="experience" value="{{sitter.years_of_experience}}">
-                    </div>
-                    <div class="form-group">
-                        <label for="summary">Summary</label>
-                        <textarea name="summary" id="summary" value="{{sitter.summary}}"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <p>Please select your rate according to the lenght of the walk:</p>   
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">30 min</span>
-                            <span class="input-group-text">$</span>
-                            <input name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
+                <div>
+                    <form action = "/sitter_profile/{{user.user_id}}/update" method="POST" >
+                        <div class="form-group">
+                            <label for="experience">Years of Experience</label>
+                            <input type="number" min=0 name="experience" id="experience" value="{{sitter.years_of_experience}}">
                         </div>
-                    </div>
-                    <form>
-                        <button class="btn btn-outline-secondary">Save Changes</button>
+                        <div class="form-group">
+                            <label for="summary">Summary</label>
+                            <textarea name="summary" id="summary" value="{{sitter.summary}}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <p>Please select your rate according to the lenght of the walk:</p>   
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">30 min</span>
+                                <span class="input-group-text">$</span>
+                                <input name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
+                            </div>
+                        </div>
+                        <form>
+                            <button class="btn btn-outline-secondary">Save Changes</button>
+                        </form>
                     </form>
-                </form>
+                </div>
             </section>
-        {%else %}
+        
+            {%else %}
             <div>
                 <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
             </div>
-        {% endif%}
+            {% endif%}
         </div>
-        <div>
+        <div class="container" style="width: 18rem;">
             {%if pet_owner %}
                 <h5> UPDATE PET OWNER PROFILE </h5>
                 <section>
                     <form action = "/petowner_profile/{{user.user_id}}/update" method="POST" >
                         <div class="form-group">
                             <label for="num_pets">How many dogs do you have?</label>
-                                <input type="number" min=0 name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
+                            <input type="number" min="0" name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary"> Confirm update </button>
-
+                        <button type="submit" class="btn btn-outline-secondary"> Confirm Update </button>
                     </form>
                 </section>
             {%else %}
-                <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create my Pet Owner Profile</a>
+                <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
             {% endif%}
         </div>
-        <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a>
     {%else%}
         <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
     {%endif%}      

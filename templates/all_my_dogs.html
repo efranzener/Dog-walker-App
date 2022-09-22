@@ -2,26 +2,41 @@
 
 {% block body %}
 
-  <h1>My dogs</h1>
-
+  <div>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="navbar-expand" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+          </li>
+          <li>                                            
+            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+          </li>
+          <li>
+            <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div> 
   <ul>
-    {% for pet in pets %}
-      
-        <div class="card-group" style="width: 18rem;">
-          <div class="card" >
-                <img class="card-img-top" src="{{pet["pic"] }}" >
-                <div class="card-body">
+    
+    <h3>My dogs</h3>
+   
+      {% for pet in pets %}
+      <div class="card-deck" >
+        <div class="card" style="width: 18rem;">
+          <img class="card-img-top" src="{{pet["pic"] }}" >
+          <div class="card-body">
             <li>
-              <h5>My name is <strong>{{ pet["name"] }}</strong></h5>
-              <p>I'm a {{pet["size"]}} {{ pet["breed"] }} and I'm {{ pet["age"] }} years old.</p>
+              <h5 class="card-title">My name is: {{ pet["name"] }}</h5>
+              <p class="card-text">I'm a {{pet["size"]}} {{ pet["breed"] }} and I'm {{ pet["age"] }} years old.</p>
             </li>
           </div>
-        </div>
-    {% endfor %}
-  </ul>
-  <div class="container">                                                
-    <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-    <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-    <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
-</div>
+      {% endfor %}
+   
+  
 {%endblock body%}%

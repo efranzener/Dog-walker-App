@@ -26,19 +26,19 @@
             Bookings
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">See all my bookings</a>
-            <a class="dropdown-item" href="/create_booking/{{user.user_id}}">Create new booking</a>
+            <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">My Bookings</a>
+            <a class="dropdown-item" href="/create_booking/{{user.user_id}}">New Booking</a>
          </div>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">See all my dogs</a>
+            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Register a new dog</a>
+            <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Add New Dog</a>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find sitters</a>          
+            <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find Sitters</a>          
           </li>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/calendar/{{user.user_id}}">See my calendar</a>
+            <a class="nav-link" aria-current="page" href="/calendar/{{user.user_id}}">My Calendar</a>
           </li>
         </li>
         <a class="nav-link" aria-current="page" href="/logout">Logout</a>
@@ -48,19 +48,19 @@
     </nav>
   </div> 
  
-          <div class="card" style="width: 18rem;">
-              <form class="form-inline" action="/search_availability/{{user.user_id}}" method="POST">                    
-                <div class="container">
-                  <h5> Search for a dog walker </h5>
-                    <label for="start_date">Date</label>
-                    <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
-                    <label for="start_time" >Start of 30 min walk</label>
-                    <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
-                    </div>
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </div>
-              </form>
-          </div>
+  <div class="card" style="width: 18rem;">
+      <form class="form-inline my-2 my-lg-0" action="/search_availability/{{user.user_id}}" method="POST">                    
+        <div class="search_box">
+          <h5> Search for a dog walker </h5>
+            <label for="start_date">Date</label>
+            <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
+            <label for="start_time" >Start of 30 min walk</label>
+            <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
+            </div>
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </div>
+      </form>
+  </div>
 
    
   

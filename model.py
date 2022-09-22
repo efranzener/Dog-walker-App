@@ -12,7 +12,8 @@ db = SQLAlchemy()
 
 
 class User(db.Model):
-
+    """ A user"""
+    
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key = True, autoincrement=True)
@@ -22,7 +23,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable = False)
     
-    profile_pic = db.Column(db.String(300), nullable=False, default='default.jpg')
+    profile_pic = db.Column(db.String(300), nullable=False, default='https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663617415/profile_standard_wtcydo.jpg')
     mobile = db.Column(db.String(15), nullable = False)
     address = db.Column(db.String(100), nullable = False)
     city = db.Column(db.String(50), default = "Seattle",nullable = False)
@@ -30,12 +31,13 @@ class User(db.Model):
     zip_code = db.Column(db.String(5), nullable = False)
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
+    # pet_owner = a PetOwner object
+    # sitter = a Sitter object
 
 def __repr__(self):
-    """Show info about sitter"""
+    """Show info about user"""
 
-    return f'<User user_id = {self.user_id}, fname = {self.first_name}, lname = {self.last_name}, dob = {self.dob}, email={self.email}, password={self.password}, profile_pic = {self.profile_pic}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>'
-
+    return f'<User user_id={self.user_id}, fname={self.fname}, lname={self.lname}, dob={self.dob}, email={self.email}, password={self.password}, profile_pic={self.profile_pic}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>'
 
 
 # ***********************
@@ -60,12 +62,12 @@ class Sitter(db.Model):
 def __repr__(self):
     """Show info about sitter"""
 
-    return f'<Sitter summary = {self.summary}, experience = {self.years_of_experience}, minute_rate = {self.minute_rate}>'
+    return f'<Sitter summary={self.summary}, experience={self.years_of_experience}, rate={self.rate}>'
 
 
 
 class PetOwner(db.Model):
-    """A pet's owner info"""
+    """A pet's owner"""
 
     __tablename__ = "pet_owners"   
 
@@ -90,7 +92,7 @@ def __repr__(self):
 
 
 class Pet(db.Model):
-    """A pet info"""
+    """A pet"""
 
     __tablename__ = "pets"
 
@@ -122,7 +124,7 @@ class Pet(db.Model):
 def __repr__(self):
     """Show info about pet"""
 
-    return f"<Pet id ={self.pet_id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, house_trained = {self.house_trainded}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship} pet>"
+    return f"<Pet id={self.pet_id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, house_trained = {self.house_trainded}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship} pet>"
 
 
 
@@ -149,7 +151,7 @@ class Vet(db.Model):
 def __repr__(self):
     """Show info about Vet"""
 
-    return f"<Vet id ={self.id}, first_name = {self.first_name}, last_name = {self.last_name}, mobile = {self.mobile}, address = {self.address}, city = {self.city}, state = {self.state}, zip_code = {self.zip_code}>"
+    return f"<Vet id={self.id}, first_name={self.first_name}, last_name={self.last_name}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>"
     
     
 
@@ -177,7 +179,7 @@ class Booking(db.Model):
 def __repr__(self):
     """Show info about booking"""
 
-    return f"<Booking id ={self.id}, start_date = {self.start_date}, end_date = {self.end_date}, start_time = {self.start_time}, end_time = {self.end_time}>"
+    return f"<Booking id={self.id}, start_date={self.start_date}, end_date={self.end_date}, start_time={self.start_time}, end_time={self.end_time}>"
 
 
 def connect_to_db(app, db_uri="postgresql:///dog_walkers", echo=True):
@@ -185,12 +187,12 @@ def connect_to_db(app, db_uri="postgresql:///dog_walkers", echo=True):
 
 
 #   this is the code that runs with seed.py 
-    # app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    # app.config["SQLALCHEMY_ECHO"] = False
-    # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    app.config["SQLALCHEMY_ECHO"] = False
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # db.app = app
-    # db.init_app(app)
+    db.app = app
+    db.init_app(app)
     
     
     # this is the test code without seeding the database, trying to add users through the sign up form
@@ -198,12 +200,12 @@ def connect_to_db(app, db_uri="postgresql:///dog_walkers", echo=True):
     # os.system("createdb dog_walkers")
 
     
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
-    app.config["SQLALCHEMY_ECHO"] = False
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
-    db.create_all()
+    # app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+    # app.config["SQLALCHEMY_ECHO"] = False
+    # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # db.app = app
+    # db.init_app(app)
+    # # db.create_all()
     
 
 

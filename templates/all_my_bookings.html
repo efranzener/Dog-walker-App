@@ -1,51 +1,65 @@
 {% extends 'base.html' %}
 {% block body %}
     {% if 'user_email' in session %}
+    <div>
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+          <a class="navbar-brand" href="#"></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+              </li>
+              <li>                                            
+                <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+              </li>
+              <li>
+                <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div> 
+      <ul>    
     
-    <h5>Hello {{ user.fname }}!</h5>
+    <h4>{{ user.fname }},</h4>
         <div>
         {%if sitter_bookings or pet_owner_bookings%}
-        <h5> All your bookings </h5>
+            <h5> These are all your bookings: </h5>
 
             {%if sitter_bookings %}
-                <h5> I'm <strong>booked<string> as a sitter on these:</h5>
-                {% for booking in sitter_bookings %}
-                    <div>
-                        <img> {{booking.pet.profile_pic}}
+                <h5> As a sitter:</h5>
+                {% for booking in sitter_bkngs %}
+                <div class="card-group" style="width: 18rem;">
+                    <div class="card" >
+                        <img class="rounded-circle" src="{{booking['dog_pic']}}" >
+                        <div class="card-body">
+                            <div><a target="_blank" href="https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=amtjaHExY3JnMzhwcXFvbDVscnF1MTFoN2MgdGVzdHVzZXIubnVtdGhyZWVAbQ&amp;tmsrc=testuser.numthree%40gmail.com"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en.gif"></a></div>
+                            <div>
+                                <div> <strong>Bookings for</strong>: {{booking['dog_name']}}</div>
+                                <div><strong> Date and Time</strong>: {{booking['time']}}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div><a target="_blank" href="https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=amtjaHExY3JnMzhwcXFvbDVscnF1MTFoN2MgdGVzdHVzZXIubnVtdGhyZWVAbQ&amp;tmsrc=testuser.numthree%40gmail.com"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en.gif"></a></div>
-                    <div>
-                        <div> Bookings with: {{booking.pet.name}}</div>
-                        <div> Bookings date and time: {{booking.start_time}}</div>
-                        {% if booking.weekly == True%}
-                            <div> Recurring service: Yes</div>
-                        {% else %}
-                            <div> Recurring service: No</div>
-                        {%endif %}
-                    </div>
+                </div>
                 {%endfor%}
             {%endif%}
-            
-                <p></p>
-            
-            {%if pet_owner_bookings %}
-                <h5> I <strong> booked </strong> a sitter on these:</h5>
-                {% for booking in pet_owner_bookings %}
-                    <div>
-                        <img> {{booking.pet.profile_pic}}
-                    </div>
 
-                    <div>
-                        <div> Booking with: {{booking.sitter.user.fname}}</div>
-                        <div> For: {{booking.pet.name}} </div>
-                        <div> Bookings dates and times: {{booking.start_time}}</div>
-                    {% if booking.weekly != True %}
-                        <div> Recurring service: No</div>
-                    {% else %}
-                        <div> Recurring service: Yes</div>
-                        <div></div>
-                        <div></div>
-                    {%endif %}
+            {%if pet_owner_bookings %}
+                <h5> As a Pet Owner:</h5>
+                {% for booking in owner_bkngs %}
+                    <div class="card-group" style="width: 18rem;">
+                        <div class="card" >
+                            <img class="rounded-circle" src="{{booking['sitter_pic']}}" >
+                        </div>
+                        <div class="card-body">
+                            <div> Booking with: {{booking['sitter_name']}}</div>
+                            <div> For: {{booking['dog_name']}} </div>
+                            <div> Date: {{booking['date']}}</div>
+                            <div> Time: {{booking['time']}}</div>
+                        </div>
                     </div>
                 {% endfor %}
             {%endif%}
@@ -54,8 +68,4 @@
         {%endif%}
     </div>
     {%endif%}
-    <div class="container">                                                
-        <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a>
-        <a class="btn btn-outline-secondary" aria-current="page" href="/logout">Logout</a>
 {%endblock body%}%

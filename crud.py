@@ -67,10 +67,6 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
      
     return booking
 
-
-# def create_recurring_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time, start_date, end_date, interval):
-#     """create a recurring booking"""
-    
     
     
 ######## GET #########
@@ -103,10 +99,10 @@ def pet_exists(pet_owner_id, name):
     else:
         return False
     
-def get_pet_by_name(pet_owner_id, name):
-    """check if that pet already has been registered"""
+# def get_pet_by_name(pet_owner_id, name):
+#     """check if that pet already has been registered"""
      
-    return Pet.query.filter(Pet.name == name, Pet.pet_owner_id == pet_owner_id).first()
+#     return Pet.query.filter(Pet.name == name, Pet.pet_owner_id == pet_owner_id).first()
      
     
 def get_all_other_users(user_id):
@@ -197,6 +193,11 @@ def get_owner_bookings_by_user_id(user_id):
         print("Sorry you don't have any bookings yet", owner_bookings)
 
     return owner_bookings
+
+def get_booking_by_id(booking_id):
+    "return a booking with the specified id"
+    
+    return Booking.query.get(booking_id)
 
 
 def get_sitters():

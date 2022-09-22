@@ -154,41 +154,18 @@ def get_available_sitters(user_id):
     print("I'm the cal dict keys", cal_dict.keys() )
     print("I'm the cal dict values", cal_dict.values() )
    
-
-
-    # cal_busy = cal_dict[cal_name]['busy']
-    # print("im the cal busy ", cal_busy)
     available_sitters = []
     for cal_name in cal_dict:
         cal_busy = cal_dict[cal_name]['busy']
-        # print("I'm the cal busy", cal_busy)
-        # print("I'm the cal_name", cal_name)
-        # if cal_dict[cal_name] != []:
+    
         if cal_busy != []:
             continue
         else:
             available_sitters.append(cal_name)
     
-    # available_sitters = []
-    # for sitter in sitters:
-    #     if sitter.user.email not in busy_sitters:
-    #         available_sitters.append(sitter.user.email)     
-        
-    # print("I'm the available sitters", available_sitters, "with my calendar info", cal_dict[cal_name], cal_busy)
+
     return available_sitters
-
     
-
-
-            
-
-    #         # Prints the start and name of the next 10 events
-    #     #     for event in calendar:
-    #     #         start = event['start'].get('dateTime', event['start'].get('date'))
-    #     #         print(start, event['summary'])
-
-    #     # except HttpError as error:
-    #     #     print('An error occurred: %s' % error)
 
 
 @app.route('/signup', methods=["POST"])
@@ -350,7 +327,12 @@ def get_profile_page(user_id):
                     'public_id': item['public_id'],
                     'pic_url': item['url']
                 }
-                
+            else:
+                current_pic = {
+                    'profile_pic': user.profile_pic,
+                    'pic_url': 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663618707/default-avatar-profile-icon-vector-39013212_kxljdk.jpg'
+                }
+    
         print("i'm the current user.profile pic", user.profile_pic, "my public id", item['public_id'] )   
              
         print("i'm the old user profile pic", current_pic) 
@@ -391,6 +373,11 @@ def get_profile_update_form(user_id):
                     'profile_pic': user.profile_pic,
                     'public_id': item['public_id'],
                     'pic_url': item['url']
+                }
+            else:
+                current_pic = {
+                    'profile_pic': user.profile_pic,
+                    'pic_url': 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663618707/default-avatar-profile-icon-vector-39013212_kxljdk.jpg'
                 }
                 
             print("i'm the current user.profile pic", user.profile_pic)        
@@ -635,12 +622,17 @@ def get_booking_form(user_id):
             sitters = crud.get_all_other_sitters(user_id)
             pet_owner = crud.get_petowner_by_user_id(user_id)
             pet_owner_id = pet_owner.id
-            pets = crud.get_pets_by_ownerid(pet_owner_id)
+            if crud.get_total_pets_by_owner(pet_owner_id) > 0:
+                pets = crud.get_pets_by_ownerid(pet_owner_id)
+            else:
+                flash("Please register your dog(s) to be able to book a walk", "warning")
+                
+                return redirect(url_for("create_pet_profile", user_id = user_id)) 
         else:
             flash("Please finish your pet owner profile to be able to book")
 
             return redirect(url_for("petowner_signup", user_id = user_id))
-        
+        print("this are my pets", pets)
         return render_template("new_booking.html", user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
     
     return redirect('/')
@@ -678,7 +670,7 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
         "description":description,
         "location": address,
         "transparency": "opaque",
-        "visibility": "public",
+        "visibility": "private",
         "start":{
             "dateTime": start_datetime.isoformat(),
             "timeZone": 'US/Pacific',
@@ -759,12 +751,7 @@ def create_booking(pet_owner_id):
         interval = dt.timedelta(minutes=30)
         endtime_with_date=  starttime_datetime + interval
         
-
-        # endtime_with_date = start_date + "T" + end_time
-        # print("im the endtime", endtime_with_date)
-        
         endtime_datetime = endtime_with_date
-        # datetime.strptime(endtime_with_date, "%Y-%m-%dT%H:%M")
 
         booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
 
@@ -776,6 +763,7 @@ def create_booking(pet_owner_id):
         return redirect(url_for("get_all_bookings", user_id = user_id))
     return redirect('/')
     
+    
 @app.route('/search_availability/<user_id>', methods=["POST"])
 def display_available_sitters(user_id):
     """display sitters available on a specific time based on user search"""
@@ -785,57 +773,51 @@ def display_available_sitters(user_id):
         
         available_sitters_email = get_available_sitters(user_id)
         
-        print("available sitters look like", available_sitters_email)
-
         if available_sitters_email == []:
             flash("I'm sorry there are no sitters available in the time you selected, please try searching for a different time", "warning")
         else:
-            print("Im the available sitter", available_sitters_email)
             cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
             api_secret = API_SECRET)
 
             current_user = crud.get_user_by_id(user_id)
-            cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+            # cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
             res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
             data = res.json()
             pics = data['resources']
             sitters=[]
             
-            all_users = []
             all_sitters = []
-            #print('im the sitters', type(all_sitters))
-            
-        
             for email in available_sitters_email:
-                available_user = crud.get_user_by_email(email)
-                available_sitter = crud.get_sitter_by_user_id(available_user.user_id)
-                all_users.append(available_user)
+                user = crud.get_user_by_email(email)
+                available_sitter = crud.get_sitter_by_user_id(user.user_id)
                 all_sitters.append(available_sitter)
-            print("available_sitters_email was empty'. all_users: ", all_users)
-            
-            for user in all_users:
-                print(user)
-                pet_sitter={}
-                for sitter in all_sitters:
-                    print(sitter)
-                    split_email = user.email.split("@")
-                    for item in pics:
-                        if user.profile_pic == (item['public_id']):
-                            pet_sitter['id'] = sitter.id
-                            pet_sitter['fname'] = user.fname
-                            pet_sitter['lname'] = user.lname
-                            pet_sitter['pic'] = item['url']
-                            pet_sitter['experience'] = sitter.years_of_experience
-                            pet_sitter['rate'] = sitter.rate
-                            pet_sitter['calendar_id'] = split_email[0]
-                            pet_sitter['user_id'] = user.user_id
+                
+            for sitter in all_sitters:
+                split_email = sitter.user.email.split("@")
+                for item in pics:
+                    pet_sitter={}
+                    if sitter.user.profile_pic == (item['public_id']):
+                        pet_sitter['id'] = sitter.id
+                        pet_sitter['fname'] = sitter.user.fname
+                        pet_sitter['lname'] = sitter.user.lname
+                        pet_sitter['pic'] = item['url']
+                        pet_sitter['experience'] = sitter.years_of_experience
+                        pet_sitter['rate'] = sitter.rate
+                        pet_sitter['calendar_id'] = split_email[0]
+                        pet_sitter['user_id'] = sitter.user.user_id
                         
-                print("im the user.profile_pic", user.profile_pic)
-        
-                sitters.append(pet_sitter) 
-            
-            print("im sitters after the loops", sitters)   
-            return render_template("all_sitters.html", sitters = sitters, current_user = current_user)
+                    else:
+                        pet_sitter['id'] = sitter.id
+                        pet_sitter['fname'] = sitter.user.fname
+                        pet_sitter['lname'] = sitter.user.lname
+                        pet_sitter['pic'] = sitter.user.profile_pic
+                        pet_sitter['experience'] = sitter.years_of_experience
+                        pet_sitter['rate'] = sitter.rate
+                        pet_sitter['calendar_id'] = split_email[0]
+                        pet_sitter['user_id'] = sitter.user.user_id
+                sitters.append(pet_sitter)        
+              
+            return render_template("all_sitters.html", sitters = sitters, user = current_user)
 
         return redirect (url_for("all_sitters", user_id = user_id))
     
@@ -854,7 +836,7 @@ def all_sitters(user_id):
     current_user = crud.get_user_by_id(user_id)
     
     
-    cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
+    # cloud_pic = cloudinary.api.resources(api_key = API_KEY, api_secret = API_SECRET, cloud_name = CLOUD_NAME)
     res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
     data = res.json()
     pics = data['resources']
@@ -865,15 +847,13 @@ def all_sitters(user_id):
     
     all_users = crud.get_all_other_users(user_id)
     all_sitters = crud.get_all_other_sitters(user_id)
-        
-        
-    print('all_users', all_users)
     
     for sitter in all_sitters:
-        pet_sitter={}
+        
         split_email = sitter.user.email.split("@")
         for item in pics:
-            if sitter.user.profile_pic == (item['public_id']):
+            pet_sitter={}
+            if sitter.user.profile_pic == item['public_id']:
                 pet_sitter['id'] = sitter.id
                 pet_sitter['fname'] = sitter.user.fname
                 pet_sitter['lname'] = sitter.user.lname
@@ -882,11 +862,23 @@ def all_sitters(user_id):
                 pet_sitter['rate'] = sitter.rate
                 pet_sitter['calendar_id'] = split_email[0]
                 pet_sitter['user_id'] = sitter.user.user_id
+                pet_sitter['summary'] = sitter.summary
+            else:
+                pet_sitter['id'] = sitter.id
+                pet_sitter['fname'] = sitter.user.fname
+                pet_sitter['lname'] = sitter.user.lname
+                pet_sitter['pic'] = sitter.user.profile_pic
+                pet_sitter['experience'] = sitter.years_of_experience
+                pet_sitter['rate'] = sitter.rate
+                pet_sitter['calendar_id'] = split_email[0]
+                pet_sitter['user_id'] = sitter.user.user_id
+                pet_sitter['summary'] = sitter.summary
                 
                 
         sitters.append(pet_sitter) 
-    return render_template("all_sitters.html", sitters = sitters, current_user = current_user)
-
+        print(sitters)   
+    
+    return render_template("all_sitters.html", sitters = sitters, user = current_user)
 
 
 @app.route("/all_my_dogs/<user_id>")
@@ -924,7 +916,17 @@ def show_all_dogs(user_id):
                             dog['age'] = pet.age
                             dog['breed'] = pet.breed
                             dog['size'] = pet.size
+                           
+                        else:
+                            dog['name'] = pet.name
+                            dog['id'] = pet.pet_id
+                            dog['pic'] = pet.profile_pic
+                            dog['age'] = pet.age
+                            dog['breed'] = pet.breed
+                            dog['size'] = pet.size
+
                     pets.append(dog) 
+                    
                     print("my dog is", dog)
                 print("my pets are", pets)
 
@@ -947,21 +949,66 @@ def get_all_bookings(user_id):
     if "user_email" in session: 
         
         user = crud.get_user_by_id(user_id)
+        res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
+        data = res.json()
+        pics = data['resources']
         
         # check of pet_owner exists to then fetch pet_owner bookings, if  any.
+        owner_bkngs = []
         if crud.petowner_exists(user_id):
-            
             pet_owner_bookings = crud.get_owner_bookings_by_user_id(user_id)
+            for booking in pet_owner_bookings:
+                for item in pics:
+                    info={}
+                    if booking.sitter.user.profile_pic == (item['public_id']):
+                        info['booking_id'] = booking.id
+                        info['dog_name'] = booking.pet.name
+                        info['sitter_pic'] = item['url']
+                        info['date'] = booking.start_date
+                        info['time'] = booking.start_time
+                        info['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
+                    else:
+                        info['booking_id'] = booking.id
+                        info['dog_name'] = booking.pet.name
+                        info['sitter_pic'] = booking.sitter.user.profile_pic
+                        info['date'] = booking.start_date
+                        info['time'] = booking.start_time
+                        info['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
+                        
+                owner_bkngs.append(info)
+                print("this are my pet owner bookings", booking.sitter.user.fname)
                 
         # check of sitter exists to then fetch sitters bookings, if  any.
+        sitter_bkngs=[]
         if crud.sitter_exists(user_id):
             sitter_bookings = crud.get_sitter_bookings_by_user_id(user_id)
+            
+            print("I'm sitter booking:", sitter_bookings)
 
+            for booking in sitter_bookings:
+                for item in pics:
+                    info={}
+                    if booking.pet.profile_pic == (item['public_id']):
+                        info['dog_name'] = booking.pet.name
+                        info['dog_pic'] = item['url']
+                        info['date'] = booking.start_date
+                        info['time'] = booking.start_time
+                        info['booking_id'] =  booking.id
+                    else:
+                        info['dog_name'] = booking.pet.name
+                        info['dog_pic'] = booking.pet.profile_pic
+                        info['date'] = booking.start_date
+                        info['time'] = booking.start_time
+                        info['booking_id'] = booking.id
+                        print("im the booking id", booking.id)
+                sitter_bkngs.append(info)
+                print("im sister bkng:", sitter_bkngs)        
+   
         elif not pet_owner_bookings or not sitter_bookings:
             flash("Sorry you don't have any bookings yet", "info")
-            
-        return render_template("all_my_bookings.html", user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
-
+        print("im the booking id")
+        return render_template("all_my_bookings.html", owner_bkngs=owner_bkngs, sitter_bkngs=sitter_bkngs, user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
+    return redirect("/")
 
 
 @app.route("/logout")
@@ -973,11 +1020,11 @@ def logout():
         
     return redirect('/')
 
-@app.route('/forgot_password', methods=["GET"])
-def forgotPassword():
-    """render forgot my password page"""
+# @app.route('/forgot_password', methods=["GET"])
+# def forgotPassword():
+#     """render forgot my password page"""
 
-    return render_template("forgot_password.html")
+#     return render_template("forgot_password.html")
 
 
 @app.route("/delete/<user_id>")
@@ -1019,6 +1066,8 @@ def delete_user(user_id):
         flash("Something went wrong, please log in and try again.", "warning")
     
     return redirect('/')
+
+            
 
 if __name__ == "__main__":
     connect_to_db(app)

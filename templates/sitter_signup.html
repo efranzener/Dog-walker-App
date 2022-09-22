@@ -5,6 +5,28 @@
 
 {% block body %}
 {%if 'user_email' in session%}
+<div>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <a class="navbar-brand" href="#"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+          </li>
+          <li>                                            
+            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+          </li>
+          <li>
+            <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div> 
+  <ul>
     <h1> Hello {{user.fname}}!</h1>
     <section>
             <form action = "/sitter_signup/{{user.user_id}}" method="POST" >
@@ -27,9 +49,6 @@
                 <button class="btn btn-outline-secondary">Save Changes</button>
             </form>
     </section>
-    <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>          
-    <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-    </div>
 </div>
 {%else%}
 <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  

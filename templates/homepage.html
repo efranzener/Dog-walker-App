@@ -1,50 +1,55 @@
 {% extends 'base.html' %}
-
+{% block header %}
+{%endblock%}
 {% block body %}
-<div class="container">
-  <nav class="navbar navbar-expand-lg bg-light">
-    <ul class="nav justify-content-center">
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/help">Help</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://www.cdc.gov/healthypets/pets/dogs.html/Resources">Resources</a>
-      </li>
-    </ul>
-  </nav>
-</div>  
-<div class="container">
-  <form action="/login" method="POST">
-      <div class="login-form">
-          <div class="form-group">
-              <label for="email">Email</label>
-              <input type="text" name="email" id="email" placeholder ="user@user.com">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password">
-          </div>
-          <div class="submit-form" >
-            <input type="submit" name = "login" id="login-btn" value="Login">
-          </div>
-      </div>
-  </form>
-</div>
-<div>
-  <form action="/forgot_password" method="GET">
-    <div class="submit-form">
-        <button type="submit" name = "forgot-password" id="forgotpassword-btn" value="Forgot Password">Forgot my Password</button> 
-    </div>
-  </form>
-  <form action="/signup" method="GET">
-    <div class="submit-form">
-        <button type="submit" name = "signup-form" id="signup-btn" value="Sign Up">New around here? Sign up now</button> 
-    </div>
-  </form>
 
-</div>
-<script src="static/mainfile.js"></script>
+  <div>
+    <div class="hpcontainer">
+      <img id="background_pic" src="static/matt-nelson-aI3EBLvcyu4-unsplash copy.jpg">
+    </div>
+    <div class="custom-shape-divider-bottom-1663810320">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+      </svg>
+  </div>
+  
+    <div class="container-fluid">
+      <nav class="navbar">
+        <ul class="nav justify-content-center">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/help">Help</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.cdc.gov/healthypets/pets/dogs.html/Resources">Resources</a>
+          </li>
+        </ul>
+      </nav>
+    </div>  
+    <div class="container">
+      <section class="mb-4">
+          <h5 class="mb-4 text-center"><strong>Login</strong></h4>
+        <form action="/login" method="POST">
+            <div class="form-control mr-sm-2">
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email" placeholder ="user@user.com">
+            </div>
+            <div class="form-control mr-sm-2">
+              <label for="password">Password</label>
+              <input type="password" name="password" id="password">
+            </div>
+              <div class="submit-form" >
+                <input type="submit" class="rounded-pill" name="login" id="login-btn" value="Login">
+              </div>
+          </form>
+        <form action="/signup" method="GET">
+          <div class="submit-form">
+            <button  class="btn btn-outline-secondary" type="submit" name = "signup-form" id="signup-btn" value="Sign Up">New around here? Sign up now</button> 
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
 {% endblock %}
