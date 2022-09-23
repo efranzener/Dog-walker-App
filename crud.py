@@ -2,8 +2,8 @@
 
 from model import db, User, Sitter, PetOwner, Pet, Vet, Booking, connect_to_db
 from flask import session, flash, redirect, render_template
-from flask_login import LoginManager
-login_manager = LoginManager()
+# from flask_login import LoginManager
+# login_manager = LoginManager()
 
 ######## CREATE #########
 

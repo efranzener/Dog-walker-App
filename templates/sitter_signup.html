@@ -4,31 +4,33 @@
 {% block title %}Finish to set up your profile{% endblock title%}
 
 {% block body %}
-{%if 'user_email' in session%}
-<div>
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
-      <a class="navbar-brand" href="#"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
-          </li>
-          <li>                                            
-            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-          </li>
-          <li>
-            <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div> 
-  <ul>
-    <h1> Hello {{user.fname}}!</h1>
-    <section>
+  {%if 'user_email' in session%}
+    <div>
+        <nav class="navbar navbar-expand-md navbar-light bg-light">
+          <a class="navbar-brand" href="#"></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+              </li>
+              <li>                                            
+                <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+              </li>
+              <li>
+                <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div> 
+      <ul>
+
+      <div class="container">
+        <div class="form-control mr-sm-2">
+          <h4 id="sitter_signup"> {{user.fname}}!</h4>
             <form action = "/sitter_signup/{{user.user_id}}" method="POST" >
                 <div class="form-group">
                     <label for="experience">Years of Experience</label>
@@ -36,7 +38,7 @@
                 </div>
                 <div class="form-group">
                     <label for="summary">Summary</label>
-                    <textarea name="summary" id="summary" placeholder="Optional"></textarea>
+                    <textarea type="text" name="summary" id="summary" placeholder="Optional"></textarea>
                 </div>
                 <div class="form-group">
                     <p>Please select your rate according to the lenght of the walk:</p>   
@@ -48,9 +50,9 @@
                 </div>
                 <button class="btn btn-outline-secondary">Save Changes</button>
             </form>
-    </section>
-</div>
-{%else%}
-<a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
-{%endif%}      
+        </div>
+      </div>
+  {%else%}
+    <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
+  {%endif%}      
 {% endblock body %}

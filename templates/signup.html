@@ -2,12 +2,36 @@
 {% extends 'base.html' %}
 
 {% block title %}Create an Account{% endblock title%}
+{% block header %}
 
+<div>
+  <img id="top-img" src="static/profile_pic1.jpg">
+<div>
+
+{%endblock header%}
 {% block body %}
-    <h2>Create an Account</h2>
-    <div class="signup">
-        <section>
-            <div class="container">
+
+<div>
+   
+    <div class="container-fluid">
+      <nav class="navbar justify-content-start">
+        <ul class="nav justify-content-start">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">Homepage</a>
+          </li>
+        </ul>
+      </nav>
+    </div>  
+
+    <div class="container">
+            <div class="form-control mr-sm-2">
+                <h4 id="sign-up">Sign Up</h4>
                 <form action="/signup" method = "POST" enctype = "multipart/form-data">
                     <div class="form-group">
                         <label for="fname">First Name</label>
@@ -29,15 +53,14 @@
                     </div>
                     <div class="form-group">
                         <label for="password" class="form-label">Password</label>
-                        <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*[a-zA-Z])(?=.*\d).{9,20}">
+                        <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{9,20}">
                         <span class="validity"></span>
-                        <p> Use 8-20 characters with a mix of letters, numbers & symbols</p>
+                        <p class="requirement">8-20 characters: at least 1 upper and lower case & a number</p>
                     </div>
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile</label>
-                        <input type="tel" minlength="10" maxlength="15" name="mobile" id="mobile" pattern="(?=.*\d).{10,15}"required>
+                        <input type="tel" minlength="10" maxlength="15" name="mobile" id="mobile" pattern="(?=.*\d).{10,15}" placeholder="Only numbers"required>
                         <span class="validity"></span>
-                        <p>Please type only numbers</p>
                     </div>
                     <div class="form-group">
                         <label for="address" >Address</label>
@@ -48,8 +71,9 @@
                         <input type="text" name="city" id="city" required>
                     </div>
                     <div class="form-group">
+                        <label for="city">State</label>
                         <select id="state" name="state">
-                            <option selected>State</option>
+                            <option selected>Select</option>
                             {% for state in states %}
                                 <option name = "state_selected" value="{{state}}" required>{{state}}</option>
                             {% endfor %}
@@ -61,15 +85,18 @@
                         <span class="validity"></span>
                     </div>         
                     <div class="form-group">
-                        <label class="profilepic" for="profilepic">Profile Picture</label>
-                        <img src="static/profile_pic1.jpg" alt="..." class="img-thumbnail">
-                        <input id="profilepic" type="file" name="profilepic" accept="image/png, image/jpeg" placeholder="Profile Picture" required>
+                        <img id="prof-pic">
+                        <label class="signup-pic" for="profilepic">Profile Picture</label>
+                        <input id="profilepic" type="file" name="profilepic" accept="image/png, image/jpeg" required>
                     </div>                                          
-                    <form>
-                        <button type="submit">Sign up</button>
-                    </form>
+                        <button type="submit" class="rounded-pill">Sign up</button>
                 </form>
             </div>
-        </section>
     </div>
-{% endblock body %} -->
+    <script>
+        document.getElementById('profilepic').onchange = function () {
+            var src = URL.createObjectURL(this.files[0]);
+            document.getElementById('prof-pic').src = src;
+        }
+    </script>
+{% endblock body %}

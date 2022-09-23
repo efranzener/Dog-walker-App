@@ -1,0 +1,7 @@
+{
+    "diffEditor.codeLens": true,
+    "html.format.indentInnerHtml": true,
+    "html.format.indentHandlebars": true,
+    "editor.tabSize": 4,
+    "editor.autoIndent": "full"
+}

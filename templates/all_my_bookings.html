@@ -24,11 +24,10 @@
       </div> 
       <ul>    
     
-    <h4>{{ user.fname }},</h4>
+    <h5>{{ user.fname }},</h5>
         <div>
         {%if sitter_bookings or pet_owner_bookings%}
             <h5> These are all your bookings: </h5>
-
             {%if sitter_bookings %}
                 <h5> As a sitter:</h5>
                 {% for booking in sitter_bkngs %}

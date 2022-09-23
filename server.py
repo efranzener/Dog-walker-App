@@ -187,23 +187,19 @@ def create_account():
     zip_code = request.form.get("zip_code")
     profile_file = request.files['profilepic']
     
-    # return a secure filename ready to be stored
-    file_name= secure_filename(profile_file.filename)
-        
-    # set UUID
-    profile_pic = str(uuid.uuid1()) + "_" + file_name
 
     user = crud.get_user_by_email(email)
     
     if user:
         flash("Cannot create an account with that email. Please try again.", "danger")    
     else:
-        upload_result = cloudinary.uploader.upload(profile_file, public_id=profile_pic)
-        
+        upload_result = cloudinary.uploader.upload(profile_file)
+        data = upload_result
+        profile_pic = data['url']
+
         user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=password, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
         
-        flash("Account sucessfully created! Please login.", "sucess")
-     
+        flash("Account sucessfully created! Please login.", "success")
         
     return redirect('/')
 
@@ -301,6 +297,7 @@ def sitter_signup(user_id):
 def get_profile_page(user_id):
     """display user profile page"""
     
+    print('Im the user id in get profile page', user_id)
     if 'user_email' in session:
         
         user = crud.get_user_by_id(user_id)
@@ -314,29 +311,12 @@ def get_profile_page(user_id):
         if sitter:
             sitter = crud.get_sitter_by_user_id(user_id)
         
-       
-        res = requests.get(f"https://{API_KEY}:{API_SECRET}@api.cloudinary.com/v1_1/{CLOUD_NAME}/resources/image")
-        data = res.json()
-        items = data['resources']
         
-        current_pic = {}
-        for item in items:
-            if user.profile_pic == item['public_id']:
-                current_pic = {
-                    'profile_pic': user.profile_pic,
-                    'public_id': item['public_id'],
-                    'pic_url': item['url']
-                }
-            else:
-                current_pic = {
-                    'profile_pic': user.profile_pic,
-                    'pic_url': 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663618707/default-avatar-profile-icon-vector-39013212_kxljdk.jpg'
-                }
-    
-        print("i'm the current user.profile pic", user.profile_pic, "my public id", item['public_id'] )   
-             
-        print("i'm the old user profile pic", current_pic) 
-            
+        current_pic = {
+            'profile_pic': user.profile_pic,
+            'pic_url': user.profile_pic
+            }
+
         return render_template("user_profile_page.html", profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, user = user)
     
     
@@ -377,11 +357,10 @@ def get_profile_update_form(user_id):
             else:
                 current_pic = {
                     'profile_pic': user.profile_pic,
-                    'pic_url': 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663618707/default-avatar-profile-icon-vector-39013212_kxljdk.jpg'
+                    'pic_url': user.profile_pic
                 }
                 
-            print("i'm the current user.profile pic", user.profile_pic)        
-            print("i'm the old user profile pic", current_pic) 
+
             
         return render_template('update_profile.html',  profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, user = user)
     else:
@@ -517,7 +496,7 @@ def update_petowner_profile(user_id):
         
         db.session.commit()
         
-        flash("Your pet owner profile was sucessfully updated!", "sucess")
+        flash("Your pet owner profile was sucessfully updated!", "success")
         return redirect(url_for('get_profile_page', user_id = user_id))
     
     return redirect('/')
@@ -1061,7 +1040,7 @@ def delete_user(user_id):
             db.session.delete(user)
             db.session.commit()
             
-            flash("All your profile(s) were sucessfully deleted. To keep using your services, please sign up again!", "sucess")
+            flash("All your profile(s) were sucessfully deleted. To keep using your services, please sign up again!", "success")
     else:
         flash("Something went wrong, please log in and try again.", "warning")
     

@@ -4,7 +4,7 @@
 {% block title %}Create an Account{% endblock title%}
 
 {% block body %}
-    {% if 'user_email' in session%}
+  {% if 'user_email' in session%}
     <div>
         <nav class="navbar navbar-expand-md navbar-light bg-light">
           <a class="navbar-brand" href="#"></a>
@@ -26,13 +26,13 @@
           </div>
         </nav>
     </div> 
-      
-        <h2>Hello {{user.fname}}!</h2>
-        <h5>Pet Owner Sign Up</h>
+    <div class="container">
+      <div class="form-control mr-sm-2">
+        <h4 id="pet_owner_signup">Pet Owner Sign Up</h4>
         <form action = "/petowner_signup/{{user.user_id}}" method="POST" >
             <div class="form-group">
                 <label for="num_pets">How many dogs do you have?</label>
-                <input type="number" min=0 name="num_pets" id="num_pets" placeholder="1, 2, 3..." required>
+                <input type="number" min="0" name="num_pets" id="num_pets" placeholder="1, 2, 3..." required>
             </div>
             <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
         </form>
@@ -40,10 +40,13 @@
         <a class="btn btn-outline-secondary" aria-current="page" href="{{ url_for("get_booking_form", user_id= user.user_id) }}" role="button">Create New Booking</a>
         <a class="btn btn-outline-secondary" aria-current="page" href="/sitters/{{user.user_id}}" role="button">Find Sitters</a>          
         <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-    {%else%}
+      </div>
+    </div>
+  {%else%}
     
     <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          
 
-    {%endif%}
+  {%endif%}
+
          
 {% endblock body %}
