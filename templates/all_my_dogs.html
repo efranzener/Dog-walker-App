@@ -29,11 +29,10 @@
     
     <h3>My dogs</h3>
    
-      {% for pet in pets %}
-      
+    {% for pet in pets %}
       <div class="card-deck" >
         <div class="card" style="width: 18rem;">
-          <img class="card-img-top" src="{{pet["pic"] }}" >
+          <img class="all-dogs" src="{{pet["pic"] }}" >
           <div class="card-body">
             <ul>
               <h5 class="card-title">My name is: {{ pet["name"] }}</h5>
@@ -42,7 +41,7 @@
           </div>
         </div>
       </div>
-      {% endfor %}
+    {% endfor %}
    
   
 {%endblock body%}%

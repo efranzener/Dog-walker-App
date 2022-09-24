@@ -31,12 +31,12 @@
             {%if sitter_bookings %}
             
                 {% for booking in sitter_bkngs %}
-                  <div class="card-deck" >
-                    <div class="card" style="width: 18rem;">
+                <div class="card-deck" >
+                  <div class="card" style="width: 20rem;">
                       <div>
                         <h5 class = "booking-title"> As a sitter:</h5>
                       </div>
-                        <img class="card-img-top" src="{{booking['dog_pic']}}" >
+                        <img class="rounded" src="{{booking['dog_pic']}}" >
                         <div class="card-body">  
                                                     
                             <h6 class="card-title">Hi, my name is<p><strong>{{booking['dog_name']}}!</strong></h6>
@@ -54,15 +54,17 @@
             {%if pet_owner_bookings %}
                 {% for booking in owner_bkngs %}
                   <div class="card-deck" >
-                    <div class="card" style="width: 18rem;">
+                    <div class="card" style="width: 20rem;">
                       <div>
                         <h5> As a Pet Owner:</h5>
                       </div>
-                        <img class="card-img-top" src="{{booking['sitter_pic']}}" >
+                        <img class="round_small_pic" src="{{booking['sitter_pic']}}" >
                         <div class="card-body">
                           <h6 class="card-title">Booking with: {{booking['sitter_name']}}</h6>
-                          <p class="justify-content-between">For: {{booking['dog_name']}} </div>
-                          <p class="justify-content-between">Date and time<strong> {{booking['date']}}</div>
+                            <p> This sitter has:{{booking['experience']}} years of experience</p>
+                            <p> summary:{{booking['experience']}}</p>
+                            <p> For:{{booking['dog_name']}}</p>
+                            <p> Date and time<strong> {{booking['date']}}</strong</div>
                         </div>
                     </div>
                   </div>

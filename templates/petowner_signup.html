@@ -6,25 +6,30 @@
 {% block body %}
   {% if 'user_email' in session%}
     <div>
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
-          <a class="navbar-brand" href="#"></a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
-              </li>
-              <li>                                            
-                <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-              </li>
-              <li>
-                <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+      <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+            </li>
+            <li>                                            
+              <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+            </li>
+            <li>
+              <a class="nav-link"aria-current="page" href="/sitters/{{user.user_id}}" role="button">Find Sitters</a>          
+            </li>
+            <li>
+              <a class="nav-link" aria-current="page" href="{{ url_for("get_booking_form", user_id= user.user_id) }}" role="button">Create New Booking</a>
+            <li>
+              <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </div> 
     <div class="container">
       <div class="form-control mr-sm-2">
@@ -36,12 +41,8 @@
             </div>
             <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
         </form>
-        <button  class="btn btn-outline-secondary" onclick="history.back()">Previous </button>  
-        <a class="btn btn-outline-secondary" aria-current="page" href="{{ url_for("get_booking_form", user_id= user.user_id) }}" role="button">Create New Booking</a>
-        <a class="btn btn-outline-secondary" aria-current="page" href="/sitters/{{user.user_id}}" role="button">Find Sitters</a>          
-        <a class="btn btn-outline-secondary" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-      </div>
     </div>
+
   {%else%}
     
     <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          

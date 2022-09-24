@@ -120,14 +120,16 @@ input[type=number]{
     position: absolute;
     float: right;
     display: block;
-    margin-left: 60%;
-    margin-right: 10%;
-    bottom: 50%;
-    top: 30%;
-    width: 80;
-    height:400px;
+    margin-left: 950px;
+    margin-right: 0px;
+    bottom: 200px;
+    top: -188px;
+    width: 450px;
+    height:350px;
     border-radius: 95%;
+        
 }
+
 
 .flex-container-hover {
     opacity: 1.0;  
@@ -136,8 +138,8 @@ input[type=number]{
 .container-homepage, .nav-center{
     background-color: white;
     position: relative;
-    top:auto;
-    right: auto;
+    top:0;
+    right: 0;
     bottom: auto;
     width: auto;
     color:   #2E1805;
@@ -147,13 +149,13 @@ input[type=number]{
 
 .rounded-pill {
     background-color: #2E1805;
-    ;
     color: white;
-    padding: 5% 5%;
+    padding: 5px 60px 10px 55px;
     border: none;
     border-radius: 5%;
     cursor: pointer;
     width: 49%;
+    /* justify-content: center; */
     }
     
 .rounded-pill:hover {
@@ -269,7 +271,7 @@ input[type=number]{
     margin-left: 500px;
     border-radius: 15px;
     border-color: lightgrey;
-    float: center
+    float: center;
     
 }
 
@@ -368,4 +370,40 @@ input[type=number]{
     border: solid lightgrey;
     position: relative;
 
+}
+
+/* all dogs */
+
+.round_small_pic {
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    border-radius: 75%;
+    background-image: url('dog_profile.jpg');
+    background-size: cover;
+    border: solid lightgrey;
+    position: relative;
+}
+
+
+/* SHAPE DIVIDER */
+.custom-shape-divider-bottom-1664014398 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1664014398 svg {
+    position: relative;
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 150px;
+}
+
+.custom-shape-divider-bottom-1664014398 .shape-fill {
+    fill: #2E1805;
 }

@@ -940,8 +940,10 @@ def get_all_bookings(user_id):
                 # for item in pics:
                 # if booking.sitter.user.profile_pic == (item['public_id']):
                 info_sitter['booking_id'] = booking.id
-                info_sitter['dog_name'] = booking.pet.name
+                info_sitter['dog_name'] = booking.pet.name 
                 info_sitter['sitter_pic'] = booking.sitter.user.profile_pic
+                info_sitter['experience'] = booking.sitter.years_of_experience
+                info_sitter ['summary'] = booking.sitter.summary
                 info_sitter['date'] = booking.start_date
                 info_sitter['time'] = booking.start_time
                 info_sitter['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
@@ -1004,12 +1006,6 @@ def logout():
         session.pop('user_email', None)
         
     return redirect('/')
-
-# @app.route('/forgot_password', methods=["GET"])
-# def forgotPassword():
-#     """render forgot my password page"""
-
-#     return render_template("forgot_password.html")
 
 
 @app.route("/delete/<user_id>")
