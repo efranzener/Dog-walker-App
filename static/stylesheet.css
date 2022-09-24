@@ -7,6 +7,8 @@ header, body {
     font-family: 'Montserrat';
     background-color: whitesmoke; 
     font: rgb(140, 91, 64);
+    font-size: medium;
+
 }
 
 
@@ -44,7 +46,7 @@ a {
 
 
 .nav-link {
-    color:  rgb(45, 38, 32);
+    color:   #2E1805;
     font-family: "Montserrat";
     font-size: medium;
     
@@ -72,21 +74,28 @@ a {
     fill: #FFFFFF;
 }
   
-input[type=text], input[type=password], input[type=date], input[type=tel], input[type=numeric], input[type=file], input[type=email], input[type=password], input[type=number], input[type=time]{
+input[type=text], input[type=password], input[type=file], input[type=date], input[type=tel], input[type=numeric], input[type=file], input[type=email], input[type=password], input[type=time], textarea[id=summary]{
     width: 100%;
     padding: 15px;
     margin: 5px 0 22px 0;
     display: inline-block;
-    border: none;
     background: #f1f1f1;
+    border: 2px solid #82b47d;
 }
 
 input:invalid {
     border: 2px solid #B33640;
   }
   
-input:valid {
-    border: 2px solid #3679B3;
+input[type=number]{
+    width: 100%;
+    height: 50%;
+    padding: auto;
+    margin: auto;
+    display: inline-block;
+    border-radius: auto;
+    background: #f1f1f1;
+    border: 2px solid #82b47d;
 }
 
 #password_login, #email_login, #start_time, #start_date, #num_pets, #start_date1, #start_date, #start_time, #start_time1{
@@ -103,14 +112,6 @@ input:valid {
     background: #f1f1f1;
 }
 
-/* input[type=text]:focus, input[type=password]:focus {
-    background-color: white;
-    /* color: lightgray; */
-    /* border: solid;
-    border-color: lightgrey;
-    border-radius: 5%;
-    outline: none;
-} */ 
 
 /* HOMEPAGE */
 /* @media screen and (min-width: 800px) { */
@@ -139,6 +140,9 @@ input:valid {
     right: auto;
     bottom: auto;
     width: auto;
+    color:   #2E1805;
+    font-family: "Montserrat";
+    font-size: medium;
 }
 
 .rounded-pill {
@@ -168,8 +172,9 @@ input:valid {
     border: solid;
     border-width: 0.5px;
     align-content: start;
-    font-family: sans-serif;
-    font: #2E1805;
+    color:   #2E1805;
+    font-family: "Montserrat";
+    font-size: medium;
 }
 
       
@@ -182,6 +187,9 @@ input:valid {
     /* margin: 5px 0 22px 0; */
     border-radius: 15px;
     border-color: lightgrey;
+    color:   #2E1805;
+    font-family: "Montserrat";
+    font-size: large
 
 }
 
@@ -221,7 +229,7 @@ input:valid {
 
 /* SIGN UP */
 
-#sign-up, #login, #profile_greet, #pet_owner_signup, #sitter_signup, .search-title, .card-title {
+#sign-up, #login, #profile_greet, #pet_owner_signup, #sitter_signup, .search-title, .card-title, .booking-title, #booking_greeting, #add-dog_greet{
     font-family: 'Montserrat';
     font: rgb(140, 91, 64);
     text-align: center;
@@ -229,19 +237,23 @@ input:valid {
 }
 
 #delete-button {
-    
+    text-align: center;
+
 }
 
 .rounded-circle, #prof-pic {
-    width: 150px;
-    height: 150px;
+    width: 220px;
+    height: 220px;
     border-radius: auto;
-    margin-bottom: auto;
+    margin-bottom: 20px;
+    margin-left: 28%;
     background-image: url('usericon.jpg');
     background-size: contain;
     border: solid lightgrey;
     text-align: center;
     position: relative;
+    float: center;
+
    
 
 }
@@ -297,13 +309,13 @@ input:valid {
 /* PROFILE PAGE */
 
 .container-profile{
-    width: 500px;
+    width: 40%;
     background: white;
     align-content: center; 
     background-color: whitesmoke;
     padding: 10px;
     margin-block-start: 10px;
-    margin-left: 500px;
+    margin: auto;
     border-radius: 15px;
     border-color: lightgrey;
     float: center
@@ -324,4 +336,36 @@ input:valid {
     border-radius: 5%;
     border: solid;
     border-color: gray;
+}
+
+
+/* BOOKINGS */
+
+#container-bookings{
+    width: 18rem;
+    background: white;
+    align-content: center; 
+    background-color: whitesmoke;
+    padding: 15px;
+    margin-left: 300px;
+    border-radius: 15px;
+    border-color: lightgrey;
+    color:   #2E1805;
+    font-family: "Montserrat";
+    font-size: large
+}
+
+/* ADD DOG */
+
+ #dog-pic {
+    width: 250px;
+    height: 250px;
+    border-radius: 10%;
+    margin-left: 30%;
+    margin-right: 25%;
+    background-image: url('dog_profile.jpg');
+    background-size: cover;
+    border: solid lightgrey;
+    position: relative;
+
 }

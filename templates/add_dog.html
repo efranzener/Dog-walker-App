@@ -17,6 +17,9 @@
           <li>                                            
             <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
           </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
+          </li>
           <li>
             <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
           </li>
@@ -26,15 +29,12 @@
   </div> 
   <ul>
 <div>
-    <h5> Hello, {{user.fname}}!</h5>
-    <br>    
-    <h6>Out of your {{pet_owner.num_pets}} dog(s), you currently have {{total_pets}} dog(s) registered under your profile:<h6>
     
 </div>
 <br>
-<div class="add_dog">
-    <section>
-        <div class="container">
+<div class="container-profile">
+    <h5 id="add-dog_greet">Total dogs currently registered under your account: {{total_pets}}<h5>
+        <div class="form-control mr-sm-2">
             <form action="/add_dog/{{pet_owner.user_id}}" method="POST" enctype = "multipart/form-data">
                 <div class="form-group">
                     <label for="fname2">Name</label>
@@ -114,9 +114,9 @@
                     <input type="text" name="emergency_phone" id="emergency_phone">
                 </div>           
                 <div class="form-group">
-                    <label class="profilepic" for="profilepic">Profile Picture</label>
-                    <img src="" alt="..." class="img-thumbnail">
-                    <input id="profilepic" type="file" name="profilepic" accept="image/png, image/jpeg" placeholder="Dog Profile Picture" required>
+                    <label class="rounded" for="profilepic">Dog Picture</label>
+                    <img id="dog-pic">
+                    <input id="profiledog" type="file" name="profilepic" accept="image/png, image/jpeg" required>
                 </div>                             
                 <form>
                     <button type="submit">Add my dog</button>
@@ -125,5 +125,11 @@
         </div>
     </section>
 </div>
+<script>
+    document.getElementById("profiledog").onchange = function () {
+        var src = URL.createObjectURL(this.files[0]);
+        document.getElementById("dog-pic").src = src;
+    }
+</script>
 
 {% endblock body %}

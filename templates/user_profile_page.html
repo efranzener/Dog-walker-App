@@ -90,14 +90,14 @@
                             <div class="form-group">
                                 <div class="modal-body">
                                     <form action = "/delete/{{user.user_id}}" method="POST" >
-                                        <label for="delete-text" class="alert"> Once deleted, your profile cannot be recovered and you will have to create a new user profile in order to reuse our app. To confirm you would like to delete your profile, please type <strong>DELETE</strong> in the box bellow</label>
+                                        <label for="delete-text" class="text-justify"> Once deleted, your profile cannot be recovered and you will have to create a new user profile in order to reuse our app. To confirm you would like to delete your profile, please type <strong>DELETE</strong> in the box bellow</label>
                                         <textarea class="form-control" id="delete-text" name = "delete" value = "delete"></textarea>
                                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit" data-bs-toggle="modal" data-bs-target="#myModal">Delete Profile</button>
                                     </form>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-secondary"  data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
                             </div> 
                         </div>
                     </div>

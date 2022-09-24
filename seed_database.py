@@ -134,12 +134,13 @@ endtime_with_date=  starttime_datetime + interval
 endtime_datetime = endtime_with_date
 
 
-booking1 = crud.create_booking(weekly=False, pet_id=pet1.pet_id, pet_owner_id=pet_owner1.id, sitter_id=sitter1.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
-booking2 = crud.create_booking(weekly=False, pet_id=pet2.pet_id, pet_owner_id=pet_owner1.id, sitter_id=sitter1.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
-booking3 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=pet_owner2.id, sitter_id=sitter2.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
-booking4 = crud.create_booking(weekly=False, pet_id=pet4.pet_id, pet_owner_id=pet_owner3.id, sitter_id=sitter3.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
-booking5 = crud.create_booking(weekly=False, pet_id=pet5.pet_id, pet_owner_id=pet_owner3.id, sitter_id=sitter3.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
-booking6 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=pet_owner2.id, sitter_id=sitter3.id,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+
+booking1 = crud.create_booking(weekly=False, pet_id=pet1.pet_id, pet_owner_id=3, sitter_id=1,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+booking2 = crud.create_booking(weekly=False, pet_id=pet2.pet_id, pet_owner_id=1, sitter_id=2,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+booking3 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=2, sitter_id=3,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+booking4 = crud.create_booking(weekly=False, pet_id=pet4.pet_id, pet_owner_id=4, sitter_id=1,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+booking5 = crud.create_booking(weekly=False, pet_id=pet5.pet_id, pet_owner_id=1, sitter_id=2,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
+booking6 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=4, sitter_id=3,  start_date=starttime_datetime, end_date=endtime_datetime, start_time=endtime_datetime, end_time=endtime_datetime)
 model.db.session.add_all([booking1, booking2, booking3, booking4, booking6]) 
 model.db.session.commit() 
 

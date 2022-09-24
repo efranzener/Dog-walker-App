@@ -5,131 +5,142 @@
     {%if 'user_email' in session%}  
         <div>
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
-                </li>
-                <li>                                            
-                    <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-                </li>
-                <li>
-                    <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
-                </li>
-                </ul>
-            </div>
+                <a class="navbar-brand" href="#"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+                        </li>
+                        <li>                                            
+                            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+                        </li>
+                        <li>
+                            <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
             </nav>
         </div> 
-        <section>
-            <h5> UPDATE PERSONAL DETAILS</h>
-
-            <div class="container" style="width: 18rem;">
-                <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
-                    <div class="form-group">
-                        <div class="card" style="max-width: 20rem;">
-                                <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
-                            <input id="profilepic1" type="file" name="profilepic" value="{{profile_pic}}" accept="image/*">
-                    </div>  
-                    <div class="form-group">
-                        <label for="fname">First Name</label>
-                        <input type="text" name="fname" value="{{user.fname}}"id="fname" autocomplete="fname">
-                    </div>
-                    <div class="form-group">
-                        <label for="lname">Last Name</label>
-                        <input type="text" name="lname" value="{{user.lname}}" id="lname" autocomplete="lname">
-                    </div>
-                    <div class="form-group">
-                        <label for="dob">Date of birth</label>
-                        <input type="date" name="dob" value="{{user.dob}}" id="dob">
-                    </div>
-                    <div class="form-group">
-                        <label for="email" >Email</label>
-                        <input type="email" name="email" value="{{user.email}}" id="email" autocomplete="email">
-                    </div>
-                    <div class="form-group">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" value="{{user.password}}" id="password">
-                    </div>
-                    <div class="form-group">
-                        <label for="mobile" class="form-label">Mobile</label>
-                        <input type="text" name="mobile" value= "{{user.mobile}}" id="mobile">
-                    </div>
-                    <div class="form-group">
-                        <label for="address" >Address</label>
-                        <input type="text"  name="address" value="{{user.address}}" id="address" placeholder="1234 Main St, number ">
-                    </div>
-                    <div class="form-group">
-                        <label for="city">City</label>
-                        <input type="text" name="city" value = "{{user.city}}"id="city">
-                    </div>
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <input type="text" name="state" value={{user.state}} id="state" >
-                    </div>
-                    <div class="form-group">
-                        <label for="zip_code" class="form-labe2">Zip Code</label>
-                        <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
-                    </div>          
-                        <button class="btn btn-outline-secondary">Save Changes</button>
-                </form>
-            </div>
-        </section>
-        <div class="container" style="width: 18rem;">
-            {%if sitter %}
-            <h5> UPDATE SITTER PROFILE </h5>
-            <section>
-                <div>
-                    <form action = "/sitter_profile/{{user.user_id}}/update" method="POST" >
+            
+            <div class="container-profile">
+                <div class="form-control mr-sm-2">
+                    <h5 class="card-title"> Update Personal Details</h5>
+                    <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
                         <div class="form-group">
-                            <label for="experience">Years of Experience</label>
-                            <input type="number" min=0 name="experience" id="experience" value="{{sitter.years_of_experience}}">
+                            <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
+                            <input id="profilepic" type="file" name="profilepic" value="{{profile_pic}}" accept="image/*">
+                        </div> 
+                        <div class="form-group">
+                            <label for="fname">First Name</label>
+                            <input type="text" name="fname" value="{{user.fname}}"id="fname" autocomplete="fname">
                         </div>
                         <div class="form-group">
-                            <label for="summary">Summary</label>
-                            <textarea name="summary" id="summary" value="{{sitter.summary}}"></textarea>
+                            <label for="lname">Last Name</label>
+                            <input type="text" name="lname" value="{{user.lname}}" id="lname" autocomplete="lname">
                         </div>
                         <div class="form-group">
-                            <p>Please select your rate according to the lenght of the walk:</p>   
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">30 min</span>
-                                <span class="input-group-text">$</span>
-                                <input name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
-                            </div>
+                            <label for="dob">Date of birth</label>
+                            <input type="date" name="dob" value="{{user.dob}}" id="dob">
                         </div>
-                        <form>
+                        <div class="form-group">
+                            <label for="email" >Email</label>
+                            <input type="email" name="email" value="{{user.email}}" id="email" autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" value="{{user.password}}" id="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile" class="form-label">Mobile</label>
+                            <input type="text" name="mobile" value= "{{user.mobile}}" id="mobile">
+                        </div>
+                        <div class="form-group">
+                            <label for="address" >Address</label>
+                            <input type="text"  name="address" value="{{user.address}}" id="address" placeholder="1234 Main St, number ">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" name="city" value = "{{user.city}}"id="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" name="state" value={{user.state}} id="state" >
+                        </div>
+                        <div class="form-group">
+                            <label for="zip_code" class="form-labe2">Zip Code</label>
+                            <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
+                        </div>           
                             <button class="btn btn-outline-secondary">Save Changes</button>
-                        </form>
                     </form>
                 </div>
-            </section>
+            </div>
+            {%if sitter %}
+                <div class="container-profile">
+                    <div class="form-control mr-sm-2">
+                        <div>
+                            <h5 class="card-title"> Update Sitter Profile </h5>
+                        </div>
+                        <form action = "/sitter_profile/{{user.user_id}}/update" method="POST" >
+                            <div class="form-group">
+                                <label for="experience">Years of Experience</label>
+                                <input type="numeric" min="0" name="experience" id="experience" value="{{sitter.years_of_experience}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="summary">Summary</label>
+                                <textarea name="summary" id="summary" value="{{sitter.summary}}"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <p>Rate</p>   
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text">$</span>
+                                    </div>
+                                        <input id="rate" name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
+                                    <div class="input-group-append">
+                                      <span class="input-group-text">30 min/walk</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-secondary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
         
             {%else %}
-            <div>
-                <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
-            </div>
+                <div>
+                    <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+                </div>
             {% endif%}
-        </div>
-        <div class="container" style="width: 18rem;">
+
             {%if pet_owner %}
-                <h5> UPDATE PET OWNER PROFILE </h5>
-                <section>
-                    <form action = "/petowner_profile/{{user.user_id}}/update" method="POST" >
-                        <div class="form-group">
-                            <label for="num_pets">How many dogs do you have?</label>
-                            <input type="number" min="0" name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
+                <div class="container-profile">
+                    <div class="form-control mr-sm-2">
+                        <div>
+                            <h5 class="card-title"> Update Pet Owner Profile </h5>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary"> Confirm Update </button>
-                    </form>
-                </section>
+                        <form action = "/petowner_profile/{{user.user_id}}/update" method="POST" >
+                            <div class="form-group">
+                                <label for="num_pets">Number of Dogs</label>
+                                <input type="numeric" min="0" name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
+                            </div>
+                            <button type="submit" class="btn btn-outline-secondary"> Confirm Update </button>
+                        </form>
+                    </div>
+                </div>
+
             {%else %}
                 <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
             {% endif%}
-        </div>
     {%else%}
         <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
     {%endif%}      
+    <script>    
+        document.getElementById("profilepic").onchange = function () {
+            var src = URL.createObjectURL(this.files[0]);
+            document.getElementById("prof-pic").src = src;
+        }
+    </script>
 {% endblock body %}

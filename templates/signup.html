@@ -4,10 +4,6 @@
 {% block title %}Create an Account{% endblock title%}
 {% block header %}
 
-<div>
-  <img id="top-img" src="static/profile_pic1.jpg">
-<div>
-
 {%endblock header%}
 {% block body %}
 
@@ -56,6 +52,7 @@
                         <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{9,20}">
                         <span class="validity"></span>
                         <p class="requirement">8-20 characters: at least 1 upper and lower case & a number</p>
+                        <input type="checkbox" onclick="myFunction()">Show Password
                     </div>
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile</label>
@@ -86,7 +83,7 @@
                     </div>         
                     <div class="form-group">
                         <img id="prof-pic">
-                        <label class="signup-pic" for="profilepic">Profile Picture</label>
+                        <label class="rounded-circle" for="profilepic">Profile Picture</label>
                         <input id="profilepic" type="file" name="profilepic" accept="image/png, image/jpeg" required>
                     </div>                                          
                         <button type="submit" class="rounded-pill">Sign up</button>
@@ -94,9 +91,18 @@
             </div>
     </div>
     <script>
-        document.getElementById('profilepic').onchange = function () {
+        function myFunction() {
+            var showPassword = document.getElementById("password");
+            if (showPassword.type === "password") {
+            showPassword.type = "text";
+            } else {
+            showPassword.type = "password";
+            }
+        }
+
+        document.getElementById("profilepic").onchange = function () {
             var src = URL.createObjectURL(this.files[0]);
-            document.getElementById('prof-pic').src = src;
+            document.getElementById("prof-pic").src = src;
         }
     </script>
 {% endblock body %}

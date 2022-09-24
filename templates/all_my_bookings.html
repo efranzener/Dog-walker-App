@@ -24,42 +24,48 @@
       </div> 
       <ul>    
     
-    <h5>{{ user.fname }},</h5>
         <div>
         {%if sitter_bookings or pet_owner_bookings%}
-            <h5> These are all your bookings: </h5>
+            <h5 id = "booking_greeting"> These are all your bookings, {{ user.fname }}: </h5>
+
             {%if sitter_bookings %}
-                <h5> As a sitter:</h5>
+            
                 {% for booking in sitter_bkngs %}
-                <div class="card-group" style="width: 18rem;">
-                    <div class="card" >
-                        <img class="rounded-circle" src="{{booking['dog_pic']}}" >
-                        <div class="card-body">
-                            <div><a target="_blank" href="https://calendar.google.com/event?action=TEMPLATE&amp;tmeid=amtjaHExY3JnMzhwcXFvbDVscnF1MTFoN2MgdGVzdHVzZXIubnVtdGhyZWVAbQ&amp;tmsrc=testuser.numthree%40gmail.com"><img border="0" src="https://www.google.com/calendar/images/ext/gc_button1_en.gif"></a></div>
-                            <div>
-                                <div> <strong>Bookings for</strong>: {{booking['dog_name']}}</div>
-                                <div><strong> Date and Time</strong>: {{booking['time']}}</div>
-                            </div>
+                  <div class="card-deck" >
+                    <div class="card" style="width: 18rem;">
+                      <div>
+                        <h5 class = "booking-title"> As a sitter:</h5>
+                      </div>
+                        <img class="card-img-top" src="{{booking['dog_pic']}}" >
+                        <div class="card-body">  
+                                                    
+                            <h6 class="card-title">Hi, my name is<p><strong>{{booking['dog_name']}}!</strong></h6>
+                            <p class="justify-content-between"> I'm a {{booking['age']}}yo {{booking['breed']}}, and about {{booking['size']}} in size. I have an appointment with you on the following date, time and address:</p>
+                            <h6><strong>Date and time:</strong> {{booking['time']}}</h6>
+                            <h6><strong>Address:</strong> {{booking['address']}} </h6>
+                            <p> Can't wait to see you!</p>
+                          
                         </div>
                     </div>
-                </div>
+                  </div>
                 {%endfor%}
             {%endif%}
 
             {%if pet_owner_bookings %}
-                <h5> As a Pet Owner:</h5>
                 {% for booking in owner_bkngs %}
-                    <div class="card-group" style="width: 18rem;">
-                        <div class="card" >
-                            <img class="rounded-circle" src="{{booking['sitter_pic']}}" >
-                        </div>
+                  <div class="card-deck" >
+                    <div class="card" style="width: 18rem;">
+                      <div>
+                        <h5> As a Pet Owner:</h5>
+                      </div>
+                        <img class="card-img-top" src="{{booking['sitter_pic']}}" >
                         <div class="card-body">
-                            <div> Booking with: {{booking['sitter_name']}}</div>
-                            <div> For: {{booking['dog_name']}} </div>
-                            <div> Date: {{booking['date']}}</div>
-                            <div> Time: {{booking['time']}}</div>
+                          <h6 class="card-title">Booking with: {{booking['sitter_name']}}</h6>
+                          <p class="justify-content-between">For: {{booking['dog_name']}} </div>
+                          <p class="justify-content-between">Date and time<strong> {{booking['date']}}</div>
                         </div>
                     </div>
+                  </div>
                 {% endfor %}
             {%endif%}
         {%else%}    
