@@ -7,9 +7,8 @@
 {%endblock header%}
 {% block body %}
 
-<div>
    
-    <div class="container-fluid">
+    <div class="container-homepage">
       <nav class="navbar justify-content-start">
         <ul class="nav justify-content-start">
           <li class="nav-item">
@@ -24,35 +23,34 @@
         </ul>
       </nav>
     </div>  
-
-    <div class="container">
+    <div class = "card-container">
+        <div class="container">
             <div class="form-control mr-sm-2">
                 <h4 id="sign-up">Sign Up</h4>
                 <form action="/signup" method = "POST" enctype = "multipart/form-data">
                     <div class="form-group">
-                        <label for="fname">First Name</label>
+                        <label for="fname" class="form-label">First Name</label>
                         <input type="text" name="fname" id="fname" required>
                     </div>
                     <div class="form-group">
-                        <label for="lname">Last Name</label>
+                        <label for="lname" class="form-label">Last Name</label>
                         <input type="text" name="lname" id="lname" required>
                         <span class="validity"></span>
                     </div>
                     <div class="form-group">
-                        <label for="dob" >Date of birth</label>
+                        <label for="dob" class="form-label">Date of birth</label>
                         <input type="date" name="dob" id="dob" required>
                     </div>
                     <div class="form-group">
-                        <label for="email" >Email</label>
+                        <label for="email" class="form-label">Email</label>
                         <input type="email" name="email" id="email" required>
                         <span class="validity"></span>
                     </div>
                     <div class="form-group">
                         <label for="password" class="form-label">Password</label>
+                        <p><small class="requirement">  8-20 characters: at least 1 upper and lower case & a number</small></p>
                         <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{9,20}">
-                        <span class="validity"></span>
-                        <p class="requirement">8-20 characters: at least 1 upper and lower case & a number</p>
-                        <input type="checkbox" onclick="myFunction()">Show Password
+                        <input type="checkbox" onclick="myFunction()"> Show Password
                     </div>
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile</label>
@@ -60,19 +58,19 @@
                         <span class="validity"></span>
                     </div>
                     <div class="form-group">
-                        <label for="address" >Address</label>
+                        <label for="address" class="form-label">Address</label>
                         <input type="text"  name="address" id="address" placeholder="1234 Main St, number" required>
                     </div>
                     <div class="form-group">
-                        <label for="city">City</label>
+                        <label for="city" class="form-label">City</label>
                         <input type="text" name="city" id="city" required>
                     </div>
                     <div class="form-group">
-                        <label for="city">State</label>
-                        <select id="state" name="state">
-                            <option selected>Select</option>
+                        <label for="city" class="form-label">State</label>
+                        <select id="state" name="state" required>
+                            <option  selected disabled value="">Select</option>
                             {% for state in states %}
-                                <option name = "state_selected" value="{{state}}" required>{{state}}</option>
+                                <option id="selected_state" name="state_selected" value="{{state}}" >{{state}}</option>
                             {% endfor %}
                         </select>  
                     </div>
@@ -89,6 +87,7 @@
                         <button type="submit" class="rounded-pill">Sign up</button>
                 </form>
             </div>
+        </div>
     </div>
     <script>
         function myFunction() {

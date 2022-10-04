@@ -4,108 +4,105 @@
 
 {% if 'user_email' in session%}
 
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
-                    </li>
-                    <li>                                            
-                        <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-                    </li>
-                    <li>
-                        <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
-                    </li>
-                </ul>
-            </div>
-    </nav>
-    
-    <div class="container-profile">
-        <div>
-            <h5 id="profile_greet">Welcome to your profile page, {{user.fname}}!</h5>
-        </div>
-        <div class="card border-light mb-3">
-            <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
-            <h5 class="card-title">Personal Information</h5>
-            <ul class="list-group">
-                <li class="list-group-item">First Name: {{user.fname}}</li>
-                <li class="list-group-item">Last Name: {{user.lname}}</li>
-                <li class="list-group-item">Date of Birth: {{user.dob}}</li>
-                <li class="list-group-item">Mobile: {{user.mobile}}</li>
-                <li class="list-group-item">Email: {{user.email}}</li>
-                <li class="list-group-item">Address: {{user.address}}</li>
-                <li class="list-group-item">City: {{user.city}}</li>
-                <li class="list-group-item">State: {{user.state}}</li>
-                <li class="list-group-item">Zip Code: {{user.zip_code}}</li>
+    <div class="container-homepage">
+        <nav class="navbar justify-content-start">
+            <ul class="nav justify-content-start">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+                </li>
+                <li>                                            
+                    <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+                </li>
+                <li>
+                    <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+                </li>
             </ul>
-                <a href="/user_profile/{{user.user_id}}/update" class="btn btn-outline-secondary" role="button">Update User Profile</a>
-        </div>
+        </nav>
+
     </div>
-        
-    <div class="container-profile" >
-        {%if sitter %}
-            <div class="card border-light mb-3">
-                <h5 class="card-title">Sitter Profile</h5>
+
+    <div class="card-container">
+        <div class="container-profile">
+            <div>
+                <h5 id="profile-greet">Welcome to your profile page, {{user.fname}}!</h5>
+            </div>
+            <div class="form-control mr-sm-2">
+                <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
+                <h5 class="card-title">Personal Information</h5>
                 <ul class="list-group">
-                    <li class="list-group-item">Summary: {{sitter.years_of_experience}}</li>
-                    <li class="list-group-item">Rate: {{sitter.rate}}/ 30 min walk</li>
+                    <li class="list-group-item">First Name: {{user.fname}}</li>
+                    <li class="list-group-item">Last Name: {{user.lname}}</li>
+                    <li class="list-group-item">Date of Birth: {{user.dob}}</li>
+                    <li class="list-group-item">Mobile: {{user.mobile}}</li>
+                    <li class="list-group-item">Email: {{user.email}}</li>
+                    <li class="list-group-item">Address: {{user.address}}</li>
+                    <li class="list-group-item">City: {{user.city}}</li>
+                    <li class="list-group-item">State: {{user.state}}</li>
+                    <li class="list-group-item">Zip Code: {{user.zip_code}}</li>
                 </ul>
-                <a class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update my Sitter Profile</a>
+                <a href="/user_profile/{{user.user_id}}/update" class="btn btn-outline-secondary" role="button">Update User Profile</a>
             </div>
-        {%else: %}
-        <div class="card border-light mb-3">
-            <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
-        </div>
-        {%endif%}
-    </div>
-
-
-    <div class="container-profile" >
-    {%if pet_owner %}      
-        <div class="card border-light mb-3">
-            <h5 class="card-title">Pet Owner Profile</h5>
-            <ul class="list-group">
-                <li class="list-group-item">Number of Dogs Informed:{{pet_owner.num_pets}}</li>
-            </ul>
-            <a  class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update Pet Owner Profile</a>
-        </div>
-    {%else: %}
-        <div class="card border-light mb-3">
-            <a  class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
-        </div>
-    {%endif%}
-            <div id="delete-button">
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal">
-                    Delete Profile
-                </button>
-            </div>
-            <div id="myModal" class="modal fade" role="">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                            <div class="form-group">
-                                <div class="modal-body">
-                                    <form action = "/delete/{{user.user_id}}" method="POST" >
-                                        <label for="delete-text" class="text-justify"> Once deleted, your profile cannot be recovered and you will have to create a new user profile in order to reuse our app. To confirm you would like to delete your profile, please type <strong>DELETE</strong> in the box bellow</label>
-                                        <textarea class="form-control" id="delete-text" name = "delete" value = "delete"></textarea>
-                                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" data-bs-toggle="modal" data-bs-target="#myModal">Delete Profile</button>
-                                    </form>
+            {%if sitter %}
+                <div class="form-control mr-sm-2">
+                    <h5 class="card-title">Sitter Profile</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item">Summary: {{sitter.years_of_experience}}</li>
+                        <li class="list-group-item">Rate: {{sitter.rate}}/ 30 min walk</li>
+                    </ul>
+                    <a class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update my Sitter Profile</a>
+                </div>
+            
+            {%else: %}
+                <div class="form-control mr-sm-2">
+                    <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+                </div>
+            {%endif%}
+            
+            {%if pet_owner %}
+                <div class="form-control mr-sm-2">
+                    <h5 class="card-title">Pet Owner Profile</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item">Number of Dogs Informed:{{pet_owner.num_pets}}</li>
+                    </ul>
+                    <a  class="btn btn-outline-secondary" href="/user_profile/{{user.user_id}}/update" role="button">Update Pet Owner Profile</a>
+                </div>
+            {%else: %}
+                <div class="form-control mr-sm-2">
+                    <a  class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
+                </div>
+            {%endif%}
+                <div class="form-control mr-sm-2">
+                    <div id="delete-button">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal">
+                            Delete All Profiles
+                        </button>
+                    </div>
+                </div>
+                <div id="myModal" class="modal fade" role="">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                                <div class="form-group">
+                                    <div class="modal-body">
+                                        <form action = "/delete/{{user.user_id}}" method="POST" >
+                                            <label for="delete-text" class="text-justify"> Once deleted, your profile cannot be recovered and you will have to create a new user profile in order to reuse our app. To confirm you would like to delete your profile, please type <strong>DELETE</strong> in the box bellow</label>
+                                            <textarea class="form-control" id="delete-text" name = "delete" value = "delete"></textarea>
+                                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" data-bs-toggle="modal" data-bs-target="#myModal">Delete Profile</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
+                                </div> 
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
-                            </div> 
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 {%else%}
     <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          
 {% endif%}
-
 {%endblock body%}

@@ -2,62 +2,81 @@
 
 {% block body %}
 
-  <div class="nav-center">
-    <nav class="navbar justify-content-center">
-      <ul class="nav justify-content-center">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Profiles
+    <div class="nav-center">
+      <nav class="navbar justify-content-center">
+        <ul class="nav justify-content-center">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Profiles
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/user_profile/{{user.user_id}}">Profile Page</a>
+                <a class="dropdown-item" href="/petowner_signup/{{user.user_id}}">Pet Owner Sign up</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/sitter_signup/{{user.user_id}}">Sitter Sign Up</a>
+              </div>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Bookings
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/user_profile/{{user.user_id}}">Profile Page</a>
-              <a class="dropdown-item" href="/petowner_signup/{{user.user_id}}">Pet Owner Sign up</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/sitter_signup/{{user.user_id}}">Sitter Sign Up</a>
-            </div>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Bookings
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">My Bookings</a>
-            <a class="dropdown-item" href="/create_booking/{{user.user_id}}">New Booking</a>
-         </div>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
+              <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">My Bookings</a>
+              <a class="dropdown-item" href="/create_booking/{{user.user_id}}">New Booking</a>
+          </div>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Add New Dog</a>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find Sitters</a>          
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/calendar/{{user.user_id}}">My Calendar</a>
+            </li>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Add New Dog</a>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find Sitters</a>          
+            <a class="nav-link" aria-current="page" href="/logout">Logout</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/calendar/{{user.user_id}}">My Calendar</a>
-          </li>
-        </li>
-          <a class="nav-link" aria-current="page" href="/logout">Logout</a>
-        </li>
-      </ul>
-    </nav>
-  </div> 
- 
-  <div class="card" style="width: 18rem;">
-      <form class="form-inline my-2 my-lg-0" action="/search_availability/{{user.user_id}}" method="POST">                    
-        <div class="search-box">
-          <h4 class="search-title"> Search for a dog walker </h4>
-            <label for="start_date1">Date</label>
-            <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date1" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
-            <label for="start_time1" >Start of 30 min walk</label>
-            <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time1" value="00:00" required>
-            </div>
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </div>
-      </form>
-  </div>
-
-   
-  
-
+        </ul>
+      </nav>
+    </div> 
+    
+    <div class = "card-container">
+      <div class="card">
+        <form class="form-inline my-2 my-lg-0" action="/search_availability/{{user.user_id}}" method="POST">                    
+          <div class="search-box">
+            <h4 class="search-title"> Search For a Sitter </h4>
+              <label for="start_date1">Date</label>
+              <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date1" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
+              <label for="start_time1" >30 min walks from 6am to 11pm</label>
+              <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time1" value="00:00" required>
+              </div>
+          <button class="btn btn-outline-secondary" type="submit">Search</button>
+          </div>
+        </form>
+        {% if sitter_bookings%}
+          {% for booking in week_sitter_bookings%}
+            <div class="card">
+              <p><strong>Your Sitter Booking This Week</strong></p>
+              <p><strong>For:</strong>{{ booking['pet_name']}}</p>
+              <p><strong>Date:</strong>{{booking['day']}}, {{booking['date']}}</p>
+              <p><strong>Time:</strong>{{ booking['hour']}}</p>
+              <p><strong>Address:</strong>{{ booking['address']}}</p>
+            </div> 
+          {%endfor%}
+        {%endif%}
+        {% if pet_owner_bookings%}
+          {% for booking in next_pet_bookings%}
+            <div class="card">
+              <p class="title"><strong>Pet's Booking For This Week</strong></p>
+              <p><strong>For:</strong>{{ booking['pet_name']}}</p>
+              <p><strong>Date:</strong>{{booking['date']}}</p>
+              <p><strong>Time:</strong>{{ booking['hour']}}</p>
+              <p><strong>Sitter:</strong>{{ booking['sitter']}}</p>
+            </div> 
+          {%endfor%}
+        {%endif%}
+    </div> 
 {%endblock body%}
 
 

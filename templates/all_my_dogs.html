@@ -26,22 +26,31 @@
     </nav>
   </div> 
   <ul>
-    
-    <h3>My dogs</h3>
-   
-    {% for pet in pets %}
-      <div class="card-deck" >
-        <div class="card" style="width: 18rem;">
-          <img class="all-dogs" src="{{pet["pic"] }}" >
-          <div class="card-body">
-            <ul>
-              <h5 class="card-title">My name is: {{ pet["name"] }}</h5>
-              <p class="card-text">I'm a {{pet["size"]}}, {{ pet["breed"] }} and I'm {{ pet["age"] }} years old.</p>
-            </ul>
+
+    <h4 id="dogs-page"> All Your Registered Dogs</h4>
+    <div class = "card-container">
+      {% for pet in pets %}
+        <div class="card-deck">
+          <div class="card" style="width: 20rem;">
+            <img class="all-dogs" src="{{pet["pic"]}}" >
+            <div class="card-body">
+                <ul class="list-group">
+                  <li class="list-group-item"><strong>Name:</strong> {{ pet["name"] }}</li>
+                  <li class="list-group-item"><strong>Age:</strong> {{ pet["age"] }}</li>
+                  <li class="list-group-item"><strong>Breed:</strong> {{ pet["breed"] }}</li>
+                  <li class="list-group-item"><strong>Size:</strong> {{ pet["size"] }}</li>
+                  <li class="list-group-item"><strong>Allergies:</strong> {{ pet["allergies"] }}: {{ pet["allergies_kind"] }}</li>
+                  <li class="list-group-item"><strong>House Trained:</strong> {{ pet["house_trained"] }}</li>
+                  <li class="list-group-item"><strong>Spayed Neutered:</strong> {{ pet["spayed_neutered"] }}</li>
+                  <li class="list-group-item"><strong>Microchipped:</strong> {{ pet["microchipped"] }}</li>
+                  <li class="list-group-item"><strong>Additional Info:</strong> {{ pet["additional_info"] }}</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </div>
+
    
   
 {%endblock body%}%

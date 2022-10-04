@@ -3,14 +3,21 @@
 /* ALL THE PAGES */
 
 
+
 header, body {
     font-family: 'Montserrat';
-    background-color: whitesmoke; 
-    font: rgb(140, 91, 64);
-    font-size: medium;
+    background-color: #f5f5f5; 
+    color: #2E1805;
+    font-size: 1rem;
+    /* text-align: justify;
+    text-justify: auto; */
 
 }
 
+p {
+    text-align: justify;
+    text-justify: auto;
+}
 
 
 a {
@@ -28,12 +35,16 @@ a {
     margin-top: 5%;
     color: #2E1805;
     margin-left: 5%;
+    font-size: 8rem;
+    overflow:hidden;
+    position: relative;
 }
 #logo2 {
     font-family: 'Caveat', cursive;
     color: #AB6800;
     margin-left: 3%;
     margin-top: -2%;
+    overflow: visible;
     
 }
 
@@ -48,7 +59,8 @@ a {
 .nav-link {
     color:   #2E1805;
     font-family: "Montserrat";
-    font-size: medium;
+    font-size: 1.1rem;
+    background-color: white;
     
 }
     
@@ -61,33 +73,38 @@ a {
     overflow: hidden;
     line-height: 0;
     transform: rotate(180deg);
+   
 }
 
 .custom-shape-divider-top-1663867673 svg {
     position: relative;
     display: block;
     width: calc(100% + 1.3px);
+    overflow: hidden;
     height: 161px;
+    z-index: -1;
+    /* position:relative; */
 }
 
 .custom-shape-divider-top-1663867673 .shape-fill {
     fill: #FFFFFF;
+    opacity: 0.8;
 }
   
-input[type=text], input[type=password], input[type=file], input[type=date], input[type=tel], input[type=numeric], input[type=file], input[type=email], input[type=password], input[type=time], textarea[id=summary]{
+input[type=text], select, input[type=description], input[type=file], input[type=date], input[type=tel], input[type=numeric], input[type=file], input[type=email], input[type=password], input[type=time], textarea[id=summary], #selected_state {
     width: 100%;
     padding: 15px;
     margin: 5px 0 22px 0;
     display: inline-block;
     background: #f1f1f1;
-    border: 2px solid #82b47d;
+    
 }
 
-input:invalid {
-    border: 2px solid #B33640;
+select:invalid, input:invalid, input:invalid + span::after {
+    border: 2px solid red;
   }
   
-input[type=number]{
+input[type=number] {
     width: 100%;
     height: 50%;
     padding: auto;
@@ -95,76 +112,89 @@ input[type=number]{
     display: inline-block;
     border-radius: auto;
     background: #f1f1f1;
-    border: 2px solid #82b47d;
 }
 
-#password_login, #email_login, #start_time, #start_date, #num_pets, #start_date1, #start_date, #start_time, #start_time1{
-    border: none;
+#password-login, #email-login, #start_date1,  #start_time1{
+    border: solid lightgray;
+    border-radius: auto;
 }
 
-
-#state{    
-    width: 100%;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    display: inline-block;
-    border: none;
-    background: #f1f1f1;
-}
 
 
 /* HOMEPAGE */
-/* @media screen and (min-width: 800px) { */
-#background_pic{
-    background-image: overlay;
-    position: absolute;
-    float: right;
-    display: block;
-    margin-left: 950px;
-    margin-right: 0px;
-    bottom: 200px;
-    top: -188px;
-    width: 450px;
-    height:350px;
-    border-radius: 95%;
-        
+
+
+.homepage {
+    display: grid;  
+    grid-template-columns: 35% 28% 37%;
+
 }
 
-
-.flex-container-hover {
-    opacity: 1.0;  
+.homepage > div > img {  
+    width: 100%;  
+    height: 85%;  
+    padding: 2% white;
+    object-fit: cover;  
 }
 
-.container-homepage, .nav-center{
+.homepage > .container-login {
+    background: white;
+    padding: 15%;
+    border: solid lightgray;
+    border-radius: auto;
+    margin-bottom: 20%;
+    opacity: 0.8; 
+    width: 100%;  
+    height: 85%;  
+}
+
+.submit-btns {
+    justify-content: center;
+
+}
+
+.submit-btns > span > button{
+    display: inline;
+    background-color: #AB6800;
+    border: rgb(191, 114, 42);
+    color: #2E1805;
+    padding: 2% 10% 2% 10%;;
+    border-radius: 5em;
+    cursor: pointer;
+}
+    
+.submit-btns > a {
+    background-color: #AB6800;
+    border: rgb(191, 114, 42);
+    color: #2E1805;
+    padding: 3% 10% 3% 10%;
+    border-radius: 5em;
+    cursor: pointer;
+
+}
+
+.submit-btns > a:hover, .submit-btns > span > button:hover{
+    color: white;   
+    opacity: 0.8;
+}
+
+.container-homepage, .nav-center {
     background-color: white;
     position: relative;
     top:0;
     right: 0;
     bottom: auto;
-    width: auto;
+    width: 100%;
     color:   #2E1805;
     font-family: "Montserrat";
-    font-size: medium;
-}
-
-.rounded-pill {
-    background-color: #2E1805;
-    color: white;
-    padding: 5px 60px 10px 55px;
-    border: none;
-    border-radius: 5%;
-    cursor: pointer;
-    width: 49%;
-    /* justify-content: center; */
-    }
-    
-.rounded-pill:hover {
-    color: white;   
-    opacity: 1;
+    font-size: 1.1rem;
 }
 
 
-
+.dropdown-item:hover, .nav-center a:hover {
+    background-color: #FFFFFF;
+    color:rgb(191, 114, 42);
+}
 
 /* see all sitters page*/
 
@@ -176,9 +206,8 @@ input[type=number]{
     align-content: start;
     color:   #2E1805;
     font-family: "Montserrat";
-    font-size: medium;
+    font-size: 1.1rem;
 }
-
       
 .container{
     width: 400px;
@@ -186,28 +215,19 @@ input[type=number]{
     align-content: center; 
     background-color: whitesmoke;
     padding: 15px;
-    /* margin: 5px 0 22px 0; */
+    margin-top: 1%;
+    margin-bottom: 1%;
     border-radius: 15px;
     border-color: lightgrey;
     color:   #2E1805;
     font-family: "Montserrat";
-    font-size: large
-
-}
-
-.card{
-    border: none;
-    background: white;
-    padding: 15px;
-    margin: 30px 15px 15px 30px;
-    border-radius: 5px;
-    align-content: center; 
+    font-size: 1.1rem;
 
 }
 
 .container.card-center {
     align-content: center; 
-    font-family: "Montserrat";
+    font-family: 'Montserrat';
     font: #2E1805;
 }
 
@@ -218,23 +238,37 @@ input[type=number]{
     margin: 5px 0 22px 0;
     border-radius: 5%;
     align-content: center; 
-    font-family: sans-serif;
+    font-family: 'Montserrat';
     font: #2E1805;
 
 }
+
 .card-title {
     align-content: center; 
-    font-family: sans-serif;
+    font-family: 'Montserrat';
     font: #2E1805; 
 
 }
 
 /* SIGN UP */
 
-#sign-up, #login, #profile_greet, #pet_owner_signup, #sitter_signup, .search-title, .card-title, .booking-title, #booking_greeting, #add-dog_greet{
+#sign-up, #dogs-page, #login, #profile-greet, #pet-owner-signup, #sitter-signup, .search-title, .card-title, .booking-title, #new_booking, #add-dog-greet, .title{
+
     font-family: 'Montserrat';
-    font: rgb(140, 91, 64);
+    color: rgb(140, 91, 64);
     text-align: center;
+    
+    
+}
+
+.booking-greeting{
+    text-align: center;
+    font-family: 'Montserrat';
+    color: rgb(140, 91, 64);
+    background: white;
+    background-color: whitesmoke;
+    margin-top: auto;
+    position: relative; left:60%; top: -10%;
     
 }
 
@@ -244,11 +278,11 @@ input[type=number]{
 }
 
 .rounded-circle, #prof-pic {
-    width: 220px;
-    height: 220px;
+    width: 210px;
+    height: 210px;
     border-radius: auto;
     margin-bottom: 20px;
-    margin-left: 28%;
+    margin-left: 30%;
     background-image: url('usericon.jpg');
     background-size: contain;
     border: solid lightgrey;
@@ -256,25 +290,7 @@ input[type=number]{
     position: relative;
     float: center;
 
-   
-
 }
-
-
-.container-login {
-    width: 400px;
-    background: white;
-    align-content: center; 
-    background-color: whitesmoke;
-    padding: 15px;
-    margin-block-start: 10px;
-    margin-left: 500px;
-    border-radius: 15px;
-    border-color: lightgrey;
-    float: center;
-    
-}
-
 
 #top-img {
     box-shadow: inset 0px 0px 0 2000px rgba(0,0,0,0.5);
@@ -288,8 +304,8 @@ input[type=number]{
     width: 400px;
     height:400px;
     border-radius: 0%;
-
 }
+
 
 /* MY CALENDAR */
 
@@ -301,34 +317,33 @@ input[type=number]{
     text-align: center;
 
 }
+
 .calendar_title{
     font-family: 'Montserrat';
     background-color: whitesmoke; 
-    font: rgb(140, 91, 64);
+    color: rgb(140, 91, 64);
     text-align: center;
 }
 
 /* PROFILE PAGE */
 
 .container-profile{
-    width: 40%;
+
     background: white;
-    align-content: center; 
     background-color: whitesmoke;
     padding: 10px;
-    margin-block-start: 10px;
     margin: auto;
-    border-radius: 15px;
-    border-color: lightgrey;
-    float: center
-
+    border-radius: 1%;
+    border-color: solid lightgrey;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    width: 40%;
 }
+
 .card-title{
-    text-align: center;
-}
-
-#container-profile{
-    width:auto;
     text-align: center;
 }
 
@@ -340,12 +355,10 @@ input[type=number]{
     border-color: gray;
 }
 
-
 /* BOOKINGS */
 
 #container-bookings{
     width: 18rem;
-    background: white;
     align-content: center; 
     background-color: whitesmoke;
     padding: 15px;
@@ -354,56 +367,77 @@ input[type=number]{
     border-color: lightgrey;
     color:   #2E1805;
     font-family: "Montserrat";
-    font-size: large
+    font-size: 1.2rem;
+
+}
+
+.important {
+    color:red
+}
+
+.list-group-item {
+    color:#2E1805;
 }
 
 /* ADD DOG */
 
  #dog-pic {
-    width: 250px;
-    height: 250px;
-    border-radius: 10%;
-    margin-left: 30%;
-    margin-right: 25%;
-    background-image: url('dog_profile.jpg');
-    background-size: cover;
+    width: 200px;
+    height: 200px;
+    border-radius: 75%;
+    margin-left: 20%;
+    margin-right: 10%;
+    margin-bottom: 10%;
+    background-image: url('dog_profile.png');
+    background-size: contain;
     border: solid lightgrey;
-    position: relative;
-
+  
 }
-
-/* all dogs */
 
 .round_small_pic {
     width: 200px;
     height: 200px;
-    margin: auto;
+    margin-left: 19%;
     border-radius: 75%;
     background-image: url('dog_profile.jpg');
     background-size: cover;
     border: solid lightgrey;
     position: relative;
+    
 }
 
-
-/* SHAPE DIVIDER */
-.custom-shape-divider-bottom-1664014398 {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-    transform: rotate(180deg);
+.columns {
+    display: flex;
+    margin: 5rem auto;
+    width: min(90%, 75rem);
+    gap: 1em;
 }
 
-.custom-shape-divider-bottom-1664014398 svg {
+ .card-container {
     position: relative;
-    display: block;
-    width: calc(100% + 1.3px);
-    height: 150px;
+    background-image: url(pexels-blue-bird-7210535.jpg);
+    background-position: contain;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: left;
+    opacity: 0.8;
+ }   
+
+ .card {
+    background: white;
+    background-color: whitesmoke;
+    width: 20%;
+    padding: 15px;
+    border: solid lightgray;
+    border-radius: 5%;
+    margin: 30px 15px 15px 30px;
+    border-radius: 5px;
+    align-content: center; 
+    
 }
 
-.custom-shape-divider-bottom-1664014398 .shape-fill {
-    fill: #2E1805;
+.copyrights {
+    font-family: 'Montserrat';
+    color: rgb(140, 91, 64);
+    text-align: center;
 }

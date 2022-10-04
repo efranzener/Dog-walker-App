@@ -5,14 +5,9 @@
 
 {% block body %}
   {% if 'user_email' in session%}
-    <div>
-      <nav class="navbar navbar-expand-md navbar-light bg-light">
-        <a class="navbar-brand" href="#"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
+      <div class="container-homepage">
+        <nav class="navbar justify-content-start">
+          <ul class="nav justify-content-start">
             <li class="nav-item">
               <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
             </li>
@@ -30,19 +25,20 @@
           </ul>
         </div>
       </nav>
-    </div> 
-    <div class="container">
-      <div class="form-control mr-sm-2">
-        <h4 id="pet_owner_signup">Pet Owner Sign Up</h4>
-        <form action = "/petowner_signup/{{user.user_id}}" method="POST" >
-            <div class="form-group">
-                <label for="num_pets">How many dogs do you have?</label>
-                <input type="number" min="0" name="num_pets" id="num_pets" placeholder="1, 2, 3..." required>
-            </div>
-            <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
-        </form>
-    </div>
-
+      <div class = "card-container">
+        <div class="container">
+          <div class="form-control mr-sm-2">
+            <h4 id="pet-owner-signup">Pet Owner Sign Up</h4>
+            <form action = "/petowner_signup/{{user.user_id}}" method="POST" >
+                <div class="form-group">
+                    <label for="num_pets">How many dogs do you have?</label>
+                    <input type="number" min="0" name="num_pets" id="num_pets" placeholder="1, 2, 3..." required>
+                </div>
+                <button type="submit" class="btn btn-outline-secondary"> Confirm </button>
+            </form>
+          </div>
+        </div>
+      <div>
   {%else%}
     
     <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>          

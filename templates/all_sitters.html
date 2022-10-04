@@ -2,80 +2,71 @@
 {% block title %}All sitters{% endblock title%}
 
 {% block body %}
-<div>
-  <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand" href="#"></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+  <div class="container-homepage">
+    <nav class="navbar justify-content-start">
+      <ul class="nav justify-content-start">
         <li class="nav-item">
           <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
         </li>
-        </li>  
         <li>                                            
           <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
         </li>
         <li>
           <a class="nav-link" aria-current="page" href="/logout">Logout</a>
-      </li>
+        </li>
       </ul>
-    </div>
-  </nav>
-</div> 
+    </nav>
+  </div>
+ 
   
 
-<div class="card" style="width: 18rem;">
-  <form class="form-inline" action="/search_availability/{{user.user_id}}" method="POST">                    
-    <div class="search_box">
-      <h4 class="search-title"> Search for a dog walker </h4>
-        <label for="start_date">Date</label>
-        <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
-        <label for="start_time" >Start of 30 min walk</label>
-        <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
+  <div class = "card-container">
+    <div class="card">
+      <form class="form-inline" action="/search_availability/{{user.user_id}}" method="POST">                    
+        <div class="search_box">
+          <h4 class="search-title"> Search for a dog walker </h4>
+            <label for="start_date">Date</label>
+            <input class="form-control mr-sm-2" type="date" name="start_date" id="start_date" min="2022-08-25" step="1" required pattern="\d{4}-\d{2}-\d{2}" >
+            <label for="start_time">30 min walks from 6am to 11pm</label>
+            <input class="form-control mr-sm-2" type="time" datelist min="06:00" step="1800" max="23:00" name="start_time" id="start_time" value="00:00" required>
+            <button class="btn btn-outline-secondary" type="submit">Search</button>
         </div>
-        <button class="btn btn-outline-secondary" type="submit">Search</button>
+      </form>
     </div>
-  </form>
-</div>
   
-   
-  
-    {% for sitter in sitters %}
-      <div class="container">
-        <div class="card border-light mb-3">
+      {% for sitter in sitters %}
+        <div class="card" style="width: 22rem;">
           <img class="round_small_pic"  alt="sitter_picture" src="{{sitter["pic"] }}">
           <div class="card-body">
             <h6 class="card-title"> {{sitter["fname"]}} {{sitter["lname"]}} </h6>
-              <p class="card-text-justify">I have {{sitter["experience"]}} years of experience </p>
-              <p class="card-text-justify"> Rates: My rates start at ${{sitter["rate"]}}</p>
-              <p class="card-text-justify"> Summary: {{sitter["summary"]}}</p>      
-          </div>                       
-          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter["lname"]}}">Calendar of availability</button>
-            <div id="{{sitter["lname"]}}" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Sitter {{sitter["fname"]}} {{sitter["lname"]}} calendar of availability</h4>
-                      </div>
-                      <div class="modal-body">
-                        <iframe src="https://calendar.google.com/calendar/embed?src={{sitter['calendar_id']}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                      </div>
-                  </div>
-                </div>
+            <p class="card-text-justify">I have {{sitter["experience"]}} years of experience </p>
+            <p class="card-text-justify"> Rates: My rates start at ${{sitter["rate"]}}</p>
+            <p class="card-text-justify"> Summary: {{sitter["summary"]}}</p>      
+          </div>
+          <form action="/create_booking/{{user.user_id}}">
+            <div id = "create_booking">
+              <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter["id"]}}">Book me</button>
             </div>
-            <form action="/create_booking/{{user.user_id}}">
-              <div id = "create_booking">
-                <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter["id"]}}">Book me</button>
+          </form>                      
+          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter["lname"]}}">Calendar of availability</button>
+          <div id="{{sitter["lname"]}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Sitter {{sitter["fname"]}} {{sitter["lname"]}} calendar of availability</h4>
+                </div>
+                <div class="modal-body">
+                  <iframe src="https://calendar.google.com/calendar/embed?src={{sitter['calendar_id']}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
               </div>
-            </form>
+            </div>
+          </div> 
         </div>
-      </div>
-    {% endfor %}
+      {% endfor %}
+  </div>
 {%endblock%}
     

@@ -5,49 +5,52 @@
 {%endblock%}
 {% block body %}
 
-
-  <div class="overlay">
-    <div class="custom-shape-divider-bottom-1664014398">
-      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
-      </svg>
-  </div>
-    <div class="container-homepage" style="width: 100rem;">
+  
+    
+    <div class="container-homepage">
       <nav class="navbar justify-content-start">
         <ul class="nav justify-content-start">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="https://www.cdc.gov/healthypets/pets/dogs.html/Resources">Resources</a>
-          </li>
         </ul>
       </nav>
-      <div class="hpcontainer">
-        <img id="background_pic" src="static/matt-nelson-aI3EBLvcyu4-unsplash copy.jpg">
-      </div>
-    </div>  
-    <div class="container-login">
-      <section class="form-control mr-sm-2">
-          <h4 id="login">Sign In</h4>
-        <form action="/login" method="POST">
-            <div >
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email_login" placeholder ="user@user.com">
-            </div>
-            <div>
-              <label for="password">Password</label>
-              <input type="password" name="password" id="password_login">
-            </div>
-              <div class="submit-login" >
-                <button type="submit" class="rounded-pill" name="login" id="login-btn" value="Login">Sign In</button>
-                <a class="rounded-pill" role="button" aria-current="page" href="/signup">Sign Up</a> 
-          </form>
-        
-        </form>
-      </section>
-     
-    </div>
+    </div> 
+    <div class="homepage">
+      <div >
+        <img src='static/cover_pic.jpg' >
+        <span> Photos by <span><a class="copyrights" href="https://unsplash.com/@mnelson?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Matt Nelson</a> on <a class="copyrights" href="https://unsplash.com/s/photos/dog-walker?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 
-  </div>
+      </div> 
+      <div class="container-login">
+          <h4 id="login">Sign In</h4>
+          <form action="/login" method="POST">
+              <div >
+                  <label for="email-login">Email</label>
+                  <input type="email" name="email" id="email-login" placeholder ="user@user.com">
+              </div>
+              <div>
+                <label for="password-login">Password</label>
+                <input type="password" name="password" id="password-login">
+                <input type="checkbox" onclick="myFunction()"> Show Password
+              </div>
+              <div class="submit-btns">
+                <span>
+                  <button type="submit"  name="login" id="login-btn" value="Login">Sign In</button>
+                </span>
+                <a role="button" id="signup-btn" aria-current="page" href="/signup">Sign Up</a> 
+              </div>
+          </form>
+      </div>
+      <div >
+        <img src="static/cover_pic.jpg">
+      </div> 
+    </div>
+  <script>
+    function myFunction() {
+      var showPassword = document.getElementById("password-login");
+      if (showPassword.type === "password") {
+      showPassword.type = "text";
+      } else {
+      showPassword.type = "password";
+      }
+    }
+  </script>
 {% endblock %}

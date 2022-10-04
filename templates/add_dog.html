@@ -3,133 +3,123 @@
 {% block title %}Create my profile - Puppy{% endblock title%}
 
 {% block body %}
-<div>
-    <nav class="navbar navbar-expand-md navbar-light bg-light">
-      <a class="navbar-brand" href="#"></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
-          </li>
-          <li>                                            
-            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
-          </li>
-          <li>
-            <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div> 
-  <ul>
-<div>
-    
-</div>
-<br>
-<div class="container-profile">
-    <h5 id="add-dog_greet">Total dogs currently registered under your account: {{total_pets}}<h5>
-        <div class="form-control mr-sm-2">
-            <form action="/add_dog/{{pet_owner.user_id}}" method="POST" enctype = "multipart/form-data">
-                <div class="form-group">
-                    <label for="fname2">Name</label>
-                    <input type="text" name="name" id="name">
-                </div>
-                <div class="form-group">
-                    <label for="breed">Breed</label>
-                    <input type="text" name="breed" id="breed">
-                </div>
-                <div class="form-group">
-                    <label for="age" >Age</label>
-                    <input type="number" min="0" name="age" id="age" placeholder="1, 2, 3 years old">
-                </div>
-                <div class="form-group">
-                    <label for="size" >Size</label>
-                    <input type="text" name="size" id="size" placeholder="Small, Medium, Big, Giant">
-                </div>
-                <div class="form-group">
-                    <label for="allergies" class="form-label">Any Allergies?</label>
-                    <input type="radio" id="yes_allergies" name="allergies" value= "true">
-                    <label for="yes_allergies">Yes</label>
-                    <input type="radio" id="no_allergies" name="allergies" value="false">
-                    <label for="no_allergies">No</label>
-                </div>
-                <div class="form-group">
-                    <label for="kind_allergies" class="form-label">If you answered yes to the previous question, please specify</label>
-                    <input type="text" name="kind_allergies" id="kind_allergies" placeholder="Nuts, Dairy...">
-                </div>
-                <div class="form-group">
-                    <label for="hstrained" class="form-label">Is your dog house trained?</label>
-                    <input type="radio" id="is_hstrained" name="hstrained" value="true">
-                    <label for="is_hstrained">Yes</label>
-                    <input type="radio" id="not_hstrained" name="hstrained" value="false">
-                    <label for="not_microchipped">No</label>
-                <div class="form-group">
-                    <label for="friendly_w_dogs" class="form-label">Friendly with other dogs?</label>
-                    <input type="radio" id="dog_friendly" name="dog_friendly" value="true">
-                    <label for="dog_friendly">Yes</label>
-                    <input type="radio" id="notdog_friendly" name="dog_friendly" value="false">
-                    <label for="notdog_friendly">No</label>
-                </div>
-                <div class="form-group">
-                    <label for="friendly_w_kids" class="form-label">Friendly with kids?</label>
-                    <input type="radio" id="kid_friendly" name="kid_friendly" value = "true">
-                    <label for="kid_friendly">Yes</label>
-                    <input type="radio" id="notkid_friendly" name="kid_friendly" value = "false">
-                    <label for="notkid_friendly">No</label>
-                </div>
-                <div class="form-group">
-                    <label for="spayed_or_neutered" class="form-label">Is your dog spayed or neutered?</label>
-                    <input type="radio" id="spayed_neutered" name="spayed_neutered" value="true">
-                    <label for="spayed_neutered">Yes</label>
-                    <input type="radio" id="notspayed_neutered" name="spayed_neutered" value="false">
-                    <label for="notspayed_neutered">No</label>
-                </div>
-                <div class="form-group">
-                    <label for="microchipped" class="form-label">Is your dog microchipped?</label>
-                    <input type="radio" id="is_microchipped" name="microchipped" value="true">
-                    <label for="is_microchipped">Yes</label>
-                    <input type="radio" id="not_microchipped" name="microchipped" value="false">
-                    <label for="not_microchipped">No</label>
-                </div>   
-                <div class="form-group">
-                    <label for="additional_info">Is there any additional info you would like to share?</label>
-                    <input type="text" name="additional_info" id="additional_info" placeholder="Optional">
-                </div>    
-                <div class="form-group">
-                    <label for="emergency_contact">Emergency contact name</label>
-                    <input type="text" name="emergency_contact" id="emergency_contact">
-                </div>    
-                <div class="form-group">
-                    <label for="emergency_relationship">What is your relationship to the emergency contact?</label>
-                    <input type="text" name="emergency_relationship" id="emergency_relationship">
-                </div>  
-                <div class="form-group">
-                    <label for="emergency_phone">Emergency contact phone number:</label>
-                    <input type="text" name="emergency_phone" id="emergency_phone">
-                </div>           
-                <div class="form-group">
-                    <label class="rounded" for="profilepic">Dog Picture</label>
-                    <img id="dog-pic">
-                    <input id="profiledog" type="file" name="profilepic" accept="image/png, image/jpeg" required>
-                </div>                             
-                <form>
-                    <button type="submit">Add my dog</button>
-                </form>
-            </form>             
+    <div class="container-homepage">
+        <nav class="navbar justify-content-start">
+            <ul class="nav justify-content-start">
+                <li class="nav-item">
+                <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
+            </li>
+            <li>                                            
+                <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
+            </li>
+            <li>
+                <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
+            </li>
+            </ul>
+        </nav>
+    </div> 
+  
+    <div  class = "card-container">
+        <div class="container-profile">
+        <h5 id="add-dog-greet">Total dogs currently registered under your account: {{total_pets}}<h5>
+            <div class="form-control mr-sm-2">
+                <form action="/add_dog/{{pet_owner.user_id}}" method="POST" enctype = "multipart/form-data">
+                    <div class="form-group">
+                        <label for="fname2">Name</label>
+                        <input type="text" name="name" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="breed">Breed</label>
+                        <input type="text" name="breed" id="breed" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age" >Age</label>
+                        <input type="number" min="0" name="age" id="age" placeholder="1, 2, 3 years old" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="size" >Size</label>
+                        <input type="text" name="size" id="size" placeholder="Small, Medium, Big, Giant" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="allergies" class="form-label">Any Allergies?</label>
+                        <input type="radio" id="yes_allergies" name="allergies" value= "true">
+                        <label for="yes_allergies">Yes</label>
+                        <input type="radio" id="no_allergies" name="allergies" value="false">
+                        <label for="no_allergies">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="kind_allergies" class="form-label">If you answered yes to the previous question, please specify</label>
+                        <input type="text" name="kind_allergies" id="kind_allergies" placeholder="Nuts, Dairy...">
+                    </div>
+                    <div class="form-group">
+                        <label for="hstrained" class="form-label">Is your dog house trained?</label>
+                        <input type="radio" id="is_hstrained" name="hstrained" value="true">
+                        <label for="is_hstrained">Yes</label>
+                        <input type="radio" id="not_hstrained" name="hstrained" value="false">
+                        <label for="not_microchipped">No</label>
+                    <div class="form-group">
+                        <label for="friendly_w_dogs" class="form-label">Friendly with other dogs?</label>
+                        <input type="radio" id="dog_friendly" name="dog_friendly" value="true">
+                        <label for="dog_friendly">Yes</label>
+                        <input type="radio" id="notdog_friendly" name="dog_friendly" value="false">
+                        <label for="notdog_friendly">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="friendly_w_kids" class="form-label">Friendly with kids?</label>
+                        <input type="radio" id="kid_friendly" name="kid_friendly" value = "true">
+                        <label for="kid_friendly">Yes</label>
+                        <input type="radio" id="notkid_friendly" name="kid_friendly" value = "false">
+                        <label for="notkid_friendly">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="spayed_or_neutered" class="form-label">Is your dog spayed or neutered?</label>
+                        <input type="radio" id="spayed_neutered" name="spayed_neutered" value="true">
+                        <label for="spayed_neutered">Yes</label>
+                        <input type="radio" id="notspayed_neutered" name="spayed_neutered" value="false">
+                        <label for="notspayed_neutered">No</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="microchipped" class="form-label" required>Is your dog microchipped?</label>
+                        <input type="radio" id="is_microchipped" name="microchipped" value="true" >
+                        <label for="is_microchipped">Yes</label>
+                        <input type="radio" id="not_microchipped" name="microchipped" value="false" >
+                        <label for="not_microchipped">No</label>
+                    </div>   
+                    <div class="form-group">
+                        <label for="additional_info">Is there any additional info you would like to share?</label>
+                        <input type="text" name="additional_info" id="additional_info" placeholder="Optional">
+                    </div>    
+                    <div class="form-group">
+                        <label for="emergency_contact">Emergency contact name</label>
+                        <input type="text" name="emergency_contact" id="emergency_contact" required>
+                    </div>    
+                    <div class="form-group">
+                        <label for="emergency_relationship" What is your relationship to the emergency contact?</label>
+                        <input type="text" name="emergency_relationship" id="emergency_relationship" required>
+                    </div>  
+                    <div class="form-group">
+                        <label for="emergency_phone">Emergency contact phone number:</label>
+                        <input type="text" name="emergency_phone" id="emergency_phone"required>
+                    </div>           
+                    <div class="form-group">
+                        <label class="rounded" for="profilepic" required>Dog Picture</label>
+                        <img id="dog-pic">
+                        <input id="profiledog" type="file" name="profilepic" accept="image/png, image/jpeg" required>
+                    </div>                             
+                    <form>
+                        <button type="submit">Add my dog</button>
+                    </form>
+                </form>             
         </div>
-    </section>
-</div>
-<script>
-    document.getElementById("profiledog").onchange = function () {
-        var src = URL.createObjectURL(this.files[0]);
-        document.getElementById("dog-pic").src = src;
-    }
-</script>
+    </div>
+    <script>
+        document.getElementById("profiledog").onchange = function () {
+            var src = URL.createObjectURL(this.files[0]);
+            document.getElementById("dog-pic").src = src;
+        }
+    </script>
 
 {% endblock body %}

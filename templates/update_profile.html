@@ -4,13 +4,9 @@
     
     {%if 'user_email' in session%}  
         <div>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#"></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
+            <div class="container-homepage">
+                <nav class="navbar justify-content-start">
+                    <ul class="nav justify-content-start">
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
                         </li>
@@ -21,17 +17,18 @@
                             <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
                         </li>
                     </ul>
-                </div>
-            </nav>
+                </nav>
+
+            </div>
         </div> 
-            
+        <div class="card-container">    
             <div class="container-profile">
                 <div class="form-control mr-sm-2">
                     <h5 class="card-title"> Update Personal Details</h5>
                     <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
                         <div class="form-group">
-                            <img class="rounded-circle" src="{{profile_url}}"  alt="profile image">
-                            <input id="profilepic" type="file" name="profilepic" value="{{profile_pic}}" accept="image/*">
+                            <img id = "prof-pic" class="rounded-circle" src="{{profile_url}}"  alt="profile-image">
+                            <input id="profilepic" type="file" name="profilepic" value="{{profile_pic}}" accept="image/png, image/jpeg">
                         </div> 
                         <div class="form-group">
                             <label for="fname">First Name</label>
@@ -52,6 +49,7 @@
                         <div class="form-group">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" name="password" value="{{user.password}}" id="password">
+                            <input type="checkbox" onclick="myFunction()"> Show Password
                         </div>
                         <div class="form-group">
                             <label for="mobile" class="form-label">Mobile</label>
@@ -76,9 +74,7 @@
                             <button class="btn btn-outline-secondary">Save Changes</button>
                     </form>
                 </div>
-            </div>
-            {%if sitter %}
-                <div class="container-profile">
+                {%if sitter %}
                     <div class="form-control mr-sm-2">
                         <div>
                             <h5 class="card-title"> Update Sitter Profile </h5>
@@ -96,27 +92,25 @@
                                 <p>Rate</p>   
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                      <span class="input-group-text">$</span>
+                                        <span class="input-group-text">$</span>
                                     </div>
                                         <input id="rate" name="rate" type="number" min="0.00" step="0.050" class="form-control" aria-label="Dollar amount (with dot and two decimal places)" value={{sitter.rate}}>
                                     <div class="input-group-append">
-                                      <span class="input-group-text">30 min/walk</span>
+                                        <span class="input-group-text">30 min/walk</span>
                                     </div>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-outline-secondary">Save Changes</button>
                         </form>
                     </div>
-                </div>
-        
-            {%else %}
-                <div>
-                    <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
-                </div>
-            {% endif%}
+            
+                {%else %}
+                    <div class="form-control mr-sm-2">
+                        <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+                    </div>
+                {% endif%}
 
-            {%if pet_owner %}
-                <div class="container-profile">
+                {%if pet_owner %}
                     <div class="form-control mr-sm-2">
                         <div>
                             <h5 class="card-title"> Update Pet Owner Profile </h5>
@@ -129,15 +123,26 @@
                             <button type="submit" class="btn btn-outline-secondary"> Confirm Update </button>
                         </form>
                     </div>
-                </div>
 
-            {%else %}
-                <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
-            {% endif%}
+                {%else %}
+                    <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
+                {% endif%}
+            </div>
+        </div>
     {%else%}
         <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
-    {%endif%}      
+    {%endif%}  
+
     <script>    
+        function myFunction() {
+            var showPassword = document.getElementById("password");
+            if (showPassword.type === "password") {
+            showPassword.type = "text";
+            } else {
+            showPassword.type = "password";
+            }
+        }
+
         document.getElementById("profilepic").onchange = function () {
             var src = URL.createObjectURL(this.files[0]);
             document.getElementById("prof-pic").src = src;
