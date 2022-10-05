@@ -217,7 +217,7 @@ def get_user_dashboard(user_id):
                 booking1 = {}
                 if booking.start_time >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
                     booking1['pet_name'] = booking.pet.name
-                    booking1['date'] = booking.start_time.strftime("%A:" "%d/%m/%Y")
+                    booking1['date'] = booking.start_time.strftime("%A:" "%m/%d/%Y")
                     booking1['hour'] = booking.start_time.strftime("%H:%M")
                     booking1['sitter'] = booking.sitter.user.fname = " " + booking.sitter.user.lname
                     
@@ -234,7 +234,7 @@ def get_user_dashboard(user_id):
                 booking2 = {}
                 if booking.start_time >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
                     booking2['pet_name'] = booking.pet.name
-                    booking2['date'] = booking.start_date.strftime("%d/%m/%Y")
+                    booking2['date'] = booking.start_date.strftime("%m/%d/%Y")
                     booking2['day'] = booking.start_date.strftime("%A:")
                     booking2['hour'] = booking.start_date.strftime("%H:%M")
                     booking2['address'] = booking.pet_owner.user.address + booking.pet_owner.user.city
@@ -581,8 +581,8 @@ def get_booking_form(user_id):
 
             return redirect(url_for("petowner_signup", user_id = user_id))
         
-        date_today = datetime.today().strftime("%Y-%m-%d")
-        max_date = (datetime.today() + timedelta(days=60)).strftime("%Y-%m-%d")
+        date_today = datetime.today().strftime("%m/%d/%Y")
+        max_date = (datetime.today() + timedelta(days=60)).strftime("%m/%d/%Y")
         
 
         return render_template("new_booking.html",max_date = max_date, min_date=date_today, user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
@@ -698,10 +698,11 @@ def display_available_sitters(user_id):
     """display sitters available on a specific time based on user search"""
     
     if 'user_email' in session:
-       
+        if request.method == 'GET':
+            return redirect (url_for("all_sitters", user_id = user_id))
+        
         available_sitters_email = get_available_sitters(user_id)
-
-        if available_sitters_email == []:
+        if available_sitters_email == [] or not available_sitters_email:
             
             flash("There are no sitters available in the time you selected. Please try searching for a different time, or browing all the sitters in our database", "info")
         else:
@@ -841,7 +842,7 @@ def get_all_bookings(user_id):
                 info_sitter['sitter_pic'] = booking.sitter.user.profile_pic
                 info_sitter['experience'] = booking.sitter.years_of_experience
                 info_sitter ['summary'] = booking.sitter.summary
-                info_sitter['date'] = booking.start_date.strftime("%d/%m/%Y")
+                info_sitter['date'] = booking.start_date.strftime("%m/%d/%Y")
                 info_sitter['time'] = booking.start_time.strftime("%H:%M")
                 info_sitter['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
                 info_sitter['sitter_mobile'] = booking.sitter.user.mobile
@@ -871,7 +872,7 @@ def get_all_bookings(user_id):
                 info['house_trained'] = booking.pet.house_trained
                 info['microchipped'] = booking.pet.microchipped
                 info['additional_info'] = booking.pet.additional_info
-                info['date'] = booking.start_date.strftime("%d/%m/%Y")
+                info['date'] = booking.start_date.strftime("%m/%d/%Y")
                 info['time'] = booking.start_time.strftime("%I:%M %p")
                 info['booking_id'] =  booking.id
                 info['calendar_id'] = calendar_id

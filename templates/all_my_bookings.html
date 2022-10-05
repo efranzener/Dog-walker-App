@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
     {% if 'user_email' in session %}
-    
+    <div class="container-homepage">
       <nav class="navbar justify-content-start">
         <ul class="nav justify-content-start">
           <li class="nav-item">
@@ -18,8 +18,8 @@
           </li>
         </ul>
       </nav>
-     
-      <div class = "card-container">
+    </div>
+      <div class = "card-grid">
         {%if sitter_bookings or pet_owner_bookings%}
           {%if sitter_bookings %}
             {% for booking in sitter_bkngs %}

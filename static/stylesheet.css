@@ -1,7 +1,5 @@
 
-
 /* ALL THE PAGES */
-
 
 
 header, body {
@@ -118,7 +116,6 @@ input[type=number] {
     border: solid lightgray;
     border-radius: auto;
 }
-
 
 
 /* HOMEPAGE */
@@ -440,4 +437,15 @@ input[type=number] {
     font-family: 'Montserrat';
     color: rgb(140, 91, 64);
     text-align: center;
+}
+
+
+
+.card-grid {
+    position: relative;
+    background-image: url(pexels-blue-bird-7210535.jpg);
+    background-position: contain;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: left;
 }

@@ -57,7 +57,7 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
 
     
     
-######## GET #########
+# CHECK IF REGISTERED
     
 
     
@@ -87,6 +87,8 @@ def pet_exists(pet_owner_id, name):
         return True
     else:
         return False
+    
+    ######## GET #########
 
     
 def get_all_other_users(user_id):

@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 
 # from model import db, User, Sitter, PetOwner, Pet, Vet, Booking, connect_to_db
-from random import randrange
+from random import random, randrange
 from datetime import timedelta, datetime
 import datetime as dt
 
@@ -36,30 +36,30 @@ CLOUD_NAME = os.environ['cloud_name']
 
 
 
-def create_profile_pic():
-    """create a standard profile picture uploading it to claudinary"""
+# def create_profile_pic():
+#     """create a standard profile picture uploading it to claudinary"""
     
-    cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, api_secret = API_SECRET)
-    upload_result = cloudinary.uploader.upload("static/usericon.jpg", folder = "static")
+#     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, api_secret = API_SECRET)
+#     upload_result = cloudinary.uploader.upload("static/usericon.jpg", folder = "static")
 
-    data = upload_result
-    img = data['url']
+#     data = upload_result
+#     img = data['url']
 
-    return img 
+#     return img 
 
-img=create_profile_pic()
+# img=create_profile_pic()
 
 
 poodle = 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663619848/poodle_qodkol.jpg'
-lab_retriever = 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663619848/f34ad5352f6b21dd88a6749812d341d7--chocolate-labrador-retriever-chocolate-labradors_qwpzml.jpg'
-golden_retriever = 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663619848/golden-retriever-dog-breed-info_hltdjo.jpg'
-blue_heeler = 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663619850/Screen_Shot_2016-02-09_at_6.56.59_PM_fpj2zl.png'
-great_dane = 'https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663620387/great_dane_d4hbpm.jpg'
+lab_retriever = 'https://res.cloudinary.com/dggbnnudv/image/upload/v1664943624/noemi-macavei-katocz-c7bUIRBqapA-unsplash_hnejhd.jpg'
+golden_retriever = "https://res.cloudinary.com/dggbnnudv/image/upload/v1664991360/jacob-thorson-fFYBRyC_OAk-unsplash_lenvse.jpg"
+blue_heeler = 'https://res.cloudinary.com/dggbnnudv/image/upload/v1664943175/daniel-lincoln-E7E8z3OWNf4-unsplash_dfjawk.jpg'
+great_dane = 'https://res.cloudinary.com/dggbnnudv/image/upload/v1664943482/chris-mcintosh-DBrgUcBG_rg-unsplash_xcg21t.jpg'
 
-user1 = crud.create_user(fname="Michelle", lname= "James", dob= date.fromisoformat('1995-12-04'), email="testuser.numone@gmail.com", password="QWERTyuiop1?", profile_pic=img, mobile="206-322-4980", address="8016 Greenwood Ave N", zip_code= 98103, city='Seattle', state='Washington')
-user2 = crud.create_user(fname="Susan", lname= "Thomas", dob= date.fromisoformat('2000-01-10'), email="testuser.numtwo@gmail.com", password="ASDFGhjkl2?", profile_pic=img,  mobile="206-504-4397", address= "2801 34th Ave W", zip_code=98199, city='Seattle', state='Washington')
-user3 = crud.create_user(fname="Brian", lname= "Sanchez", dob= date.fromisoformat('1990-12-24'), email="testuser.numthree@gmail.com", password="ZXCVBnm3?", profile_pic=img,  mobile="582-201-4225", address="1501 N 45th St", zip_code=98103, city='Seattle', state='Washington')
-user4 = crud.create_user(fname="Jared", lname= "Perkins", dob= date.fromisoformat('1992-10-04'), email="testuser.numfour@gmail.com", password="ZXCVBnm4?", profile_pic=img,  mobile="206-644-0852", address="5614, 22nd Ave NW", zip_code=98107,city='Seattle', state='Washington')
+user1 = crud.create_user(fname="Michelle", lname= "James", dob= date.fromisoformat('1995-12-04'), email="testuser.numone@gmail.com", password="QWERTyuiop1?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664942203/i7kboife9afigqzcildi.jpg", mobile="206-322-4980", address="8016 Greenwood Ave N", zip_code= 98103, city='Seattle', state='Washington')
+user2 = crud.create_user(fname="Susan", lname= "Thomas", dob= date.fromisoformat('2000-01-10'), email="testuser.numtwo@gmail.com", password="ASDFGhjkl2?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991252/jorge-salvador-Y6GZ97S-mcY-unsplash_o8ok6z.jpg",  mobile="206-504-4397", address= "2801 34th Ave W", zip_code=98199, city='Seattle', state='Washington')
+user3 = crud.create_user(fname="Brian", lname= "Sanchez", dob= date.fromisoformat('1990-12-24'), email="testuser.numthree@gmail.com", password="ZXCVBnm3?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991758/tadeusz-lakota-tk5LWGNiWVs-unsplash_r94szu.jpg",  mobile="582-201-4225", address="1501 N 45th St", zip_code=98103, city='Seattle', state='Washington')
+user4 = crud.create_user(fname="Kate", lname= "Perkins", dob= date.fromisoformat('1992-10-04'), email="testuser.numfour@gmail.com", password="ZXCVBnm4?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991573/isaiah-mcclean-DrVJk1EaPSc-unsplash_qjhttx.jpg",  mobile="206-644-0852", address="5614, 22nd Ave NW", zip_code=98107,city='Seattle', state='Washington')
 
 
 model.db.session.add_all([user1, user2, user3, user4])
@@ -99,59 +99,66 @@ date_end = (datetime.today() + timedelta(days=60)).strftime("%Y-%m-%d")
 start_today = datetime.strptime(date_today, "%Y-%m-%d")
 end_date = datetime.strptime(date_end, "%Y-%m-%d")
 
+max_time = time(hour=23, minute=00, second=00)
+min_time = time(hour=6, minute=00, second=00)
+
 def creating_datetimes(start_today, end_date):
     """ Return a random datetime"""
     
     interval_dates = (end_date - start_today)
-    
     interval = (interval_dates.days * 24 * 60 * 60)
     random_date = randrange(interval)
     random_datetime = start_today + timedelta(seconds=random_date)
+
     if random_datetime.minute > 0:
-        random_datetime = now + (datetime.min - now) % timedelta(minutes=60)
+        random_datetime = random_datetime + (datetime.min - random_datetime) % timedelta(minutes=60)
+        
+   
+    if random_datetime.date() == start_today:
+        while (random_datetime.time() > max_time and random_datetime.time() < local_time):
+            random_date = randrange(interval)
+            random_datetime = start_today + timedelta(seconds=random_date)
+            random_datetime = random_datetime + (datetime.min - random_datetime) % timedelta(minutes=60)
     else:
-        random_datetime = random_datetime
-    
+        while (random_datetime.time() < min_time and random_datetime.time() > max_time):
+            random_date = randrange(interval)
+            random_datetime = start_today + timedelta(seconds=random_date)
+            random_datetime = random_datetime + (datetime.min - random_datetime) % timedelta(minutes=60)
+    random_datetime= random_datetime
 
     return random_datetime
 
-
-def check_time(random_datetime):
-    """ Check if random date is within allowed times"""
+  
+start_date = creating_datetimes(start_today, end_date)
+start_time = start_date
+end_time = (start_date + timedelta(minutes=30)) 
     
-    max_time = time(hour=23, minute=00, second=00)
-    min_time = time(hour=6, minute=00, second=00)
-    random_time = time(random_datetime.hour, random_datetime.minute, random_datetime.second)
-    
-    if (random_time >= min_time and random_time <= max_time):
-        random_datetime = random_datetime
-    elif (random_time <= min_time or random_time >= max_time):
-
-        random_datetime=creating_datetimes(start_today, end_date)
-        random_datetime = check_time(random_datetime)
-    start_datetime = random_datetime    
-    return start_datetime
-
-for i in range(6):
-    random_date = creating_datetimes(start_today, end_date)
-    start_datetime = check_time(random_date)
-
-    start_time = start_datetime
-    start_date = start_datetime
-
-    end_time = (start_datetime + timedelta(minutes=30))
-
-
-
 booking1 = crud.create_booking(weekly=False, pet_id=pet1.pet_id, pet_owner_id=3, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+start_date = creating_datetimes(start_today, end_date)
+end_time = (start_date + timedelta(minutes=30))  
+
 booking2 = crud.create_booking(weekly=False, pet_id=pet2.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+start_date = creating_datetimes(start_today, end_date)
+end_time = (start_date + timedelta(minutes=30))  
+
 booking3 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=2, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+start_date = creating_datetimes(start_today, end_date)
+end_time = (start_date + timedelta(minutes=30))  
+
 booking4 = crud.create_booking(weekly=False, pet_id=pet4.pet_id, pet_owner_id=4, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+start_date = creating_datetimes(start_today, end_date)
+end_time = (start_date + timedelta(minutes=30))  
+
 booking5 = crud.create_booking(weekly=False, pet_id=pet5.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+start_date = creating_datetimes(start_today, end_date)
+end_time = (start_date + timedelta(minutes=30))  
+
 booking6 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=4, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 
+    
 model.db.session.add_all([booking1, booking2, booking3, booking4, booking6]) 
 model.db.session.commit() 
+
 
 if __name__ == "__main__":
     from server import app
