@@ -4,12 +4,14 @@ from model import db, User, Sitter, PetOwner, Pet, Booking, connect_to_db
 from flask import session, flash, redirect, render_template
 
 
-######## CREATE #########
+##### CREATE #####
 
 def create_user(fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington'):
     """Create and return a new user."""
 
+    
     user = User(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
+    print("im passoword", password)
     db.session.add(user)
     db.session.commit()
 
@@ -57,7 +59,7 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
 
     
     
-# CHECK IF REGISTERED
+##### CHECK IF REGISTERED #####
     
 
     
@@ -88,7 +90,13 @@ def pet_exists(pet_owner_id, name):
     else:
         return False
     
-    ######## GET #########
+
+##### GET ######
+
+def get_user_by_id(user_id):
+    """Return a user by primary key."""
+
+    return User.query.get(user_id)
 
     
 def get_all_other_users(user_id):
@@ -107,7 +115,7 @@ def get_sitter_by_user_id(user_id):
 def get_petowner_by_user_id(user_id):
     """Return a pet_owner by user_id."""
 
-    return PetOwner.query.filter(Pet.user_id == user_id).first()
+    return PetOwner.query.filter(PetOwner.user_id == user_id).first()
 
 
 def get_pets_by_ownerid(pet_owner_id):
@@ -126,11 +134,6 @@ def get_total_pets_by_owner(pet_owner_id):
         
     return Pet.query.filter(Pet.pet_owner_id == pet_owner_id).count()
 
-
-def get_user_by_id(user_id):
-    """Return a user by primary key."""
-
-    return User.query.get(user_id)
 
 
 def get_user_by_sitter_id(sitter_id):
@@ -190,22 +193,10 @@ def get_sitter_by_id(sitter_id):
     return Sitter.query.get(sitter_id)
 
 
-def get_sitter_by_user_id(user_id):
-    """Return a sitter by user_id."""
-    
-    return Sitter.query.filter(Sitter.user_id == user_id).first()
-
-
 def get_all_other_sitters(user_id):
     """Return all sitters excepts the current user_id"""
     
     return Sitter.query.filter(Sitter.user_id != user_id).all()
-
-
-def get_petowner_by_user_id(user_id):
-    """Return a pet_owner by user_id"""
-    
-    return PetOwner.query.filter(PetOwner.user_id == user_id).first()
 
 
 def get_pet_by_id(id):
