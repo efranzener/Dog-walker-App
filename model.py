@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime, timedelta
 import os
+from flask_login import UserMixin
 
 
 app = Flask(__name__)
@@ -11,7 +12,7 @@ db = SQLAlchemy()
 
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """ A user"""
     
     __tablename__ = 'users'
@@ -21,7 +22,8 @@ class User(db.Model):
     lname = db.Column(db.String(100), nullable = False)
     dob = db.Column(db.Date, nullable = False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(100), nullable = False)
+    password = db.Column(db.String(500), nullable = False)
+    authenticated = db.Column(db.Boolean, default=False)
     profile_pic = db.Column(db.String(300), nullable=False, default='https://res.cloudinary.com/dggbnnudv/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1663617415/profile_standard_wtcydo.jpg')
     mobile = db.Column(db.String(15), nullable = False)
     address = db.Column(db.String(100), nullable = False)
@@ -33,12 +35,28 @@ class User(db.Model):
     # pet_owner = a PetOwner object
     # sitter = a Sitter object
 
-def __repr__(self):
-    """Show info about user"""
 
-    return f'<User user_id={self.user_id}, fname={self.fname}, lname={self.lname}, dob={self.dob}, email={self.email}, password={self.password}, profile_pic={self.profile_pic}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>'
+    def __repr__(self):
+        """Show info about user"""
 
+        return f'<User user_id={self.user_id}, fname={self.fname}, lname={self.lname}, dob={self.dob}, email={self.email}, password={self.password}, profile_pic={self.profile_pic}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>'
 
+    def is_active(self):
+        """True, as all users are active."""
+        return True
+
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        return self.authenticated
+
+    def get_id(self):
+        """Return the id to satisfy Flask-Login's requirements."""
+        return self.user_id
+        
+
+  
+
+  
 
 class Sitter(db.Model):
     """ A pet sitter"""
@@ -57,10 +75,10 @@ class Sitter(db.Model):
     # bookings = a list of Booking objects
 
 
-def __repr__(self):
-    """Show info about sitter"""
+    def __repr__(self):
+        """Show info about sitter"""
 
-    return f'<Sitter summary={self.summary}, experience={self.years_of_experience}, rate={self.rate}>'
+        return f'<Sitter summary={self.summary}, experience={self.years_of_experience}, rate={self.rate}>'
 
 
 
@@ -81,10 +99,10 @@ class PetOwner(db.Model):
     user = db.relationship("User", uselist=False, backref="pet_owner")
 
 
-def __repr__(self):
-    """Show info about pet owner"""
+    def __repr__(self):
+        """Show info about pet owner"""
 
-    return f"<PetOwner  num_pets = {self.num_pets}>"
+        return f"<PetOwner  num_pets = {self.num_pets}>"
     
 
 
@@ -119,10 +137,10 @@ class Pet(db.Model):
 
 
 
-def __repr__(self):
-    """Show info about pet"""
+    def __repr__(self):
+        """Show info about pet"""
 
-    return f"<Pet id={self.pet_id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, house_trained = {self.house_trainded}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship} pet>"
+        return f"<Pet id={self.pet_id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, house_trained = {self.house_trainded}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship} pet>"
 
     
 
@@ -147,10 +165,10 @@ class Booking(db.Model):
     pet_owner = db.relationship("PetOwner", backref = 'bookings', )
 
 
-def __repr__(self):
-    """Show info about booking"""
+    def __repr__(self):
+        """Show info about booking"""
 
-    return f"<Booking id={self.id}, start_date={self.start_date}, end_date={self.end_date}, start_time={self.start_time}, end_time={self.end_time}>"
+        return f"<Booking id={self.id}, start_date={self.start_date}, end_date={self.end_date}, start_time={self.start_time}, end_time={self.end_time}>"
 
 
 def connect_to_db(flask_app, db_uri="postgresql:///dog_walkers", echo=True):

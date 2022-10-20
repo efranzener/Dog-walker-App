@@ -1,17 +1,20 @@
 from __future__ import print_function
 from http import server
 from flask import (Flask, render_template, request, flash, session, redirect, url_for)
+from flask_login import LoginManager, login_user, login_required, current_user
+
+from wtforms import Form, BooleanField, StringField, PasswordField, validators
+
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
 import datetime as dt
 from datetime import datetime, timedelta
 import os
+# from os import path, environ
+
 import pytz
-
-import os.path
-import flask
-
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 # GOOGLE CALENDAR API IMPORTS
 from google.auth.transport.requests import Request
@@ -28,7 +31,7 @@ import cloudinary.api
 
 
 # Cloudinary API
-config = cloudinary.config(secure=True)
+configr = cloudinary.config(secure=True)
 API_KEY = os.environ['cloudinary_api_key']
 API_SECRET = os.environ['api_secret']
 CLOUD_NAME = os.environ['cloud_name']
@@ -42,10 +45,25 @@ API_VERSION = 'v3'
 
 
 app = Flask(__name__)
-app.secret_key = "Mys3cr3tk3y"
+app.secret_key = os.environ['secret_key']
 app.jinja_env.undefined = StrictUndefined
 
+
 states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
+
+
+###Flask Login###
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = '/'
+login_manager.session_protection = "strong"
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+    """Given  a user_id, return the associated User object"""
+
+    return crud.get_user_by_id(user_id)
 
 
 # Google Calendar API
@@ -76,7 +94,7 @@ def get_consent():
         service = build('calendar', 'v3', credentials=creds)
     except HttpError as error:
         print('An error occurred: %s' % error)
-    return (service)
+    return service
 
     
 def get_available_sitters(user_id):
@@ -151,7 +169,8 @@ def create_account():
     lname= request.form.get("lname")
     dob = request.form.get("dob")
     email = request.form.get("email")
-    password = request.form.get("password")
+    pwd = request.form.get("password")
+    confirm_pwd= request.form.get("password")
     mobile = request.form.get("mobile")
     address = request.form.get("address")
     city = request.form.get("city")
@@ -163,13 +182,18 @@ def create_account():
     user = crud.get_user_by_email(email)
     
     if user:
-        flash("Cannot create an account with that email. Please try again.", "danger")    
-    else:
+        flash("Cannot create an account with that email. Please try again.", "danger")
+
+    if pwd != confirm_pwd:
+        flash("Please make sure your password and confirm password match.", "danger")
+
+    if pwd == confirm_pwd:
+
         upload_result = cloudinary.uploader.upload(profile_file)
         data = upload_result
         profile_pic = data['url']
 
-        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=password, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
+        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=generate_password_hash(pwd).decode("utf-8"), authenticated=False, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
         
         flash("Account sucessfully created! Please login.", "success")
         
@@ -180,24 +204,34 @@ def create_account():
 def process_login():
     """Process user login."""
     
-    email = request.form.get("email")
-    password = request.form.get("password")
-    user = crud.get_user_by_email(email)
-    
-    if not user or user.password != password:
-        flash("Something went wrong. Please check your email and password and try again", "danger")
-        return redirect('/')
-    
-    elif user and user.password == password:
-        user_id = user.user_id
-        session["user_email"] = user.email
-        flash(f"Welcome, {user.fname}!", "primary")
-        
-        
-        return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
 
+    email = request.form.get("email")
+    pwd = request.form.get("password")
+    
+    user = crud.get_user_by_email(email)
+
+    
+    if email and pwd:
+        user = crud.get_user_by_email(email)
+        if user:
+            if check_password_hash(user.password, pwd):
+                user.authenticated = True
+                login_user(user)
+                user_id = user.user_id
+                session["user_email"] = user.email
+
+                flash(f"Welcome, {user.fname}!", "primary")
+                
+                return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
+
+        else:
+            flash("Something went wrong. Please check your email and password and try again", "danger")
+    return redirect('/')
+  
+        
 
 @app.route('/user_dashboard/<user_id>')
+@login_required
 def get_user_dashboard(user_id):
     """Show user dashboard"""
       

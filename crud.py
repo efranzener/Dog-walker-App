@@ -6,10 +6,10 @@ from flask import session, flash, redirect, render_template
 
 ######## CREATE #########
 
-def create_user(fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington'):
+def create_user(fname, lname, email, password, authenticated, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington'):
     """Create and return a new user."""
 
-    user = User(fname=fname, lname=lname, email=email, password=password, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
+    user = User(fname=fname, lname=lname, email=email, password=password, authenticated=authenticated, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
     db.session.add(user)
     db.session.commit()
 
