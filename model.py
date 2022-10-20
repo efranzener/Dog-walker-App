@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime, timedelta
 import os
+from flask_login import UserMixin
 
 
 app = Flask(__name__)
@@ -11,7 +12,7 @@ db = SQLAlchemy()
 
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """ A user"""
     
     __tablename__ = 'users'
@@ -47,16 +48,14 @@ class User(db.Model):
         """True, as all users are active."""
         return True
 
-    def get_id(self):
-        """Return the email address to satisfy Flask-Login's requirements."""
-        return self.user_id
-
     def is_authenticated(self):
         """Return True if the user is authenticated."""
         return self.authenticated
 
-  
-
+    def get_id(self):
+        """Return the id to satisfy Flask-Login's requirements."""
+        return self.user_id
+        
   
 
 class Sitter(db.Model):
