@@ -199,7 +199,8 @@ def create_account():
         profile_pic = data['url']
 
         user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=generate_password_hash(pwd).decode("utf-8"), authenticated=False, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
-        
+        db.session.add(user)
+        db.session.commit()
         flash("Account sucessfully created! Please login.", "success")
         
     return redirect('/')
@@ -338,7 +339,8 @@ def sitter_signup(user_id):
         rate = request.form.get("rate")
         
         sitter = crud.create_sitter(user_id = user_id, years_of_experience = years_of_experience, summary = summary, rate = rate)
-        
+        db.session.add(sitter)
+        db.session.commit()
         flash("Sitter profile sucessfully completed!", "success")
         
         return redirect(url_for("get_user_dashboard", user_id = user_id))
@@ -491,7 +493,8 @@ def petowner_signup(user_id):
        
         num_pets = request.form.get("num_pets")
         pet_owner = crud.create_pet_owner( user_id = user_id, num_pets = num_pets)
-
+        db.session.add(pet_owner)
+        db.session.commit()
         flash("Profile sucessfully created! Proceed to add your dog info.", "success")
             
         return redirect(url_for("create_pet_profile", user_id = user_id))
@@ -572,7 +575,8 @@ def create_pet_profile(user_id):
                 profile_pic = data['url'] 
                                     
                 pet = crud.create_pet(name= name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, house_trained=house_trained, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, additional_info=additional_info, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id=pet_owner.id)
-                
+                db.session.add(pet)
+                db.session.commit()   
                 flash("Pet sucessfully added!", "success") 
                 
                 total_pets += 1    
@@ -720,7 +724,8 @@ def create_booking(pet_owner_id):
         endtime_datetime = endtime_with_date
 
         booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
-
+        db.session.add(booking)
+        db.session.commit() 
         flash("Booking sucessfully created", "success")
         
         create_cal_bokng(user_id, sitter_id, pet_id, address = address, description = description)

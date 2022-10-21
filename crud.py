@@ -10,8 +10,6 @@ def create_user(fname, lname, email, password, profile_pic, dob, mobile, address
     """Create and return a new user."""
 
     user = User(fname=fname, lname=lname, email=email, password=password, authenticated=authenticated, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
-    db.session.add(user)
-    db.session.commit()
 
     return user
 
@@ -20,8 +18,6 @@ def create_sitter(user_id, summary, rate,  years_of_experience):
     """Create and return a new sitter."""
 
     sitter = Sitter(user_id = user_id, summary = summary, rate=rate, years_of_experience=years_of_experience)
-    db.session.add(sitter)
-    db.session.commit()
         
     return sitter
 
@@ -30,8 +26,6 @@ def create_pet_owner(user_id, num_pets):
     """Create and return a new pet_owner."""
 
     pet_owner = PetOwner(user_id = user_id, num_pets = num_pets)
-    db.session.add(pet_owner)
-    db.session.commit()
     
     return pet_owner
 
@@ -40,8 +34,7 @@ def create_pet(name, profile_pic, breed, age, size, allergies, allergies_kind, h
     """Create and return a new pet"""
  
     pet = Pet(name=name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, house_trained = house_trained, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, additional_info = additional_info, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id = pet_owner_id)
-    db.session.add(pet)
-    db.session.commit()     
+  
     return pet
 
 
@@ -50,9 +43,6 @@ def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time
 
     booking = Booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly)
    
-    db.session.add(booking)
-    db.session.commit() 
-     
     return booking
 
     
@@ -202,14 +192,6 @@ def get_pet_by_id(id):
 
     return Pet.query.get(id)
 
-
-def delete_user(user_id):
-    
-    user = get_user_by_id(user_id)
-    db.session.delete(user)
-    db.session.commit()
-
-    return None
 
 
 
