@@ -38,7 +38,7 @@
   
     {% for sitter in sitters %}
     <div class="card" style="width: 22rem;">
-        <img class="round_small_pic"  alt="sitter_picture" src="{{sitter["pic"] }}">
+        <img class="round_small_pic"  alt="sitter_picture" src="{{sitter['pic']}}">
         <div class="card-body">
         <h6 class="card-title"> {{sitter["fname"]}} {{sitter["lname"]}} </h6>
         <p class="card-text-justify">I have {{sitter["experience"]}} years of experience </p>
@@ -47,11 +47,11 @@
         </div>
         <form action="/create_booking/{{user.user_id}}">
         <div id = "create_booking">
-            <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter["id"]}}">Book me</button>
+            <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter['id']}}">Book me</button>
         </div>
         </form>                      
-        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter["lname"]}}">Calendar of availability</button>
-        <div id="{{sitter["lname"]}}" class="modal fade" role="dialog">
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter['lname']}}">Calendar of availability</button>
+        <div id="{{sitter['lname']}}" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">

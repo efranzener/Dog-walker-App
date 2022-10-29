@@ -1,11 +1,9 @@
 from __future__ import print_function
-from http import server
 from flask import (Flask, render_template, request, flash, session, redirect, url_for)
 
-from flask_login import LoginManager, login_user, login_required, current_user
+from flask_login import LoginManager, login_user, login_required
 
-from wtforms import Form, BooleanField, StringField, PasswordField, validators
-
+from itsdangerous import URLSafeSerializer
 from model import connect_to_db, db
 import crud
 from jinja2 import StrictUndefined
@@ -47,27 +45,29 @@ API_VERSION = 'v3'
 
 
 app = Flask(__name__)
-
 app.secret_key = os.environ['secret_key']
 app.jinja_env.undefined = StrictUndefined
+serializer = URLSafeSerializer(app.secret_key)
+
 
 
 states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
 
 ###Flask Login###
+
 login_manager = LoginManager()
+login_manager.login_view = 'app.homepage'
+login_manager.session_protection = "strong"
 login_manager.init_app(app)
 
-login_manager.login_view = '/'
-login_manager.session_protection = "strong"
-
 @login_manager.user_loader
-def user_loader(user_id):
-    """Given  a user_id, return the associated User object"""
+def user_loader(alternative_id):
+    """Given an alternative id, return the associated User object"""
 
-    return crud.get_user_by_id(user_id)
 
+    return crud.get_user_by_alternative_id(alternative_id)
+  
 
 # Google Calendar API
 def get_consent():
@@ -148,8 +148,10 @@ def get_available_sitters(user_id):
 
 
 @app.route('/')
+@app.route('/homepage')
 def homepage():
     """display the homepage"""
+
     
     return render_template("homepage.html")
 
@@ -197,8 +199,8 @@ def create_account():
         upload_result = cloudinary.uploader.upload(profile_file)
         data = upload_result
         profile_pic = data['url']
-
-        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=generate_password_hash(pwd).decode("utf-8"), authenticated=False, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
+        
+        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=generate_password_hash(pwd).decode("utf-8"), authenticated=False, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic, alternative_id = serializer.dumps([email, pwd]))
         db.session.add(user)
         db.session.commit()
         flash("Account sucessfully created! Please login.", "success")
@@ -224,10 +226,11 @@ def process_login():
                 login_user(user)
                 user_id = user.user_id
                 session["user_email"] = user.email
+                session["alternative_id"] = user.alternative_id
 
                 flash(f"Welcome, {user.fname}!", "primary")
                 
-                return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
+                return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname, alternative_id = user.alternative_id))
 
 
         else:
@@ -235,18 +238,18 @@ def process_login():
     return redirect('/')
   
         
-@app.route('/user_dashboard/<user_id>')
+@app.route('/user_dashboard/<alternative_id>')
 @login_required
-def get_user_dashboard(user_id):
+def get_user_dashboard(alternative_id):
     """Show user dashboard"""
-      
+     
     pet_owner_bookings = False
     sitter_bookings = False
     if "user_email" in session: 
         
-        user = crud.get_user_by_id(user_id)
+        user = crud.get_user_by_alternative_id(alternative_id)
         current_datetime = datetime.now()
-
+        user_id = user.user_id
         if crud.petowner_exists(user_id):
             
             pet_owner_bookings = crud.get_owner_bookings_by_user_id(user_id)
@@ -254,10 +257,12 @@ def get_user_dashboard(user_id):
             next_pet_bookings=[]
             for booking in pet_owner_bookings:
                 booking1 = {}
-                if booking.start_time >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
+                
+                
+                if booking.start_date >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
                     booking1['pet_name'] = booking.pet.name
-                    booking1['date'] = booking.start_time.strftime("%A:" "%m/%d/%Y")
-                    booking1['hour'] = booking.start_time.strftime("%H:%M")
+                    booking1['date'] = booking.start_date.strftime("%A:" "%m/%d/%Y")
+                    booking1['hour'] = booking.start_time
                     booking1['sitter'] = booking.sitter.user.fname = " " + booking.sitter.user.lname
                     
                     next_pet_bookings.append(booking1)
@@ -271,11 +276,11 @@ def get_user_dashboard(user_id):
             week_sitter_bookings=[]     
             for booking in sitter_bookings:
                 booking2 = {}
-                if booking.start_time >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
+                if booking.start_date >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
                     booking2['pet_name'] = booking.pet.name
                     booking2['date'] = booking.start_date.strftime("%m/%d/%Y")
                     booking2['day'] = booking.start_date.strftime("%A:")
-                    booking2['hour'] = booking.start_date.strftime("%H:%M")
+                    booking2['hour'] = booking.start_time
                     booking2['address'] = booking.pet_owner.user.address + booking.pet_owner.user.city
                     week_sitter_bookings.append(booking2)
                     
@@ -623,11 +628,11 @@ def get_booking_form(user_id):
 
             return redirect(url_for("petowner_signup", user_id = user_id))
         
-        date_today = datetime.today().strftime("%m/%d/%Y")
+        min_date= (datetime.today() + timedelta(days=1)).strftime("%m/%d/%Y")
         max_date = (datetime.today() + timedelta(days=60)).strftime("%m/%d/%Y")
         
 
-        return render_template("new_booking.html",max_date = max_date, min_date=date_today, user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
+        return render_template("new_booking.html",max_date=max_date, min_date=min_date, user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
     
     return redirect('/')
 
@@ -639,7 +644,7 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
     
     user = crud.get_user_by_id(user_id)
     sitter = crud.get_user_by_id(sitter_id)
-    pet_owner = crud.get_petowner_by_user_id(user_id)
+    # pet_owner = crud.get_petowner_by_user_id(user_id)
     pet = crud.get_pet_by_id(pet_id)
     sitter_user = crud.get_user_by_id(sitter.user_id)
     pet_name = pet.name
@@ -687,8 +692,8 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
     }
     
     event = service.events().insert(calendarId=sitter_user.email,  body=body).execute()
-   
-    return event
+    print("Im a new event", event)
+    return event, event['id']
     
     
 @app.route("/create_booking/<pet_owner_id>", methods=["POST"])
@@ -704,9 +709,9 @@ def create_booking(pet_owner_id):
         pet_owner_id = pet_owner_id
         sitter_id = request.form.get("sitter_id")
         pet_id = request.form.get("pet_id")
-        start_date = request.form.get("start_date")
+        date = request.form.get("start_date")
         start_time = request.form.get("start_time")
-        end_date = start_date
+        end_date = date
         
         # info for creating the booking in google calendar
         address = request.form.get("address")
@@ -714,16 +719,15 @@ def create_booking(pet_owner_id):
 
         # weekly = bool(request.form["weekly"])
         
-        starttime_with_date = start_date + "T" + start_time
-        starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
-        
-        # create an interval to calculate end time, based on 30 min walks
-        interval = dt.timedelta(minutes=30)
-        endtime_with_date=  starttime_datetime + interval
-        
-        endtime_datetime = endtime_with_date
+       
 
-        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
+        datetime_string = date + "T" + start_time
+        start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M")
+        
+        start_time = start_date.strftime("%I:%M %p")
+
+
+        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=start_date + timedelta(minutes=30), start_time=start_time, end_time=(start_date + timedelta(minutes=30).strftime("%I:%M %p")), weekly=False)
         db.session.add(booking)
         db.session.commit() 
         flash("Booking sucessfully created", "success")
@@ -886,7 +890,7 @@ def get_all_bookings(user_id):
                 info_sitter['experience'] = booking.sitter.years_of_experience
                 info_sitter ['summary'] = booking.sitter.summary
                 info_sitter['date'] = booking.start_date.strftime("%m/%d/%Y")
-                info_sitter['time'] = booking.start_time.strftime("%H:%M")
+                info_sitter['time'] = booking.start_time
                 info_sitter['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
                 info_sitter['sitter_mobile'] = booking.sitter.user.mobile
                 info_sitter['sitter_email']  = booking.sitter.user.email
@@ -916,7 +920,7 @@ def get_all_bookings(user_id):
                 info['microchipped'] = booking.pet.microchipped
                 info['additional_info'] = booking.pet.additional_info
                 info['date'] = booking.start_date.strftime("%m/%d/%Y")
-                info['time'] = booking.start_time.strftime("%I:%M %p")
+                info['time'] = booking.start_time
                 info['booking_id'] =  booking.id
                 info['calendar_id'] = calendar_id
                 info['address'] = booking.pet_owner.user.address +", "+ booking.pet_owner.user.city +"-"+ booking.pet_owner.user.state
@@ -932,7 +936,20 @@ def get_all_bookings(user_id):
         return render_template("all_my_bookings.html", owner_bkngs=owner_bkngs, sitter_bkngs=sitter_bkngs, user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
     return redirect("/")
 
+# @app.route("/all_my_bookings/update/<booking_id>")
+# def update_event(event_id):
 
+#     if request.method == "GET": 
+# # First retrieve the event from the API.
+
+#         event = service.events().get(calendarId='primary', eventId='eventId').execute()
+
+# event['summary'] = 'Appointment at Somewhere'
+
+# updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
+
+# # Print the updated date.
+# print updated_event['updated']
 @app.route("/logout")
 def logout():
     """remove the user from the session if it is there"""

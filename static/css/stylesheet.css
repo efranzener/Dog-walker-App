@@ -280,7 +280,7 @@ input[type=number] {
     border-radius: auto;
     margin-bottom: 20px;
     margin-left: 30%;
-    background-image: url('usericon.jpg');
+    background-image: url(https://res.cloudinary.com/dggbnnudv/image/upload/v1666894891/usericon_zzj6lt.png);
     background-size: contain;
     border: solid lightgrey;
     text-align: center;
@@ -385,7 +385,7 @@ input[type=number] {
     margin-left: 20%;
     margin-right: 10%;
     margin-bottom: 10%;
-    background-image: url('dog_profile.png');
+    background-image: url(https://res.cloudinary.com/dggbnnudv/image/upload/v1664667019/xbskzhbjbkxlqbllfevr.jpg);
     background-size: contain;
     border: solid lightgrey;
   
@@ -396,7 +396,7 @@ input[type=number] {
     height: 200px;
     margin-left: 19%;
     border-radius: 75%;
-    background-image: url('dog_profile.jpg');
+    background-image: url(https://res.cloudinary.com/dggbnnudv/image/upload/v1664667019/xbskzhbjbkxlqbllfevr.jpg);
     background-size: cover;
     border: solid lightgrey;
     position: relative;
@@ -412,7 +412,7 @@ input[type=number] {
 
  .card-container {
     position: relative;
-    background-image: url(pexels-blue-bird-7210535.jpg);
+    background-image: url(https://res.cloudinary.com/dggbnnudv/image/upload/v1666894897/pexels-blue-bird-7210535_noiqh4.jpg);
     background-position: contain;
     display: flex;
     flex-flow: row wrap;
@@ -443,7 +443,7 @@ input[type=number] {
 
 .card-grid {
     position: relative;
-    background-image: url(pexels-blue-bird-7210535.jpg);
+    background-image: url(https://res.cloudinary.com/dggbnnudv/image/upload/v1666894897/pexels-blue-bird-7210535_noiqh4.jpg);
     background-position: contain;
     display: flex;
     flex-flow: row wrap;

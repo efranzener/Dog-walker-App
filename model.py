@@ -3,24 +3,22 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from datetime import datetime, timedelta
-import os
-from flask_login import UserMixin
 
 
 app = Flask(__name__)
 db = SQLAlchemy()
 
 
+class User(db.Model):
 
-class User(UserMixin, db.Model):
+    
     """ A user"""
     
     __tablename__ = 'users'
 
-    authenticated = db.Column(db.Boolean, default=False)
-
 
     user_id = db.Column(db.Integer, primary_key = True, autoincrement=True)
+    alternative_id = db.Column(db.String(900), unique=True)
     fname = db.Column(db.String(100), nullable = False)
     lname = db.Column(db.String(100), nullable = False)
     dob = db.Column(db.Date, nullable = False)
@@ -42,7 +40,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         """Show info about user"""
 
-        return f'<User user_id={self.user_id}, fname={self.fname}, lname={self.lname}, dob={self.dob}, email={self.email}, password={self.password}, profile_pic={self.profile_pic}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>'
+        return f'<User user_id={self.user_id}, fname={self.fname}, lname={self.lname}, dob={self.dob}, email={self.email}, password={self.password}, alternative_id = {self.alternative_id}, profile_pic={self.profile_pic}, mobile={self.mobile}, address={self.address}, city={self.city}, state={self.state}, zip_code={self.zip_code}>'
 
     def is_active(self):
         """True, as all users are active."""
@@ -51,10 +49,16 @@ class User(UserMixin, db.Model):
     def is_authenticated(self):
         """Return True if the user is authenticated."""
         return self.authenticated
+    
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
 
     def get_id(self):
         """Return the id to satisfy Flask-Login's requirements."""
-        return self.user_id
+        return self.alternative_id
+    
+
         
   
 
@@ -154,9 +158,9 @@ class Booking(db.Model):
     sitter_id = db.Column(db.Integer, db.ForeignKey("sitters.id"))
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"))
     start_date = db.Column(db.DateTime, default=datetime.now().strftime("%x"), nullable = False)
-    end_date = db.Column(db.DateTime, default=(datetime.now() + timedelta(days=180)).strftime("%x"), nullable = False)
-    start_time = db.Column(db.DateTime, default=datetime.now().strftime("%H:%M"), nullable = False)
-    end_time = db.Column(db.DateTime, default=(datetime.now() + timedelta(hours=24)).strftime("%H:%M"), nullable = False)
+    end_date = db.Column(db.DateTime, default=(datetime.now() + timedelta(days=180)).strftime("%x"))
+    start_time = db.Column(db.String, default=(datetime.now() + (datetime.min - datetime.now()) % timedelta(minutes=30)).strftime("%I:%M %p"), nullable = False)
+    end_time = db.Column(db.String, default=(datetime.now() + (datetime.min - datetime.now()) % timedelta(minutes=60)).strftime("%I:%M %p"))
     weekly = db.Column(db.Boolean, default = False)
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     
@@ -176,7 +180,7 @@ def connect_to_db(flask_app, db_uri="postgresql:///dog_walkers", echo=True):
 
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
     flask_app.config["SQLALCHEMY_ECHO"] = False
-    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    flask_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
     db.app = flask_app
     db.init_app(flask_app)

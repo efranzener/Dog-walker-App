@@ -1,15 +1,14 @@
 """CRUD operations."""
 
-from model import db, User, Sitter, PetOwner, Pet, Booking, connect_to_db
+from model import  User, Sitter, PetOwner, Pet, Booking, connect_to_db
 from flask import session, flash, redirect, render_template
-
 
 ##### CREATE #####
 
-def create_user(fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington', authenticated=False,):
+def create_user(alternative_id, fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington', authenticated=False):
     """Create and return a new user."""
-
-    user = User(fname=fname, lname=lname, email=email, password=password, authenticated=authenticated, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code)
+    
+    user = User(fname=fname, lname=lname, email=email, password=password, authenticated=authenticated, profile_pic=profile_pic, dob=dob, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, alternative_id = alternative_id)
 
     return user
 
@@ -81,6 +80,11 @@ def pet_exists(pet_owner_id, name):
 
 ##### GET ######
 
+def get_user_by_alternative_id(alternative_id):
+
+    return User.query.filter(User.alternative_id == alternative_id).first()
+    
+
 def get_user_by_id(user_id):
     """Return a user by primary key."""
 
@@ -90,7 +94,7 @@ def get_user_by_id(user_id):
 def get_all_other_users(user_id):
     """Return all users excepts the current user id"""
 
-    return User.query.filter(user_id != user_id).all()
+    return User.query.filter(User.user_id != user_id).all()
 
 
     
@@ -191,6 +195,13 @@ def get_pet_by_id(id):
     """Return a pet by primary key."""
 
     return Pet.query.get(id)
+
+def check_availability_by_datetime(date, time):
+    """check if booking date and time is available"""
+
+    if Booking.query.filter(Booking.start_date == date and Booking.start_time == time).first():
+        return True
+    return False
 
 
 

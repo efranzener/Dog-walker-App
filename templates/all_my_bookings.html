@@ -52,12 +52,12 @@
                       </ul>
                     </div>
                     <div>
-                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{booking["dog_name"]}}">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{booking['dog_name']}}">
                           Emergency Info
                       </button>
                     </div>
-                    <div id="{{booking["dog_name"]}}" class="modal fade" role="dialog">
-                      <div class="modal-dialog" id="{{booking["dog_name"]}}">
+                    <div id="{{booking['dog_name']}}" class="modal fade" role="dialog">
+                      <div class="modal-dialog" id="{{booking['dog_name']}}">
                         <div class="modal-content">
                           <div class="modal-header">
                             <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
@@ -79,11 +79,11 @@
                       </div>
                     </div>
                     <div >
-                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal{{booking["dog_name"]}}">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal{{booking['dog_name']}}">
                           Cancel Booking
                       </button>
                     </div>
-                    <div id="myModal{{booking["dog_name"]}}" class="modal fade" role="dialog">
+                    <div id="myModal{{booking['dog_name']}}" class="modal fade" role="dialog">
                       <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -116,7 +116,7 @@
                       <h5 class="booking_title"> Your Pet's Bookings:</h5>
                     </div>
                     <div class="form-control mr-sm-2">
-                      <img class="round_small_pic" src="{{booking["sitter_pic"]}}">
+                      <img class="round_small_pic" src="{{booking['sitter_pic']}}">
                       <div class="card-body">
                         <h6 class="card-title"><strong>Booking info</strong></h6>
                         <ul class="list-group">
@@ -130,11 +130,11 @@
                       </div>
                       <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the sitter directly.</strong></h6>
                       <div class="cancel">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal2{{booking["dog_name"]}}">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal2{{booking['dog_name']}}">
                           Contact Info
                         </button>
                       </div>
-                      <div id="myModal2{{booking["dog_name"]}}" class="modal fade" role="">
+                      <div id="myModal2{{booking['dog_name']}}" class="modal fade" role="">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">

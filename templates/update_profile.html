@@ -50,6 +50,9 @@
                             <label for="password" class="form-label">Password</label>
                             <input type="password" name="password" value="{{user.password}}" id="password">
                             <input type="checkbox" onclick="myFunction()"> Show Password
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" name="confirm_password" value="{{user.password}}" id="confirm_password">
+                            <input type="checkbox" onclick="myFunction()"> Show Confirm Password
                         </div>
                         <div class="form-group">
                             <label for="mobile" class="form-label">Mobile</label>
@@ -136,10 +139,14 @@
     <script>    
         function myFunction() {
             var showPassword = document.getElementById("password");
+            var showConfirmPassword = document.getElementBryId("confirm_password")
             if (showPassword.type === "password") {
             showPassword.type = "text";
+            } else if (showConfirmPassword.type == "confirm_password") {
+            showConfirmPassword.type = "text";
             } else {
             showPassword.type = "password";
+            showConfirmPassword.type = "password";
             }
         }
 

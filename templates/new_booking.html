@@ -48,7 +48,8 @@
                         <select id="sitter_id" name="sitter_id" required>
                             {% if  sitter %}
                                 <option name="sitter_id" value="{{sitter.id}}" selected>{{sitter.user.fname}}  {{sitter.user.lname}}</option>
-                                    <iframe src="https://calendar.google.com/calendar/embed?src={{sitter_calendar_id}}%40gmail.com&ctz=America%2FLos_Angeles" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                                    <iframe src="https://calendar.google.com/calendar/embed?src={{sitter_calendar_id}}%40gmail.com&ctz=America%2FLos_Angeles" 
+                                    style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
                             {%else%}
                                 <option selected disabled value="">Which sitter would you like to book the walk with?</option>
                                 {% for sitter in sitters %}
