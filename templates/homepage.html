@@ -29,10 +29,13 @@
                 <label for="password-login">Password</label>
                 <input type="password" name="password" id="password-login">
                 <input type="checkbox" onclick="myFunction()"> Show Password
+                <input type="checkbox" value="lsRememberMe" id="rememberMe"> 
+                <label for="rememberMe">Remember me</label>
+                
               </div>
               <div class="submit-btns">
                 <span>
-                  <button type="submit"  name="login" id="login-btn" value="Login">Sign In</button>
+                  <button type="submit"  name="login" id="login-btn" onclick="lsRememberMe()" value="Login">Sign In</button>
                 </span>
                 <a role="button" id="signup-btn" aria-current="page" href="/signup">Sign Up</a> 
               </div>
@@ -43,13 +46,6 @@
       </div> 
     </div>
   <script>
-    function myFunction() {
-      var showPassword = document.getElementById("password-login");
-      if (showPassword.type === "password") {
-      showPassword.type = "text";
-      } else {
-      showPassword.type = "password";
-      }
-    }
+    
   </script>
 {% endblock %}

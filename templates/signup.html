@@ -49,7 +49,7 @@
                         <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{9,20}">
                         <input type="checkbox" onclick="myFunction()"> Show Password
                         <label for="confirm_password" class="form-label">Confirm Password</label>
-                        <input type="password" name="confirm_password" value="{{user.password}}" id="confirm_password">
+                        <input type="password" name="confirm_password" id="confirm_password">
                         <input type="checkbox" onclick="myFunction()"> Show Confirm Password
                     </div>
                     <div class="form-group">
@@ -91,8 +91,8 @@
     </div>
     <script>
         function myFunction() {
-            var showPassword = document.getElementById("password");
-            var showConfirmPassword = document.getElementBryId("confirm_password")
+            let showPassword = document.getElementById("password");
+            let showConfirmPassword = document.getElementBryId("confirm_password")
             if (showPassword.type === "password") {
             showPassword.type = "text";
             } else if (showConfirmPassword.type == "confirm_password") {
@@ -104,7 +104,7 @@
         }
 
         document.getElementById("profilepic").onchange = function () {
-            var src = URL.createObjectURL(this.files[0]);
+            let src = URL.createObjectURL(this.files[0]);
             document.getElementById("prof-pic").src = src;
         }
     </script>

@@ -97,7 +97,7 @@
                         <input type="text" name="emergency_contact" id="emergency_contact" required>
                     </div>    
                     <div class="form-group">
-                        <label for="emergency_relationship" What is your relationship to the emergency contact?</label>
+                        <label for="emergency_relationship">What is your relationship to the emergency contact?</label>
                         <input type="text" name="emergency_relationship" id="emergency_relationship" required>
                     </div>  
                     <div class="form-group">
@@ -115,11 +115,6 @@
                 </form>             
         </div>
     </div>
-    <script>
-        document.getElementById("profiledog").onchange = function () {
-            var src = URL.createObjectURL(this.files[0]);
-            document.getElementById("dog-pic").src = src;
-        }
-    </script>
+    
 
 {% endblock body %}

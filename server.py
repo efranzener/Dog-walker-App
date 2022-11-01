@@ -1,7 +1,7 @@
 from __future__ import print_function
 from flask import (Flask, render_template, request, flash, session, redirect, url_for)
 
-from flask_login import LoginManager, login_user, login_required
+from flask_login import LoginManager, login_user, login_required, fresh_login_required, logout_user
 
 from itsdangerous import URLSafeSerializer
 from model import connect_to_db, db
@@ -48,7 +48,7 @@ app = Flask(__name__)
 app.secret_key = os.environ['secret_key']
 app.jinja_env.undefined = StrictUndefined
 serializer = URLSafeSerializer(app.secret_key)
-
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 
 
 states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
@@ -57,14 +57,13 @@ states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
 ###Flask Login###
 
 login_manager = LoginManager()
-login_manager.login_view = 'app.homepage'
+login_manager.login_view = 'homepage'
 login_manager.session_protection = "strong"
 login_manager.init_app(app)
 
 @login_manager.user_loader
 def user_loader(alternative_id):
     """Given an alternative id, return the associated User object"""
-
 
     return crud.get_user_by_alternative_id(alternative_id)
   
@@ -97,13 +96,15 @@ def get_consent():
         service = build('calendar', 'v3', credentials=creds)
     except HttpError as error:
         print('An error occurred: %s' % error)
+    
     return service
 
-    
+service = get_consent()    
 def get_available_sitters(user_id):
     """ query for available sitters based on Google Calendar"""
     
-    service = get_consent()
+    service = service
+    print("im service", service)
    
     start_date = request.form.get("start_date")
     start_time = request.form.get("start_time")
@@ -151,9 +152,13 @@ def get_available_sitters(user_id):
 @app.route('/homepage')
 def homepage():
     """display the homepage"""
-
-    
-    return render_template("homepage.html")
+    if 'alternative_id' in session:
+        
+        alternative_id = session['alternative_id']
+        user = crud.get_user_by_alternative_id(alternative_id)
+        return redirect (url_for("get_user_dashboard", alternative_id=alternative_id, current_user=user))
+    else: 
+        return render_template("homepage.html")
 
 
 @app.route('/signup')
@@ -208,6 +213,7 @@ def create_account():
     return redirect('/')
 
 
+
 @app.route('/login', methods=["POST"])
 def process_login():
     """Process user login."""
@@ -215,26 +221,32 @@ def process_login():
 
     email = request.form.get("email")
     pwd = request.form.get("password")
-    
+    remember = request.form.get('rememberme')
     user = crud.get_user_by_email(email)
     
+
+    
     if email and pwd:
-        user = crud.get_user_by_email(email)
-        if user:
+        try:
             if check_password_hash(user.password, pwd):
-                user.authenticated = True
-                login_user(user)
-                user_id = user.user_id
-                session["user_email"] = user.email
-                session["alternative_id"] = user.alternative_id
+                current_user = user
+                if remember:
+                    remember=True
+                current_user.authenticated = True
+                login_user(current_user, remember=remember)
+                session["alternative_id"] = current_user.alternative_id
+                session["user_email"] = current_user.email
+                # flash(f"Welcome, {current_user.fname}!", "primary")
+                consent = service
+                return redirect(url_for("get_user_dashboard", alternative_id = session["alternative_id"], fname=current_user.fname))
 
-                flash(f"Welcome, {user.fname}!", "primary")
-                
-                return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname, alternative_id = user.alternative_id))
 
+            else:
+                print(user.password)
 
-        else:
-            flash("Something went wrong. Please check your email and password and try again", "danger")
+                flash("Something went wrong. Please make sure your email and password are correct and try again", "danger")
+        except:
+                flash("Something went wrong. Please check your email and password and try again", "warning")
     return redirect('/')
   
         
@@ -245,11 +257,12 @@ def get_user_dashboard(alternative_id):
      
     pet_owner_bookings = False
     sitter_bookings = False
-    if "user_email" in session: 
+    if "alternative_id" in session: 
         
         user = crud.get_user_by_alternative_id(alternative_id)
         current_datetime = datetime.now()
-        user_id = user.user_id
+        current_user = user
+        user_id = current_user.user_id
         if crud.petowner_exists(user_id):
             
             pet_owner_bookings = crud.get_owner_bookings_by_user_id(user_id)
@@ -294,6 +307,7 @@ def get_user_dashboard(alternative_id):
 
 
 @app.route('/calendar/<user_id>')
+@login_required
 def get_user_calendar(user_id):
     """show user their own calendar"""
     
@@ -311,6 +325,7 @@ def get_user_calendar(user_id):
     
 
 @app.route("/sitter_signup/<user_id>")
+@login_required
 def get_sitter_signup(user_id) :     
     """get sitter sign up form"""
     
@@ -332,6 +347,7 @@ def get_sitter_signup(user_id) :
         
         
 @app.route("/sitter_signup/<user_id>", methods=["POST"])
+@login_required
 def sitter_signup(user_id):     
     """create a new sitter profile"""
         
@@ -353,99 +369,114 @@ def sitter_signup(user_id):
     return redirect('/')
     
   
-@app.route("/user_profile/<user_id>")
-def get_profile_page(user_id):
+@app.route("/user_profile/<alternative_id>")
+@login_required
+def get_profile_page(alternative_id):
     """display user profile page"""
     
-    if 'user_email' in session:
+    if 'alternative_id' in session:
         
-        user = crud.get_user_by_id(user_id)
-        sitter = crud.sitter_exists(user_id)
-        pet_owner = crud.petowner_exists(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        sitter = crud.sitter_exists(current_user.user_id)
+        pet_owner = crud.petowner_exists(current_user.user_id)
         
         if pet_owner:
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
         if sitter:
-            sitter = crud.get_sitter_by_user_id(user_id)
+            sitter = crud.get_sitter_by_user_id(current_user.user_id)
         
         current_pic = {
-            'profile_pic': user.profile_pic,
-            'pic_url': user.profile_pic
+            'profile_pic': current_user.profile_pic,
+            'pic_url': current_user.profile_pic
             }
 
-        return render_template("user_profile_page.html", profile_url=current_pic['pic_url'], profile_pic=current_pic['profile_pic'], pet_owner=pet_owner, sitter=sitter, user=user)
+        return render_template("user_profile_page.html", profile_url=current_pic['pic_url'], profile_pic=current_pic['profile_pic'], pet_owner=pet_owner, sitter=sitter, current_user=current_user)
 
     return redirect('/')
     
     
-@app.route("/user_profile/<user_id>/update")
-def get_profile_update_form(user_id):
+@app.route("/user_profile/<alternative_id>/update")
+@login_required
+def get_profile_update_form(alternative_id):
     """get profile update form"""
 
-    if 'user_email' in session:
+    if 'alternative_id' in session:
         
-        user = crud.get_user_by_id(user_id)
-        sitter = crud.sitter_exists(user_id)
-        pet_owner = crud.petowner_exists(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        sitter = crud.sitter_exists(current_user.user_id)
+        pet_owner = crud.petowner_exists(current_user.user_id)
         
         if pet_owner:
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
             
         if sitter:
-            sitter=crud.get_sitter_by_id(user_id)
+            sitter=crud.get_sitter_by_id(current_user.user_id)
          
-        
+    
+
         current_pic = {
-        'profile_pic': user.profile_pic,
-        'pic_url': user.profile_pic
+        'profile_pic': current_user.profile_pic,
+        'pic_url': current_user.profile_pic
         }
     
-        return render_template('update_profile.html',  profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, user = user)
+        return render_template('update_profile.html',  profile_url = current_pic['pic_url'], profile_pic = current_pic['profile_pic'], pet_owner = pet_owner, sitter = sitter, current_user = current_user)
     else:
         return redirect('/')
     
     
-@app.route("/user_profile/<user_id>/update", methods=['POST'])
-def update_user_profile(user_id):
+@app.route("/user_profile/<alternative_id>/update", methods=['POST'])
+@fresh_login_required
+def update_user_profile(alternative_id):
     """ update user profile page """
     
     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
     api_secret = API_SECRET)
     upload_result = None
     
-    if 'user_email' in session:
+    if 'alternative_id' in session:
         
-        user = crud.get_user_by_id(user_id)
-        user.fname = request.form.get("fname")
-        user.lname= request.form.get("lname")
-        user.dob = request.form.get("dob")
-        user.email = request.form.get("email")
-        user.password = request.form.get("password")
-        user.mobile = request.form.get("mobile")
-        user.address = request.form.get("address")
-        user.city = request.form.get("city")
-        user.state = request.form.get("state")
-        user.zip_code = request.form.get("zip_code")
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        current_user.fname = request.form.get("fname")
+        current_user.lname= request.form.get("lname")
+        current_user.dob = request.form.get("dob")
+        current_user.email = request.form.get("email")
+        current_user.password = request.form.get("password")
+        current_user.confirm_password = request.form.get("confirm_password")
+        current_user.mobile = request.form.get("mobile")
+        current_user.address = request.form.get("address")
+        current_user.city = request.form.get("city")
+        current_user.state = request.form.get("state")
+        current_user.zip_code = request.form.get("zip_code")
         new_profile_file = request.files['profilepic']
         
+        
+
         if new_profile_file:
             upload_result = cloudinary.uploader.upload(new_profile_file)
             data = upload_result
-            user.profile_pic = data['url']
+            current_user.profile_pic = data['url']
 
         else:
-            user.profile_pic = user.profile_pic
-
+            current_user.profile_pic = current_user.profile_pic
+            
+        if current_user.password == current_user.confirm_password:
+            current_user.password = generate_password_hash(current_user.password, rounds=12).decode("utf-8")
+        
+        alternative_id = serializer.dumps([current_user.email, current_user.password])
+        user_id = current_user.user_id
         db.session.commit()
         
         flash("Your user information was sucessfully updated", "success")
                 
-        return redirect(url_for("get_profile_page", user_id = user_id))
+        return redirect(url_for("get_profile_page", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
     else:
-        redirect('/')
+        flash("Please make sure your password and confirm password match")
+
+        redirect(url_for("get_profile_page", alternative_id = alternative_id, user_id = user_id))
     
     
 @app.route("/sitter_profile/<user_id>/update", methods=['POST'])
+@fresh_login_required
 def update_sitter_profile(user_id):
     """ update sitter_profile_page """
     
@@ -467,6 +498,7 @@ def update_sitter_profile(user_id):
         
    
 @app.route("/petowner_signup/<user_id>")
+@login_required
 def petowner_signup_form(user_id):
     """ get pet owner sign up form """
    
@@ -508,6 +540,7 @@ def petowner_signup(user_id):
 
 
 @app.route("/petowner_profile/<user_id>/update", methods=['POST'])
+@fresh_login_required
 def update_petowner_profile(user_id):
     """ update pet owner profile page """
     
@@ -526,6 +559,7 @@ def update_petowner_profile(user_id):
     
     
 @app.route("/add_dog/<user_id>", methods=["GET", "POST"])
+@login_required
 def create_pet_profile(user_id):
     """create a new dog profile"""
     
@@ -593,6 +627,7 @@ def create_pet_profile(user_id):
 
 
 @app.route("/create_booking/<user_id>")
+@login_required
 def get_booking_form(user_id):
     """get booking form"""
    
@@ -697,6 +732,7 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
     
     
 @app.route("/create_booking/<pet_owner_id>", methods=["POST"])
+@login_required
 def create_booking(pet_owner_id):
     """ create a new booking"""
     
@@ -740,15 +776,17 @@ def create_booking(pet_owner_id):
     return redirect('/')
     
     
-@app.route('/search_availability/<user_id>', methods=["POST"])
-def display_available_sitters(user_id):
+@app.route('/search_availability/<alternative_id>', methods=["POST"])
+@login_required
+def display_available_sitters(alternative_id):
     """display sitters available on a specific time based on user search"""
     
-    if 'user_email' in session:
+    if 'alternative_id' in session:
         if request.method == 'GET':
-            return redirect (url_for("all_sitters", user_id = user_id))
+            current_user = crud.get_user_by_alternative_id(alternative_id)
+            return redirect (url_for("all_sitters", user_id = current_user.user_id))
         
-        available_sitters_email = get_available_sitters(user_id)
+        available_sitters_email = get_available_sitters(current_user.user_id)
         if available_sitters_email == [] or not available_sitters_email:
             
             flash("There are no sitters available in the time you selected. Please try searching for a different time, or browing all the sitters in our database", "info")
@@ -756,46 +794,47 @@ def display_available_sitters(user_id):
             cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
             api_secret = API_SECRET)
 
-            current_user = crud.get_user_by_id(user_id)
+            current_user = crud.get_user_by_alternative_id(alternative_id)
         
             sitters=[]
             all_sitters = []
             for email in available_sitters_email:
-                user = crud.get_user_by_email(email)
-                available_sitter = crud.get_sitter_by_user_id(user.user_id)
+                current_user = crud.get_user_by_email(email)
+                available_sitter = crud.get_sitter_by_user_id(current_user.user_id)
                 all_sitters.append(available_sitter)
                 
             for sitter in all_sitters:
                 pet_sitter={}
                 split_email = sitter.user.email.split("@")
                 pet_sitter['id'] = sitter.id
-                pet_sitter['fname'] = sitter.user.fname
-                pet_sitter['lname'] = sitter.user.lname
-                pet_sitter['pic'] = sitter.user.profile_pic
+                pet_sitter['fname'] = sitter.current_user.fname
+                pet_sitter['lname'] = sitter.current_user.lname
+                pet_sitter['pic'] = sitter.current_user.profile_pic
                 pet_sitter['experience'] = sitter.years_of_experience
                 pet_sitter['rate'] = sitter.rate
                 pet_sitter['calendar_id'] = split_email[0]
-                pet_sitter['user_id'] = sitter.user.user_id
+                pet_sitter['user_id'] = sitter.current_user.user_id
                 pet_sitter['summary'] = sitter.summary
                 sitters.append(pet_sitter)        
         
             return render_template("all_sitters.html", sitters = sitters, user = current_user)
 
-        return redirect (url_for("all_sitters", user_id = user_id))
+        return redirect (url_for("all_sitters", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
     
     return redirect('/')
             
     
-@app.route('/sitters/<user_id>')
-def all_sitters(user_id):
+@app.route('/sitters/<alternative_id>')
+@login_required
+def all_sitters(alternative_id):
     """View all sitters in db"""
     
     
     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
     api_secret = API_SECRET)
 
-    current_user = crud.get_user_by_id(user_id)
-    all_sitters = crud.get_all_other_sitters(user_id)
+    current_user = crud.get_user_by_alternative_id(alternative_id)
+    all_sitters = crud.get_all_other_sitters(current_user.user_id)
     
     sitters=[]
 
@@ -803,13 +842,13 @@ def all_sitters(user_id):
         pet_sitter = {}
         split_email = sitter.user.email.split("@")
         pet_sitter['id'] = sitter.id
-        pet_sitter['fname'] = sitter.user.fname
-        pet_sitter['lname'] = sitter.user.lname
-        pet_sitter['pic'] = sitter.user.profile_pic
+        pet_sitter['fname'] = sitter.current_user.fname
+        pet_sitter['lname'] = sitter.current_user.lname
+        pet_sitter['pic'] = sitter.current_user.profile_pic
         pet_sitter['experience'] = sitter.years_of_experience
         pet_sitter['rate'] = sitter.rate
         pet_sitter['calendar_id'] = split_email[0]
-        pet_sitter['user_id'] = sitter.user.user_id
+        pet_sitter['user_id'] = sitter.current_user.user_id
         pet_sitter['summary'] = sitter.summary
                 
         sitters.append(pet_sitter) 
@@ -818,6 +857,7 @@ def all_sitters(user_id):
 
 
 @app.route("/all_my_dogs/<user_id>")
+@login_required
 def show_all_dogs(user_id):
     """return all the dogs under a specific pet_id"""
 
@@ -866,6 +906,7 @@ def show_all_dogs(user_id):
             
 
 @app.route("/my_bookings/<user_id>")
+@login_required
 def get_all_bookings(user_id):
     """Return all the bookings made by a specific user"""
     
@@ -950,17 +991,22 @@ def get_all_bookings(user_id):
 
 # # Print the updated date.
 # print updated_event['updated']
+
 @app.route("/logout")
+@login_required
 def logout():
     """remove the user from the session if it is there"""
-   
-    if 'user_email' in session:
-        session.pop('user_email', None)
-        
+    
+    if 'alternative_id' in session:    
+        remember = False
+        logout_user()
+        print("you are now logged out", session['alternative_id'])
+        session.pop('alternative_id', None)
     return redirect('/')
 
 
 @app.route("/delete/<user_id>")
+@fresh_login_required
 def confirm_delete_user(user_id):
     "Ask user to confirm if they want to delete their profile"
     
@@ -973,6 +1019,7 @@ def confirm_delete_user(user_id):
     
     
 @app.route("/delete/<user_id>", methods=['POST'])
+@fresh_login_required
 def delete_user(user_id):
     "delete a user profile from database"
     

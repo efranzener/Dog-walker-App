@@ -11,7 +11,7 @@
                             <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
                         </li>
                         <li>                                            
-                            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+                            <a class="nav-link" aria-current="page" href="/user_dashboard/{{current_user.alternative_id}}" role="button">Homepage</a> 
                         </li>
                         <li>
                             <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
@@ -25,54 +25,54 @@
             <div class="container-profile">
                 <div class="form-control mr-sm-2">
                     <h5 class="card-title"> Update Personal Details</h5>
-                    <form action="/user_profile/{{user.user_id}}/update" method = "POST" enctype = "multipart/form-data">
+                    <form action="/user_profile/{{current_user.alternative_id}}/update" method = "POST" enctype = "multipart/form-data">
                         <div class="form-group">
                             <img id = "prof-pic" class="rounded-circle" src="{{profile_url}}"  alt="profile-image">
                             <input id="profilepic" type="file" name="profilepic" value="{{profile_pic}}" accept="image/png, image/jpeg">
                         </div> 
                         <div class="form-group">
                             <label for="fname">First Name</label>
-                            <input type="text" name="fname" value="{{user.fname}}"id="fname" autocomplete="fname">
+                            <input type="text" name="fname" value="{{current_user.fname}}"id="fname" autocomplete="fname">
                         </div>
                         <div class="form-group">
                             <label for="lname">Last Name</label>
-                            <input type="text" name="lname" value="{{user.lname}}" id="lname" autocomplete="lname">
+                            <input type="text" name="lname" value="{{current_user.lname}}" id="lname" autocomplete="lname">
                         </div>
                         <div class="form-group">
                             <label for="dob">Date of birth</label>
-                            <input type="date" name="dob" value="{{user.dob}}" id="dob">
+                            <input type="date" name="dob" value="{{current_user.dob}}" id="dob">
                         </div>
                         <div class="form-group">
                             <label for="email" >Email</label>
-                            <input type="email" name="email" value="{{user.email}}" id="email" autocomplete="email">
+                            <input type="email" name="email" value="{{current_user.email}}" id="email" autocomplete="email">
                         </div>
                         <div class="form-group">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" value="{{user.password}}" id="password">
+                            <input type="password" name="password" value="{{current_user.password}}" id="password">
                             <input type="checkbox" onclick="myFunction()"> Show Password
                             <label for="confirm_password" class="form-label">Confirm Password</label>
-                            <input type="password" name="confirm_password" value="{{user.password}}" id="confirm_password">
+                            <input type="password" name="confirm_password" value="{{current_user.password}}" id="confirm_password">
                             <input type="checkbox" onclick="myFunction()"> Show Confirm Password
                         </div>
                         <div class="form-group">
                             <label for="mobile" class="form-label">Mobile</label>
-                            <input type="text" name="mobile" value= "{{user.mobile}}" id="mobile">
+                            <input type="text" name="mobile" value= "{{current_user.mobile}}" id="mobile">
                         </div>
                         <div class="form-group">
                             <label for="address" >Address</label>
-                            <input type="text"  name="address" value="{{user.address}}" id="address" placeholder="1234 Main St, number ">
+                            <input type="text"  name="address" value="{{current_user.address}}" id="address" placeholder="1234 Main St, number ">
                         </div>
                         <div class="form-group">
                             <label for="city">City</label>
-                            <input type="text" name="city" value = "{{user.city}}"id="city">
+                            <input type="text" name="city" value = "{{current_user.city}}"id="city">
                         </div>
                         <div class="form-group">
                             <label for="state">State</label>
-                            <input type="text" name="state" value={{user.state}} id="state" >
+                            <input type="text" name="state" value={{current_user.state}} id="state" >
                         </div>
                         <div class="form-group">
                             <label for="zip_code" class="form-labe2">Zip Code</label>
-                            <input type="text" name="zip_code" value = "{{user.zip_code}}" id="zip_code">
+                            <input type="text" name="zip_code" value = "{{current_user.zip_code}}" id="zip_code">
                         </div>           
                             <button class="btn btn-outline-secondary">Save Changes</button>
                     </form>
@@ -82,7 +82,7 @@
                         <div>
                             <h5 class="card-title"> Update Sitter Profile </h5>
                         </div>
-                        <form action = "/sitter_profile/{{user.user_id}}/update" method="POST" >
+                        <form action = "/sitter_profile/{{current_user.alternative_id}}/update" method="POST" >
                             <div class="form-group">
                                 <label for="experience">Years of Experience</label>
                                 <input type="numeric" min="0" name="experience" id="experience" value="{{sitter.years_of_experience}}">
@@ -109,7 +109,7 @@
             
                 {%else %}
                     <div class="form-control mr-sm-2">
-                        <a class="btn btn-outline-secondary" href="/sitter_signup/{{user.user_id}}" role="button">Create my Sitter Profile</a>
+                        <a class="btn btn-outline-secondary" href="/sitter_signup/{{current_user.alternative_id}}" role="button">Create my Sitter Profile</a>
                     </div>
                 {% endif%}
 
@@ -118,7 +118,7 @@
                         <div>
                             <h5 class="card-title"> Update Pet Owner Profile </h5>
                         </div>
-                        <form action = "/petowner_profile/{{user.user_id}}/update" method="POST" >
+                        <form action = "/petowner_profile/{{current_user.alternative_id}}/update" method="POST" >
                             <div class="form-group">
                                 <label for="num_pets">Number of Dogs</label>
                                 <input type="numeric" min="0" name="num_pets" id="num_pets" value="{{pet_owner.num_pets}}">
@@ -128,7 +128,7 @@
                     </div>
 
                 {%else %}
-                    <a class="btn btn-outline-secondary" href="/petowner_signup/{{user.user_id}}" role="button" >Create Pet Owner Profile</a>
+                    <a class="btn btn-outline-secondary" href="/petowner_signup/{{current_user.alternative_id}}" role="button" >Create Pet Owner Profile</a>
                 {% endif%}
             </div>
         </div>

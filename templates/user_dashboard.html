@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block body %}
-
+  {% if current_user.is_authenticated %}
+    Hi {{ current_user.fname }}!
     <div class="nav-center">
       <nav class="navbar justify-content-center">
         <ul class="nav justify-content-center">
@@ -10,29 +11,29 @@
               Profiles
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/user_profile/{{user.user_id}}">Profile Page</a>
-                <a class="dropdown-item" href="/petowner_signup/{{user.user_id}}">Pet Owner Sign up</a>
+                <a class="dropdown-item" href="/user_profile/{{user.alternative_id}}">Profile Page</a>
+                <a class="dropdown-item" href="/petowner_signup/{{user.alternative_id}}">Pet Owner Sign up</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/sitter_signup/{{user.user_id}}">Sitter Sign Up</a>
+                <a class="dropdown-item" href="/sitter_signup/{{user.alternative_id}}">Sitter Sign Up</a>
               </div>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Bookings
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="/my_bookings/{{user.user_id}}">My Bookings</a>
-              <a class="dropdown-item" href="/create_booking/{{user.user_id}}">New Booking</a>
+              <a class="dropdown-item" href="/my_bookings/{{current_user.alternative_id}}">My Bookings</a>
+              <a class="dropdown-item" href="/create_booking/{{current_user.alternative_id}}">New Booking</a>
           </div>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/all_my_dogs/{{user.user_id}}">My Dogs</a>
+              <a class="nav-link" aria-current="page" href="/all_my_dogs/{{current_user.alternative_id}}">My Dogs</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/add_dog/{{user.user_id}}">Add New Dog</a>
+              <a class="nav-link" aria-current="page" href="/add_dog/{{current_user.alternative_id}}">Add New Dog</a>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/sitters/{{user.user_id}}">Find Sitters</a>          
+              <a class="nav-link" aria-current="page" href="/sitters/{{current_user.alternative_id}}">Find Sitters</a>          
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="/calendar/{{user.user_id}}">My Calendar</a>
+              <a class="nav-link" aria-current="page" href="/calendar/{{current_user.alternative_id}}">My Calendar</a>
             </li>
           </li>
             <a class="nav-link" aria-current="page" href="/logout">Logout</a>
@@ -43,7 +44,7 @@
     
     <div class = "card-container">
       <div class="card">
-        <form class="form-inline my-2 my-lg-0" action="/search_availability/{{user.user_id}}" method="POST">                    
+        <form class="form-inline my-2 my-lg-0" action="/search_availability/{{current_user.alternative_id}}" method="POST">                    
           <div class="search-box">
             <h4 class="search-title"> Search For a Sitter </h4>
               <label for="start_date1">Date</label>
@@ -77,6 +78,9 @@
           {%endfor%}
         {%endif%}
     </div> 
+  {% else %}
+    <a href="/">Please login to access your account</a>
+  {% endif %}
 {%endblock body%}
 
 

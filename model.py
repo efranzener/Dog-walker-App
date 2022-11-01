@@ -56,7 +56,7 @@ class User(db.Model):
 
     def get_id(self):
         """Return the id to satisfy Flask-Login's requirements."""
-        return self.alternative_id
+        return str(self.alternative_id)
     
 
         
