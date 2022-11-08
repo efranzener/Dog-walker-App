@@ -47,13 +47,15 @@
                             <input type="email" name="email" value="{{current_user.email}}" id="email" autocomplete="email">
                         </div>
                         <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" value="{{current_user.password}}" id="password">
-                            <input type="checkbox" onclick="myFunction()"> Show Password
-                            <label for="confirm_password" class="form-label">Confirm Password</label>
-                            <input type="password" name="confirm_password" value="{{current_user.password}}" id="confirm_password">
-                            <input type="checkbox" onclick="myFunction()"> Show Confirm Password
+                            <label for="newpassword" class="form-label">New Password</label>
+                            <input type="password" name="newpassword" id="newpassword" placeholder = "*********">
+                            <input type="checkbox" onclick="showNewPassword()"> Show New Password
                         </div>
+                        <div>
+                            <label for="new_confirmpassword" class="form-label">Confirm New Password</label>
+                            <input type="password" name="new_confirmpassword" id="new_confirmpassword" placeholder = "*********">
+                            <input type="checkbox" onclick="showConfPwd()"> Show Confirm Password
+                        </div> 
                         <div class="form-group">
                             <label for="mobile" class="form-label">Mobile</label>
                             <input type="text" name="mobile" value= "{{current_user.mobile}}" id="mobile">
@@ -136,23 +138,5 @@
         <a class="btn btn-outline-secondary" aria-current="page" href="/homepage" role="button">Login</a>  
     {%endif%}  
 
-    <script>    
-        function myFunction() {
-            var showPassword = document.getElementById("password");
-            var showConfirmPassword = document.getElementBryId("confirm_password")
-            if (showPassword.type === "password") {
-            showPassword.type = "text";
-            } else if (showConfirmPassword.type == "confirm_password") {
-            showConfirmPassword.type = "text";
-            } else {
-            showPassword.type = "password";
-            showConfirmPassword.type = "password";
-            }
-        }
-
-        document.getElementById("profilepic").onchange = function () {
-            var src = URL.createObjectURL(this.files[0]);
-            document.getElementById("prof-pic").src = src;
-        }
-    </script>
+   
 {% endblock body %}

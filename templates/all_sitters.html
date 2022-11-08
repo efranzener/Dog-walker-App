@@ -9,7 +9,7 @@
           <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
         </li>
         <li>                                            
-          <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+          <a class="nav-link" aria-current="page" href="/user_dashboard/{{current_user.alternative_id}}" role="button">Homepage</a> 
         </li>
         <li>
           <a class="nav-link" aria-current="page" href="/logout">Logout</a>
@@ -22,7 +22,7 @@
 
   <div class = "card-grid">
     <div class="card">
-      <form class="form-inline" action="/search_availability/{{user.user_id}}" method="POST">                    
+      <form class="form-inline" action="/search_availability/{{current_user.alternative_id}}" method="POST">                    
         <div class="search_box">
           <h4 class="search-title"> Search for a dog walker </h4>
             <label for="start_date">Date</label>
@@ -45,10 +45,10 @@
         <p class="card-text-justify"> Rates: My rates start at ${{sitter["rate"]}}</p>
         <p class="card-text-justify"> Summary: {{sitter["summary"]}}</p>      
         </div>
-        <form action="/create_booking/{{user.user_id}}">
-        <div id = "create_booking">
-            <button name="sitter_id" type="submit" class="btn btn-outline-secondary" value="{{sitter['id']}}">Book me</button>
-        </div>
+        <form action="/create_booking/{{current_user.alternative_id}}">
+          <div id = "create_booking">
+              <button type ="submit" name="sitter_id"  class="btn btn-outline-secondary" value="{{sitter['id']}}">Book me</button>
+            </div>
         </form>                      
         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{sitter['lname']}}">Calendar of availability</button>
         <div id="{{sitter['lname']}}" class="modal fade" role="dialog">

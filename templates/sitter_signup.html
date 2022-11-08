@@ -12,7 +12,7 @@
               <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
             </li>
             <li>                                            
-              <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+              <a class="nav-link" aria-current="page" href="/user_dashboard/{{current_user.alternative_id}}" role="button">Homepage</a> 
             </li>
             <li>
               <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
@@ -25,7 +25,7 @@
       <div class="container">
         <div class="form-control mr-sm-2">
           <h4 id="sitter-signup"> {{user.fname}}!</h4>
-            <form action = "/sitter_signup/{{user.user_id}}" method="POST" >
+            <form action = "/sitter_signup/{{current_user.alternative_id}}" method="POST" >
                 <div class="form-group">
                     <label for="experience">Years of Experience</label>
                         <input type="number" min=0 name="experience" id="experience" placeholder="1, 2, 3..." required>

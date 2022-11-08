@@ -1,5 +1,6 @@
 from __future__ import print_function
-from flask import (Flask, render_template, request, flash, session, redirect, url_for)
+
+from flask import (Flask, render_template, request, flash, session, redirect, url_for, jsonify)
 
 from flask_login import LoginManager, login_user, login_required, fresh_login_required, logout_user
 
@@ -11,6 +12,8 @@ import datetime as dt
 from datetime import datetime, timedelta
 import os
 
+
+import gcalendar
 # from os import path, environ
 
 import pytz
@@ -38,10 +41,10 @@ CLOUD_NAME = os.environ['cloud_name']
 
 
 # Google Calendar API
-CLIENT_SECRETS_FILE = 'credentials.json'
-SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events']
-API_SERVICE_NAME = 'calendar'
-API_VERSION = 'v3'
+# CLIENT_SECRETS_FILE = 'credentials.json'
+# SCOPES = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events']
+# API_SERVICE_NAME = 'calendar'
+# API_VERSION = 'v3'
 
 
 app = Flask(__name__)
@@ -68,95 +71,51 @@ def user_loader(alternative_id):
     return crud.get_user_by_alternative_id(alternative_id)
   
 
-# Google Calendar API
-def get_consent():
-    """get user consent to accessing sensitive data"""
+# # Google Calendar API
+# def get_consent():
+#     """get user consent to accessing sensitive data"""
     
-    creds = None
+#     creds = None
     
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+#     # The file token.json stores the user's access and refresh tokens, and is
+#     # created automatically when the authorization flow completes for the first
+#     # time.
+#     if os.path.exists('token.json'):
+#         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
         
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+#     # If there are no (valid) credentials available, let the user log in.
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file(
+#                 'credentials.json', SCOPES)
+#             creds = flow.run_local_server(port=0)
             
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    try:
-        service = build('calendar', 'v3', credentials=creds)
-    except HttpError as error:
-        print('An error occurred: %s' % error)
+#         # Save the credentials for the next run
+#         with open('token.json', 'w') as token:
+#             token.write(creds.to_json())
+#     try:
+#         service = build('calendar', 'v3', credentials=creds)
+#     except HttpError as error:
+#         print('An error occurred: %s' % error)
     
-    return service
+#     return service
 
-service = get_consent()    
-def get_available_sitters(user_id):
-    """ query for available sitters based on Google Calendar"""
-    
-    service = service
-    print("im service", service)
    
-    start_date = request.form.get("start_date")
-    start_time = request.form.get("start_time")
-    
-    starttime_with_date = start_date + "T" + start_time
-    starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
 
-    # create an interval to calculate end time, based on 30 min walks
-    interval = dt.timedelta(minutes=30)
-    end_time =  starttime_datetime + interval
-    
-    # user = crud.get_user_by_id(user_id)
-    sitters = crud.get_all_other_sitters(user_id)
-    cal_ids = []
-    for sitter in sitters:
-        calendar_ids={
-            "id":sitter.user.email}
-        cal_ids.append(calendar_ids)
-       
-    tz = pytz.timezone('US/Pacific')    
-    start_datetime = tz.localize(starttime_datetime)
-    end_datetime = tz.localize(end_time)
-    body = {
-        "timeMin": start_datetime.isoformat(),
-        "timeMax": end_datetime.isoformat(),
-        "timeZone": 'US/Pacific',
-        "items": cal_ids
-    }
-    eventsResult = service.freebusy().query(body=body).execute()
-    
-    cal_dict = eventsResult['calendars']
-    available_sitters = []
-    for cal_name in cal_dict:
-        cal_busy = cal_dict[cal_name]['busy']
-    
-        if cal_busy != []:
-            continue
-        else:
-            available_sitters.append(cal_name)
-
-    return available_sitters
 
 
 @app.route('/')
 @app.route('/homepage')
 def homepage():
     """display the homepage"""
-    if 'alternative_id' in session:
+
+    if 'user_email' in session:
         
-        alternative_id = session['alternative_id']
-        user = crud.get_user_by_alternative_id(alternative_id)
-        return redirect (url_for("get_user_dashboard", alternative_id=alternative_id, current_user=user))
+        email = session["user_email"]
+        current_user = crud.get_user_by_email(email)
+        return redirect (url_for("get_user_dashboard", alternative_id=current_user.alternative_id))
     else: 
         return render_template("homepage.html")
 
@@ -180,9 +139,7 @@ def create_account():
     dob = request.form.get("dob")
     email = request.form.get("email")
     pwd = request.form.get("password")
-
     confirm_pwd= request.form.get("password")
-    
     mobile = request.form.get("mobile")
     address = request.form.get("address")
     city = request.form.get("city")
@@ -224,8 +181,6 @@ def process_login():
     remember = request.form.get('rememberme')
     user = crud.get_user_by_email(email)
     
-
-    
     if email and pwd:
         try:
             if check_password_hash(user.password, pwd):
@@ -236,13 +191,11 @@ def process_login():
                 login_user(current_user, remember=remember)
                 session["alternative_id"] = current_user.alternative_id
                 session["user_email"] = current_user.email
-                # flash(f"Welcome, {current_user.fname}!", "primary")
-                consent = service
-                return redirect(url_for("get_user_dashboard", alternative_id = session["alternative_id"], fname=current_user.fname))
+    
+                return redirect(url_for("get_user_dashboard", alternative_id = session["alternative_id"]))
 
 
             else:
-                print(user.password)
 
                 flash("Something went wrong. Please make sure your email and password are correct and try again", "danger")
         except:
@@ -257,11 +210,11 @@ def get_user_dashboard(alternative_id):
      
     pet_owner_bookings = False
     sitter_bookings = False
-    if "alternative_id" in session: 
+
+    if 'user_email' in session: 
         
-        user = crud.get_user_by_alternative_id(alternative_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
         current_datetime = datetime.now()
-        current_user = user
         user_id = current_user.user_id
         if crud.petowner_exists(user_id):
             
@@ -302,7 +255,7 @@ def get_user_dashboard(alternative_id):
         else:
             week_sitter_bookings= []
        
-        return render_template("user_dashboard.html",  sitter_bookings = sitter_bookings, week_sitter_bookings = week_sitter_bookings, pet_owner_bookings = pet_owner_bookings, next_pet_bookings = next_pet_bookings, user = user)
+        return render_template("user_dashboard.html",  sitter_bookings = sitter_bookings, week_sitter_bookings = week_sitter_bookings, pet_owner_bookings = pet_owner_bookings, next_pet_bookings = next_pet_bookings, current_user = current_user)
     return redirect('/')
 
 
@@ -324,24 +277,25 @@ def get_user_calendar(user_id):
     return render_template('calendar.html', user = user, calendar_id = calendar_id)
     
 
-@app.route("/sitter_signup/<user_id>")
+@app.route("/sitter_signup/<alternative_id>")
 @login_required
-def get_sitter_signup(user_id) :     
+def get_sitter_signup(alternative_id) :     
     """get sitter sign up form"""
     
     if 'user_email' in session:
-        user = crud.get_user_by_id(user_id)
+
+        current_user = crud.get_user_by_alternative_id(alternative_id)
         
-        if crud.sitter_exists(user_id):
-            sitter = crud.get_sitter_by_user_id(user_id)
+        if crud.sitter_exists(current_user.user_id):
+            sitter = crud.get_sitter_by_user_id(current_user.user_id)
             
             flash("Sitter profile already created. Here you can update any information you wish", "info")
             
-            return redirect(url_for("get_profile_page", sitter=sitter, user_id=user_id))
+            return redirect(url_for("get_profile_page", sitter=sitter, user_id=current_user.user_id))
         
         else:
                 
-            return render_template("sitter_signup.html", user = user)  
+            return render_template("sitter_signup.html", current_user = current_user)  
     
     return('/')    
         
@@ -374,7 +328,7 @@ def sitter_signup(user_id):
 def get_profile_page(alternative_id):
     """display user profile page"""
     
-    if 'alternative_id' in session:
+    if 'user_email' in session:
         
         current_user = crud.get_user_by_alternative_id(alternative_id)
         sitter = crud.sitter_exists(current_user.user_id)
@@ -400,7 +354,7 @@ def get_profile_page(alternative_id):
 def get_profile_update_form(alternative_id):
     """get profile update form"""
 
-    if 'alternative_id' in session:
+    if 'user_email' in session:
         
         current_user = crud.get_user_by_alternative_id(alternative_id)
         sitter = crud.sitter_exists(current_user.user_id)
@@ -433,24 +387,24 @@ def update_user_profile(alternative_id):
     api_secret = API_SECRET)
     upload_result = None
     
-    if 'alternative_id' in session:
+    if 'user_email' in session:
         
-        current_user = crud.get_user_by_alternative_id(alternative_id)
+        user = crud.get_user_by_alternative_id(alternative_id)
+        current_user = crud.get_user_by_id(user.user_id)
         current_user.fname = request.form.get("fname")
         current_user.lname= request.form.get("lname")
         current_user.dob = request.form.get("dob")
         current_user.email = request.form.get("email")
-        current_user.password = request.form.get("password")
-        current_user.confirm_password = request.form.get("confirm_password")
         current_user.mobile = request.form.get("mobile")
         current_user.address = request.form.get("address")
         current_user.city = request.form.get("city")
         current_user.state = request.form.get("state")
         current_user.zip_code = request.form.get("zip_code")
         new_profile_file = request.files['profilepic']
+        new_password = request.form.get("newpassword")
+        new_confirm_password = request.form.get("new_confirmpassword")
         
         
-
         if new_profile_file:
             upload_result = cloudinary.uploader.upload(new_profile_file)
             data = upload_result
@@ -458,31 +412,49 @@ def update_user_profile(alternative_id):
 
         else:
             current_user.profile_pic = current_user.profile_pic
-            
-        if current_user.password == current_user.confirm_password:
-            current_user.password = generate_password_hash(current_user.password, rounds=12).decode("utf-8")
         
-        alternative_id = serializer.dumps([current_user.email, current_user.password])
-        user_id = current_user.user_id
+
+        if not new_password and not new_confirm_password:
+            user = crud.get_user_by_id(current_user.user_id)
+            current_user.password = new_password
+            current_user.confirm_password = new_confirm_password
+   
+        elif not new_password or not new_confirm_password:
+
+            flash("please check you password and match password and try again", "danger")
+
+            return redirect(url_for("update_user_profile", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
+        else:
+            if new_password == new_confirm_password:
+                
+                alternative_id = serializer.dumps([current_user.email, current_user.password])
+
+                current_user.password = generate_password_hash(new_password, rounds=12).decode("utf-8")
+            else:
+                flash("Please make sure your password and confirm password match", "danger")
+
+                return redirect(url_for("update_user_profile", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
+    
+        current_user.password = current_user.password
         db.session.commit()
         
         flash("Your user information was sucessfully updated", "success")
                 
         return redirect(url_for("get_profile_page", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
-    else:
-        flash("Please make sure your password and confirm password match")
+       
 
-        redirect(url_for("get_profile_page", alternative_id = alternative_id, user_id = user_id))
+    redirect(url_for("get_profile_page", alternative_id = alternative_id, user_id = user.user_id))
     
     
-@app.route("/sitter_profile/<user_id>/update", methods=['POST'])
+@app.route("/sitter_profile/<alternative_id>/update", methods=['POST'])
 @fresh_login_required
-def update_sitter_profile(user_id):
+def update_sitter_profile(alternative_id):
     """ update sitter_profile_page """
     
     if 'user_email' in session:
         
-        sitter = crud.get_sitter_by_user_id(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        sitter = crud.get_sitter_by_user_id(current_user.user_id)
         
         sitter.years_of_experience = request.form.get("experience")
         sitter.summary = request.form.get("summary")
@@ -492,86 +464,93 @@ def update_sitter_profile(user_id):
         
         flash("Your sitter profile was sucessfully updated!", "success")
         
-        return redirect(url_for('get_profile_page', user_id = user_id))
+        return redirect(url_for('get_profile_page', alternative_id = alternative_id))
     
     return redirect('/')
         
    
-@app.route("/petowner_signup/<user_id>")
+@app.route("/petowner_signup/<alternative_id>")
 @login_required
-def petowner_signup_form(user_id):
+def petowner_signup_form(alternative_id):
     """ get pet owner sign up form """
    
     if 'user_email' in session:
-        sitter = crud.sitter_exists(user_id)
-        pet_owner = crud.petowner_exists(user_id)
-        user = crud.get_user_by_id(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        sitter = crud.sitter_exists(current_user.user_id)
+        pet_owner = crud.petowner_exists(current_user.user_id)
+        
         
         if sitter:
-            sitter=crud.get_sitter_by_user_id(user_id)
+            sitter=crud.get_sitter_by_user_id(current_user.user_id)
             
         if pet_owner:
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
             
             flash("Pet owner profile already created. Here you can update any information you wish", "info")
             
-            return redirect(url_for("get_profile_page", user_id=user_id))
+            return redirect(url_for("get_profile_page", alternative_id = alternative_id))
         
-        return render_template("petowner_signup.html", user = user)
+        return render_template("petowner_signup.html", current_user = current_user)
     
     return redirect('/') 
 
 
-@app.route("/petowner_signup/<user_id>", methods=["POST"])
-def petowner_signup(user_id):
+@app.route("/petowner_signup/<alternative_id>", methods=["POST"])
+def petowner_signup(alternative_id):
     """ create a new pet owner"""
    
     if 'user_email' in session:
        
         num_pets = request.form.get("num_pets")
-        pet_owner = crud.create_pet_owner( user_id = user_id, num_pets = num_pets)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        pet_owner = crud.create_pet_owner( user_id = current_user.user_id, num_pets = num_pets)
+        
         db.session.add(pet_owner)
         db.session.commit()
+
         flash("Profile sucessfully created! Proceed to add your dog info.", "success")
             
-        return redirect(url_for("create_pet_profile", user_id = user_id))
+        return redirect(url_for("create_pet_profile", user_id = current_user.user_id))
     
     return redirect('/')
 
 
-@app.route("/petowner_profile/<user_id>/update", methods=['POST'])
+@app.route("/petowner_profile/<alternative_id>/update", methods=['POST'])
 @fresh_login_required
-def update_petowner_profile(user_id):
+def update_petowner_profile(alternative_id):
     """ update pet owner profile page """
     
     if 'user_email' in session:
         
-        pet_owner = crud.get_petowner_by_user_id(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
         pet_owner.num_pets = request.form.get("num_pets")
         
         db.session.commit()
         
         flash("Your pet owner profile was sucessfully updated!", "success")
         
-        return redirect(url_for('get_profile_page', user_id = user_id))
+        return redirect(url_for('get_profile_page', alternative_id = current_user.alternative_id))
     
     return redirect('/')
     
     
-@app.route("/add_dog/<user_id>", methods=["GET", "POST"])
+@app.route("/add_dog/<alternative_id>", methods=["GET", "POST"])
 @login_required
-def create_pet_profile(user_id):
+def create_pet_profile(alternative_id):
     """create a new dog profile"""
     
     if 'user_email' in session:
+
         cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
         api_secret = API_SECRET)
         upload_result = None
         
-        user = crud.get_user_by_id(user_id)
+        current_user = crud.get_user_by_alternative_id(alternative_id)
         
-        if crud.petowner_exists(user_id):
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+        if crud.petowner_exists(current_user.user_id):
+            
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
             num_pets = pet_owner.num_pets
             pet_owner_id = pet_owner.id
             pets_registered = crud.get_pets_by_ownerid(pet_owner_id)
@@ -580,10 +559,10 @@ def create_pet_profile(user_id):
         else:
             flash("Finish your pet owner profile to be able to add a pet", "info")
 
-            return redirect(url_for("petowner_signup", user_id = user_id))
+            return redirect(url_for("petowner_signup", user_id = current_user.user_id))
         
         if request.method == "GET":
-            return render_template("add_dog.html", total_pets = total_pets, fname = user.fname, pets_registered = pets_registered, num_pets = num_pets, user = user, user_id = user.user_id, pet_owner=pet_owner)
+            return render_template("add_dog.html", total_pets = total_pets, fname = current_user.fname, pets_registered = pets_registered, num_pets = num_pets, user = current_user, user_id = current_user.user_id, pet_owner=pet_owner)
             
         else:
             
@@ -607,7 +586,7 @@ def create_pet_profile(user_id):
             if crud.pet_exists(pet_owner_id, name):
     
                 flash("Pet already created. Sorry, at this moment we don't support changes in the pet profile", "info")
-                return url_for("show_all_dogs", user_id=user_id )
+                return url_for("show_all_dogs", user_id=current_user.user_id )
             else:
                 upload_result = cloudinary.uploader.upload(profile_file)
                 data = upload_result
@@ -616,23 +595,26 @@ def create_pet_profile(user_id):
                 pet = crud.create_pet(name= name, profile_pic=profile_pic, breed=breed, age=age, size=size, allergies=allergies, allergies_kind=allergies_kind, house_trained=house_trained, friendly_w_dogs=friendly_w_dogs, friendly_w_kids=friendly_w_kids, spayed_neutered=spayed_neutered, microchipped=microchipped, additional_info=additional_info, emergency_phone=emergency_phone, emergency_contact_name=emergency_contact_name, emergency_contact_relationship=emergency_contact_relationship, pet_owner_id=pet_owner.id)
                 db.session.add(pet)
                 db.session.commit()   
+
                 flash("Pet sucessfully added!", "success") 
                 
                 total_pets += 1    
             
             flash(f"You currently have {total_pets} dogs registered under your profile", "info")
 
-            return redirect(url_for("show_all_dogs", user_id=user_id))
+            return redirect(url_for("show_all_dogs", user_id=alternative_id))
     return redirect('/')
 
 
-@app.route("/create_booking/<user_id>")
+@app.route("/create_booking/<alternative_id>")
+
 @login_required
-def get_booking_form(user_id):
+def get_booking_form(alternative_id):
     """get booking form"""
    
     selected_sitter_id = request.args.get('sitter_id')
-    
+    date = request.args.get('start_date')
+
     if selected_sitter_id:
         
         selected_sitter = crud.get_sitter_by_id(selected_sitter_id)
@@ -643,92 +625,102 @@ def get_booking_form(user_id):
         sitter_calendar_id = 0 
         selected_sitter = None
         
-    if "user_email" in session:
+    if 'user_email' in session:
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        
 
-        if crud.petowner_exists(user_id):
-            user = crud.get_user_by_id(user_id)
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+        if crud.petowner_exists(current_user.user_id):
+
+            user = crud.get_user_by_id(current_user.user_id)
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
             pet_owner_id = pet_owner.id
-            sitters = crud.get_all_other_sitters(user_id)
-            pet_owner = crud.get_petowner_by_user_id(user_id)
+            sitters = crud.get_all_other_sitters(current_user.user_id)
+            pet_owner = crud.get_petowner_by_user_id(current_user.user_id)
             pet_owner_id = pet_owner.id
             if crud.get_total_pets_by_owner(pet_owner_id) > 0:
                 pets = crud.get_pets_by_ownerid(pet_owner_id)
             else:
                 flash("Please register your dog(s) to be able to book a walk", "info")
                 
-                return redirect(url_for("create_pet_profile", user_id = user_id)) 
+                return redirect(url_for("create_pet_profile", user_id = current_user.user_id)) 
         else:
             flash("Please finish your pet owner profile to be able to book", "info")
 
-            return redirect(url_for("petowner_signup", user_id = user_id))
+            return redirect(url_for("petowner_signup", user_id = current_user.user_id))
         
         min_date= (datetime.today() + timedelta(days=1)).strftime("%m/%d/%Y")
         max_date = (datetime.today() + timedelta(days=60)).strftime("%m/%d/%Y")
-        
 
-        return render_template("new_booking.html",max_date=max_date, min_date=min_date, user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, user_id = user_id, pets = pets)    
+        # if date:
+        #     times_list = get_selected_date()
+        #     print("im the times list", times_list)
+        # else:
+        #     times_list = False
+        
+        return render_template("new_booking.html", times = [], max_date=max_date, min_date=min_date, user=user, sitter_calendar_id = sitter_calendar_id, pet_owner = pet_owner, sitter = selected_sitter, sitters = sitters, alternative_id = alternative_id, pets = pets)    
     
     return redirect('/')
 
 
-def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
-    """insert a new_booking into google calendar"""
-    
-    service = get_consent()
-    
-    user = crud.get_user_by_id(user_id)
-    sitter = crud.get_user_by_id(sitter_id)
-    # pet_owner = crud.get_petowner_by_user_id(user_id)
-    pet = crud.get_pet_by_id(pet_id)
-    sitter_user = crud.get_user_by_id(sitter.user_id)
-    pet_name = pet.name
-    sitter_name = (sitter_user.fname) +" "+(sitter_user.lname)
-    pet_owner_name = (user.fname) +" "+ (user.lname)
-    
-    start_date = request.form.get("start_date")
-    start_time = request.form.get("start_time")
-    starttime_with_date = start_date + "T" + start_time
-    starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
 
-    # create an interval to calculate end time, based on 30 min walks
-    interval = dt.timedelta(minutes=30)
-    end_time =  starttime_datetime + interval
 
-    tz = pytz.timezone('US/Pacific')    
-    start_datetime = tz.localize(starttime_datetime)
-    end_datetime = tz.localize(end_time)
-    body = {
-        "summary":f"Dog Walk for {pet.name}" ,
-        "description":description,
-        "location": address,
-        "transparency": "opaque",
-        "visibility": "private",
-        "start":{
-            "dateTime": start_datetime.isoformat(),
-            "timeZone": 'US/Pacific',
-        },
-        "end": {
-            "dateTime": end_datetime.isoformat(),
-            "timeZone": 'US/Pacific',
-        },
+# def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
+#     """insert a new_booking into google calendar"""
+    
+#     service = get_consent()
+    
+#     user = crud.get_user_by_id(user_id)
+#     sitter = crud.get_user_by_id(sitter_id)
+#     pet = crud.get_pet_by_id(pet_id)
+#     sitter_user = crud.get_user_by_id(sitter.user_id)
+#     pet_name = pet.name
+#     sitter_name = (sitter_user.fname) +" "+(sitter_user.lname)
+#     pet_owner_name = (user.fname) +" "+ (user.lname)
+    
+#     start_date = request.form.get("start_date")
+#     start_time = request.form.get("start_time")
+#     starttime_with_date = start_date + "T" + start_time
+    
+#     starttime_datetime = datetime.strptime(starttime_with_date, "%Y-%m-%dT%H:%M")
+
+#     # create an interval to calculate end time, based on 30 min walks
+#     interval = dt.timedelta(minutes=30)
+#     end_time =  starttime_datetime + interval
+
+#     tz = pytz.timezone('US/Pacific')    
+#     start_datetime = tz.localize(starttime_datetime)
+#     end_datetime = tz.localize(end_time)
+#     body = {
+#         "summary":f"Dog Walk for {pet.name}" ,
+#         "description":description,
+#         "location": address,
+#         "transparency": "opaque",
+#         "visibility": "private",
+#         "start":{
+#             "dateTime": start_datetime.isoformat(),
+#             "timeZone": 'US/Pacific',
+#         },
+#         "end": {
+#             "dateTime": end_datetime.isoformat(),
+#             "timeZone": 'US/Pacific',
+#         },
         
-        "attendes": [
-            {'email': user.email},
-            {'email': sitter_user.email},
+#         "attendes": [
+#             {'email': user.email},
+#             {'email': sitter_user.email},
             
-            {'petname': pet_name},
-            {'petOwner': pet_owner_name},
-            {'Sitter': sitter_name}
-        ],
-        "reminders": {
-            "useDefault": True
-            }
-    }
+#             {'petname': pet_name},
+#             {'petOwner': pet_owner_name},
+#             {'Sitter': sitter_name}
+#         ],
+#         "reminders": {
+#             "useDefault": True
+#             }
+#     }
     
-    event = service.events().insert(calendarId=sitter_user.email,  body=body).execute()
-    print("Im a new event", event)
-    return event, event['id']
+#     event = service.events().insert(calendarId=sitter_user.email,  body=body).execute()
+    
+#     return event
     
     
 @app.route("/create_booking/<pet_owner_id>", methods=["POST"])
@@ -736,11 +728,11 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
 def create_booking(pet_owner_id):
     """ create a new booking"""
     
-    if "user_email" in session:
-            
+    if 'user_email' in session:
+
         email = session.get('user_email')
-        user = crud.get_user_by_email(email)
-        user_id = user.user_id
+        current_user = crud.get_user_by_email(email)
+        user_id = current_user.user_id
        
         pet_owner_id = pet_owner_id
         sitter_id = request.form.get("sitter_id")
@@ -749,6 +741,8 @@ def create_booking(pet_owner_id):
         start_time = request.form.get("start_time")
         end_date = date
         
+
+        print("im the start_date", date, "type:", type(date))
         # info for creating the booking in google calendar
         address = request.form.get("address")
         description = request.form.get("description")
@@ -762,39 +756,105 @@ def create_booking(pet_owner_id):
         
         start_time = start_date.strftime("%I:%M %p")
 
-
-        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=start_date + timedelta(minutes=30), start_time=start_time, end_time=(start_date + timedelta(minutes=30).strftime("%I:%M %p")), weekly=False)
+        event = gcalendar.create_cal_bokng(start_date = start_date, start_time = start_time, user_id=user_id , sitter_id=sitter_id, pet_id=pet_id, address=address, description=description)
+        flash("Booking sucessfully added to your calendar", "success")
+        
+        google_cal_id = event['id']
+        
+        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=start_date + timedelta(minutes=30), start_time=start_time, end_time=((start_date + timedelta(minutes=30)).strftime("%I:%M %p")), google_cal_id = google_cal_id, weekly=False)
         db.session.add(booking)
         db.session.commit() 
+
         flash("Booking sucessfully created", "success")
         
-        create_cal_bokng(user_id, sitter_id, pet_id, address = address, description = description)
-        
-        flash("Booking sucessfully added to your calendar", "success")
-
-        return redirect(url_for("get_all_bookings", user_id = user_id))
+        return redirect(url_for("get_all_bookings", alternative_id = current_user.alternative_id))
     return redirect('/')
+
+@app.route("/availability/<date>/<sitterid>/")
+def get_available_times(date, sitterid):
+
+    # sitterid = request.args.get('sitter_id')
+    # date = request.args.get("start_date")
+    # available_times = crud.get_available_times(date)
+
+    free_times = gcalendar.free_times(selected_date=date, sitter_id = sitterid)
+    # times_list = []
+    # if free_time:
+    #     for time in free_time:
+    #         times_list.append(time)
+    #         print("im the time", time)
+    #         print("im all the free times", free_time)
+    #     print("im the time_list", times_list)
+    return free_times
     
+
+        
+
+    # free_time = gcalendar.free_times(selected_date=date, sitter_id = sitterid, selected_date = date)
+    # print("im the free time on server", free_time)
+    # return free_time
+
+
+
+@app.route("/all_my_bookings/update/<booking_id>")
+def update_event(booking_id):
+    """update a booking"""
+    
+    if 'user_email' in session:
+
+        current_user = crud.get_user_by_email(session['user_email'])
+        booking = crud.get_booking_by_id(booking_id)
+        google_booking_id = booking.google_booking_id
+        cal_id = booking.sitter.user.email
+        pet_owner_id = booking.pet_owner_id
+        sitter_id = booking.pet_owner_id
+        pet_id = booking.pet_id
+        new_date = request.form.get("new_date")
+        new_start_time = request.form.get("new_time")
+        
+        
+        # info for creating the booking in google calendar
+        new_address = request.form.get("address")
+        new_description = request.form.get("description")
+
+        # weekly = bool(request.form["weekly"])
+        
+        datetime_string = booking.new_date + "T" + new_start_time
+        booking.start_date = datetime.strptime(datetime_string, "%Y-%m-%dT%H:%M")
+        booking.end_date = (booking.start_date + timedelta(minutes=30))
+        booking.start_time = booking.start_date.strftime("%I:%M %p")
+        booking.end_time=((booking.start_date + timedelta(minutes=30)).strftime("%I:%M %p"))
+
+        updated_event = gcalendar.update_booking(google_booking_id, cal_id)
+
+        db.session.commit()
+
+        flash("your booking was sucessfully updated")
+
+        return redirect(url_for("get_all_bookings", alternative_id = current_user.alternative_id))
+    return redirect('/')
+
     
 @app.route('/search_availability/<alternative_id>', methods=["POST"])
 @login_required
 def display_available_sitters(alternative_id):
     """display sitters available on a specific time based on user search"""
     
-    if 'alternative_id' in session:
-        if request.method == 'GET':
-            current_user = crud.get_user_by_alternative_id(alternative_id)
-            return redirect (url_for("all_sitters", user_id = current_user.user_id))
+    if 'user_email' in session:
+            
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        # if request.method == 'GET':
+
+        #     return redirect (url_for("all_sitters", alternative_id))
         
-        available_sitters_email = get_available_sitters(current_user.user_id)
+        available_sitters_email = gcalendar.get_available_sitters(alternative_id)
         if available_sitters_email == [] or not available_sitters_email:
             
             flash("There are no sitters available in the time you selected. Please try searching for a different time, or browing all the sitters in our database", "info")
+            return redirect ('/')
         else:
             cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
             api_secret = API_SECRET)
-
-            current_user = crud.get_user_by_alternative_id(alternative_id)
         
             sitters=[]
             all_sitters = []
@@ -807,20 +867,19 @@ def display_available_sitters(alternative_id):
                 pet_sitter={}
                 split_email = sitter.user.email.split("@")
                 pet_sitter['id'] = sitter.id
-                pet_sitter['fname'] = sitter.current_user.fname
-                pet_sitter['lname'] = sitter.current_user.lname
-                pet_sitter['pic'] = sitter.current_user.profile_pic
+                pet_sitter['fname'] = sitter.user.fname
+                pet_sitter['lname'] = sitter.user.lname
+                pet_sitter['pic'] = sitter.user.profile_pic
                 pet_sitter['experience'] = sitter.years_of_experience
                 pet_sitter['rate'] = sitter.rate
                 pet_sitter['calendar_id'] = split_email[0]
-                pet_sitter['user_id'] = sitter.current_user.user_id
+                pet_sitter['user_id'] = sitter.user.user_id
                 pet_sitter['summary'] = sitter.summary
                 sitters.append(pet_sitter)        
-        
-            return render_template("all_sitters.html", sitters = sitters, user = current_user)
 
-        return redirect (url_for("all_sitters", alternative_id = current_user.alternative_id, user_id = current_user.user_id))
-    
+            flash("These are the sitter available on the selected date and time")
+            return render_template("all_sitters.html", sitters=sitters, current_user=current_user)
+
     return redirect('/')
             
     
@@ -828,7 +887,6 @@ def display_available_sitters(alternative_id):
 @login_required
 def all_sitters(alternative_id):
     """View all sitters in db"""
-    
     
     cloudinary.config(cloud_name = CLOUD_NAME, api_key = API_KEY, 
     api_secret = API_SECRET)
@@ -842,13 +900,13 @@ def all_sitters(alternative_id):
         pet_sitter = {}
         split_email = sitter.user.email.split("@")
         pet_sitter['id'] = sitter.id
-        pet_sitter['fname'] = sitter.current_user.fname
-        pet_sitter['lname'] = sitter.current_user.lname
-        pet_sitter['pic'] = sitter.current_user.profile_pic
+        pet_sitter['fname'] = sitter.user.fname
+        pet_sitter['lname'] = sitter.user.lname
+        pet_sitter['pic'] = sitter.user.profile_pic
         pet_sitter['experience'] = sitter.years_of_experience
         pet_sitter['rate'] = sitter.rate
         pet_sitter['calendar_id'] = split_email[0]
-        pet_sitter['user_id'] = sitter.current_user.user_id
+        pet_sitter['user_id'] = sitter.user.user_id
         pet_sitter['summary'] = sitter.summary
                 
         sitters.append(pet_sitter) 
@@ -905,22 +963,23 @@ def show_all_dogs(user_id):
     return redirect('/')
             
 
-@app.route("/my_bookings/<user_id>")
+@app.route("/my_bookings/<alternative_id>")
 @login_required
-def get_all_bookings(user_id):
+def get_all_bookings(alternative_id):
     """Return all the bookings made by a specific user"""
     
     sitter_bookings = False
     pet_owner_bookings = False
+
     if "user_email" in session: 
         
-        user = crud.get_user_by_id(user_id)
-        split_email = user.email.split("@")
+        current_user = crud.get_user_by_alternative_id(alternative_id)
+        split_email = current_user.email.split("@")
         calendar_id = split_email[0]
 
         owner_bkngs = []
-        if crud.petowner_exists(user_id):
-            pet_owner_bookings = crud.get_owner_bookings_by_user_id(user_id)
+        if crud.petowner_exists(current_user.user_id):
+            pet_owner_bookings = crud.get_owner_bookings_by_user_id(current_user.user_id)
             
             for booking in pet_owner_bookings:
             
@@ -932,16 +991,18 @@ def get_all_bookings(user_id):
                 info_sitter ['summary'] = booking.sitter.summary
                 info_sitter['date'] = booking.start_date.strftime("%m/%d/%Y")
                 info_sitter['time'] = booking.start_time
+                info_sitter['address'] = booking.pet_owner.user.address +", "+ booking.pet_owner.user.city +"-"+ booking.pet_owner.user.state
                 info_sitter['sitter_name'] = booking.sitter.user.fname + " " + booking.sitter.user.lname
                 info_sitter['sitter_mobile'] = booking.sitter.user.mobile
                 info_sitter['sitter_email']  = booking.sitter.user.email
+                info_sitter ['sitter_id'] = booking.sitter.id
                 
                 owner_bkngs.append(info_sitter)
                 
         # check of sitter exists to then fetch sitters bookings, if  any.
         sitter_bkngs=[]
-        if crud.sitter_exists(user_id):
-            sitter_bookings = crud.get_sitter_bookings_by_user_id(user_id)
+        if crud.sitter_exists(current_user.user_id):
+            sitter_bookings = crud.get_sitter_bookings_by_user_id(current_user.user_id)
       
             
             for booking in sitter_bookings:
@@ -974,34 +1035,23 @@ def get_all_bookings(user_id):
    
         elif not pet_owner_bookings or not sitter_bookings:
             flash("You haven't made any bookings yet", "info")
-        return render_template("all_my_bookings.html", owner_bkngs=owner_bkngs, sitter_bkngs=sitter_bkngs, user = user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
+        return render_template("all_my_bookings.html", owner_bkngs=owner_bkngs, sitter_bkngs=sitter_bkngs, current_user = current_user, sitter_bookings = sitter_bookings, pet_owner_bookings = pet_owner_bookings)
     return redirect("/")
 
-# @app.route("/all_my_bookings/update/<booking_id>")
-# def update_event(event_id):
 
-#     if request.method == "GET": 
-# # First retrieve the event from the API.
-
-#         event = service.events().get(calendarId='primary', eventId='eventId').execute()
-
-# event['summary'] = 'Appointment at Somewhere'
-
-# updated_event = service.events().update(calendarId='primary', eventId=event['id'], body=event).execute()
-
-# # Print the updated date.
-# print updated_event['updated']
+    return updated_event
 
 @app.route("/logout")
 @login_required
 def logout():
     """remove the user from the session if it is there"""
     
-    if 'alternative_id' in session:    
+    if 'user_email' in session:    
         remember = False
+        session.pop('user_email', None)
         logout_user()
         print("you are now logged out", session['alternative_id'])
-        session.pop('alternative_id', None)
+        
     return redirect('/')
 
 

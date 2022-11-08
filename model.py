@@ -154,6 +154,7 @@ class Booking(db.Model):
     __tablename__ = "bookings"
 
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    google_booking_id = db.Column(db.String)
     pet_owner_id = db.Column(db.Integer, db.ForeignKey("pet_owners.id"))
     sitter_id = db.Column(db.Integer, db.ForeignKey("sitters.id"))
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"))

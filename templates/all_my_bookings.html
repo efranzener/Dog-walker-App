@@ -11,7 +11,7 @@
             <a class="nav-link" aria-current="page" role="button"  onclick="history.back()">Previous </a>          
           </li>
           <li>                                            
-            <a class="nav-link" aria-current="page" href="/user_dashboard/{{user.user_id}}" role="button">Homepage</a> 
+            <a class="nav-link" aria-current="page" href="/user_dashboard/{{current_user.alternative_id}}" role="button">Homepage</a> 
           </li>
           <li>
             <a class="nav-link" aria-current="page" role="button" href="/logout">Logout</a>
@@ -78,6 +78,7 @@
                         </div>
                       </div>
                     </div>
+    
                     <div >
                       <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal{{booking['dog_name']}}">
                           Cancel Booking
@@ -128,6 +129,48 @@
                           <li class="list-group-item" id = "additional-info"><strong>Additional Info on Them:</strong>{{booking['summary']}}</li>
                         <ul>
                       </div>
+                      <div class="form-control mr-sm-2">
+                        <div id="modify-button">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal">
+                                Modify Booking
+                            </button>
+                        </div>
+                      </div>
+                      <div id="myModal" class="modal fade" role="">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                                      <div class="form-group">
+                                          <div class="modal-body">
+                                            <form action="/all_my_bookings/update/{{booking['booking_id']}}">
+                                              <div id = "update_booking">
+                                                  <button type ="submit" name="update_booking"  class="btn btn-outline-secondary" value="{{booking['booking_id']}}">Update Booking</button>
+                                                  <div class="form-group">
+                                                    <label for="new_date">Date</label>
+                                                    <input type="text" name="new_date" value="{{booking['date']}}" id="new_date">
+                                                  </div>
+                                                  <div class="form-group">
+                                                    <label for="new_time">Time</label>
+                                                    <input type="text" name="new_date" value="{{booking['time']}}" id="new_time">
+                                                  </div>
+                                                  <div class="form-group">
+                                                    <label for="new_address">Address</label>
+                                                    <input type="text" name="new_address" value="{{booking['address']}}" id="new_address">
+                                                  </div>
+                                                </div>
+                                                </div>
+                                            </form>
+                                          </div>
+                                      </div>
+                                      <div class="modal-footer">
+                                          <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
+                                      </div> 
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                     
                       <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the sitter directly.</strong></h6>
                       <div class="cancel">
                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal2{{booking['dog_name']}}">
@@ -161,7 +204,7 @@
               </div>
             {%endif%}
             {%else%}    
-              <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}">Create new booking</a>
+              <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{current_user.alternative_id}}">Create new booking</a>
             {%endif%}
         {%endif%}
       </div>

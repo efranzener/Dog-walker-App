@@ -3,6 +3,9 @@
 from model import  User, Sitter, PetOwner, Pet, Booking, connect_to_db
 from flask import session, flash, redirect, render_template
 
+
+
+booking_times = []
 ##### CREATE #####
 
 def create_user(alternative_id, fname, lname, email, password, profile_pic, dob, mobile, address, zip_code, city='Seattle', state='Washington', authenticated=False):
@@ -37,10 +40,10 @@ def create_pet(name, profile_pic, breed, age, size, allergies, allergies_kind, h
     return pet
 
 
-def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time, start_date, end_date):
+def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time, start_date, end_date, google_booking_id):
     """Create and return a new booking"""
 
-    booking = Booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly)
+    booking = Booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly, google_booking_id=google_booking_id)
    
     return booking
 
@@ -197,11 +200,23 @@ def get_pet_by_id(id):
     return Pet.query.get(id)
 
 def check_availability_by_datetime(date, time):
-    """check if booking date and time is available"""
+    """check if booking date and time is available, returns True if date and time are unavailable"""
 
     if Booking.query.filter(Booking.start_date == date and Booking.start_time == time).first():
         return True
     return False
+
+# def get_available_times(date, sitter_id):
+#     """get available times for a specific date"""
+
+
+#     sitter = get_sitter_by_id(sitter_id)
+
+#     #filter all the bookings a sitter has on a certain date
+#     date_list = Sitter.query.filter(Booking.start_date == date).all()
+#     for date in date_list:
+#         if not Booking.start_date or Booking.end_time:
+
 
 
 

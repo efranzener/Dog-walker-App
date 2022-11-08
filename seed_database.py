@@ -17,6 +17,7 @@ import random
 from datetime import timedelta, datetime
 import datetime as dt
 
+import gcalendar
 
 # # CLOUDINARY IMPORT
 # import cloudinary
@@ -107,8 +108,7 @@ def create_random_datetime(start, end):
     # check if random datetime is in the hour or hours and half mark, and if not it rounds it to be
     if random_datetime.minute > 0:
 
-        random_datetime = random_datetime + \
-            (datetime.min - random_datetime) % timedelta(minutes=30)
+        random_datetime = random_datetime + (datetime.min - random_datetime) % timedelta(minutes=30)
 
     return random_datetime
 
@@ -135,11 +135,19 @@ def create_booking():
                     date = create_random_datetime(start, end)
                     time_string = date.strftime("%I:%M %p")
 
-                booking = crud.create_booking(weekly=False, pet_id=pet.pet_id, pet_owner_id=pet_owner.id,
+                start_date = date
+                start_time = time_string
+
+                event = gcalendar.create_cal_bokng(user_id = n, start_date = date, start_time = start_time, sitter_id=sitter.id, pet_id=pet.pet_id, address=pet_owner.user.address, description="Can't wait to walk your dog")
+                google_booking_id = event['id']
+                
+
+                booking = crud.create_booking(google_booking_id=google_booking_id, weekly=False, pet_id=pet.pet_id, pet_owner_id=pet_owner.id,
                                               sitter_id=sitter.id,  start_date=date, end_date=date + timedelta(minutes=30), start_time=time_string, end_time=(date + timedelta(minutes=30)).strftime("%I:%M %p"))
                 model.db.session.add(booking)
                 model.db.session.commit()
                 print("Im a new booking", booking)
+                print("im a google calendar booking", event)
 
 
 create_booking()
