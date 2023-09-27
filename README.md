@@ -3,9 +3,6 @@
 A full stack web application for dog owners to find and book dog walkers.
 
 ## Overview ##
----
-Walk though video coming soon.
-
 * Users can create an account and then login to finish their pet-owner and/or sitter profile, which uses Cloudinary API for picture storage.
 
 * After creating their dog(s) profile, a pet-owner can search for a sitter using date and time filters.
@@ -13,17 +10,16 @@ Walk though video coming soon.
 * Google calendar is used to query for available sitters, and once a pet owner creates a new booking, this is then added to the sitter's calendar. 
 
 * Bookings for the next 7 days are displayed in the user's dashboard, while the remaining and past ones are displayed in all-bookings tab.
-
-
+  
 ### Motivation ###
----
-
 My motivation to build this web application came from my experience using several pet-sitter apps during my time working as a dog walker.
 
+### Walkthrough video ###
+https://github.com/efranzener/Dog-walker-App/assets/99047099/a9ee0d95-ca0c-43cc-bf81-2efd4e65f043
+
+https://github.com/efranzener/Dog-walker-App/assets/99047099/7d9f42cb-66bc-4274-b9aa-b0a141886a99
 
 ### Technologies ###
----
-
 This project was created with:
 
 * Backend: Python 3.7, Flask, SQLAlchemy, PostgreSQL 
@@ -32,16 +28,14 @@ This project was created with:
 
 * Libraries: Flask Bcrypt, Flask-Login
 
-
-
 ### <a name="api"></a> API'S ###
 
 * [Cloudinary API](https://cloudinary.com/documentation/python_quickstart)
 
 * [Google Calendar API](https://developers.google.com/workspace/guides/get-started)
 
-### SET UP ###
----
+## Set Up ##
+
 #### Prerequisites ####
 To run Vowvow Dog Walkers, you must have installed:
  * [PostgreSQL](https://www.postgresql.org/)
@@ -57,7 +51,7 @@ git clone https://github.com/efranzener/Dog-walker-App
 Create and activate a virtual environment within your directory
 
 ```bash
-    virtualenv env source env/bin/activate
+virtualenv env source env/bin/activate
 ```
 Install requirements
 
