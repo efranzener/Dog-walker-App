@@ -49,6 +49,11 @@
                         <input required minlength="8" maxlength="20" type="password" name="password" id="password" pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{9,20}">
                         <input type="checkbox" onclick="myFunction()"> Show Password
                     </div>
+                    <div>
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" name="confirm_password" id="confirm_password">
+                        <input type="checkbox" onclick="showConfirmPwd()"> Show Confirm Password
+                    </div>
                     <div class="form-group">
                         <label for="mobile" class="form-label">Mobile</label>
                         <input type="tel" minlength="10" maxlength="15" name="mobile" id="mobile" pattern="(?=.*\d).{10,15}" placeholder="Only numbers"required>
@@ -96,6 +101,15 @@
             }
         }
 
+        function showConfirmPwd() {
+            const showConfirmPassword = document.getElementById("confirm_password");
+            if (showConfirmPassword.type == "password") {
+            showConfirmPassword.type = "text";
+            } else {
+            showConfirmPassword.type = "password";
+            };
+        };
+        
         document.getElementById("profilepic").onchange = function () {
             var src = URL.createObjectURL(this.files[0]);
             document.getElementById("prof-pic").src = src;

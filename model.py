@@ -138,7 +138,7 @@ class Booking(db.Model):
     start_date = db.Column(db.DateTime, default=datetime.now().strftime("%x"), nullable = False)
     end_date = db.Column(db.DateTime, default=(datetime.now() + timedelta(days=180)).strftime("%x"), nullable = False)
     start_time = db.Column(db.DateTime, default=datetime.now().strftime("%H:%M"), nullable = False)
-    end_time = db.Column(db.DateTime, default=(datetime.now() + timedelta(hours=24)).strftime("%H:%M"), nullable = False)
+    end_time = db.Column(db.DateTime, default=(datetime.now() + timedelta(minutes=30)).strftime("%H:%M"), nullable = False)
     weekly = db.Column(db.Boolean, default = False)
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     

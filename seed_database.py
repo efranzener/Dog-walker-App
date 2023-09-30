@@ -23,6 +23,8 @@ import cloudinary.api
 import os.path
 import flask
 
+from flask_bcrypt import generate_password_hash
+
 os.system("dropdb dog_walkers")
 os.system("createdb dog_walkers")
 
@@ -56,10 +58,10 @@ golden_retriever = "https://res.cloudinary.com/dggbnnudv/image/upload/v166499136
 blue_heeler = 'https://res.cloudinary.com/dggbnnudv/image/upload/v1664943175/daniel-lincoln-E7E8z3OWNf4-unsplash_dfjawk.jpg'
 great_dane = 'https://res.cloudinary.com/dggbnnudv/image/upload/v1664943482/chris-mcintosh-DBrgUcBG_rg-unsplash_xcg21t.jpg'
 
-user1 = crud.create_user(fname="Michelle", lname= "James", dob= date.fromisoformat('1995-12-04'), email="testuser.numone@gmail.com", password="QWERTyuiop1?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664942203/i7kboife9afigqzcildi.jpg", mobile="206-322-4980", address="8016 Greenwood Ave N", zip_code= 98103, city='Seattle', state='Washington')
-user2 = crud.create_user(fname="Susan", lname= "Thomas", dob= date.fromisoformat('2000-01-10'), email="testuser.numtwo@gmail.com", password="ASDFGhjkl2?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991252/jorge-salvador-Y6GZ97S-mcY-unsplash_o8ok6z.jpg",  mobile="206-504-4397", address= "2801 34th Ave W", zip_code=98199, city='Seattle', state='Washington')
-user3 = crud.create_user(fname="Brian", lname= "Sanchez", dob= date.fromisoformat('1990-12-24'), email="testuser.numthree@gmail.com", password="ZXCVBnm3?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991758/tadeusz-lakota-tk5LWGNiWVs-unsplash_r94szu.jpg",  mobile="582-201-4225", address="1501 N 45th St", zip_code=98103, city='Seattle', state='Washington')
-user4 = crud.create_user(fname="Kate", lname= "Perkins", dob= date.fromisoformat('1992-10-04'), email="testuser.numfour@gmail.com", password="ZXCVBnm4?", profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991573/isaiah-mcclean-DrVJk1EaPSc-unsplash_qjhttx.jpg",  mobile="206-644-0852", address="5614, 22nd Ave NW", zip_code=98107,city='Seattle', state='Washington')
+user1 = crud.create_user(fname="Michelle", lname= "James", dob= date.fromisoformat('1995-12-04'), email="testuser.numone@gmail.com", password=generate_password_hash("QWERTyuiop1?", rounds=12).decode("utf-8"), profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664942203/i7kboife9afigqzcildi.jpg", mobile="206-322-4980", address="8016 Greenwood Ave N", zip_code= 98103, city='Seattle', state='Washington')
+user2 = crud.create_user(fname="Susan", lname= "Thomas", dob= date.fromisoformat('2000-01-10'), email="testuser.numtwo@gmail.com", password=generate_password_hash("ASDFGhjkl2?", rounds=12).decode("utf-8"),profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991252/jorge-salvador-Y6GZ97S-mcY-unsplash_o8ok6z.jpg",  mobile="206-504-4397", address= "2801 34th Ave W", zip_code=98199, city='Seattle', state='Washington')
+user3 = crud.create_user(fname="Brian", lname= "Sanchez", dob= date.fromisoformat('1990-12-24'), email="testuser.numthree@gmail.com", password=generate_password_hash("ZXCVBnm3?", rounds=12).decode("utf-8"), profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991758/tadeusz-lakota-tk5LWGNiWVs-unsplash_r94szu.jpg",  mobile="582-201-4225", address="1501 N 45th St", zip_code=98103, city='Seattle', state='Washington')
+user4 = crud.create_user(fname="Kate", lname= "Perkins", dob= date.fromisoformat('1992-10-04'), email="testuser.numfour@gmail.com", password=generate_password_hash("ZXCVBnm4?", rounds=12).decode("utf-8"), profile_pic="https://res.cloudinary.com/dggbnnudv/image/upload/v1664991573/isaiah-mcclean-DrVJk1EaPSc-unsplash_qjhttx.jpg",  mobile="206-644-0852", address="5614, 22nd Ave NW", zip_code=98107,city='Seattle', state='Washington')
 
 
 model.db.session.add_all([user1, user2, user3, user4])

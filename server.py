@@ -11,6 +11,7 @@ import pytz
 
 import os.path
 import flask
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 
 # GOOGLE CALENDAR API IMPORTS
@@ -152,6 +153,7 @@ def create_account():
     dob = request.form.get("dob")
     email = request.form.get("email")
     password = request.form.get("password")
+    confirm_password = request.form.get("password")
     mobile = request.form.get("mobile")
     address = request.form.get("address")
     city = request.form.get("city")
@@ -164,12 +166,15 @@ def create_account():
     
     if user:
         flash("Cannot create an account with that email. Please try again.", "danger")    
-    else:
+    if password != confirm_password:
+        flash("Please make sure your password and confirm password match.", "danger")
+
+    if password == confirm_password:
         upload_result = cloudinary.uploader.upload(profile_file)
         data = upload_result
         profile_pic = data['url']
 
-        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=password, mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
+        user = crud.create_user(fname=fname, lname=lname, dob=dob, email=email, password=generate_password_hash(password).decode("utf-8"), mobile=mobile, address=address, city=city, state=state, zip_code=zip_code, profile_pic=profile_pic)
         
         flash("Account sucessfully created! Please login.", "success")
         
@@ -182,19 +187,23 @@ def process_login():
     
     email = request.form.get("email")
     password = request.form.get("password")
-    user = crud.get_user_by_email(email)
+    # user = crud.get_user_by_email(email)
     
-    if not user or user.password != password:
+    if password and email:
+        user = crud.get_user_by_email(email)
+        if user:
+            if check_password_hash(user.password, password):
+                user_id = user.user_id
+                session["user_email"] = user.email
+                flash(f"Welcome, {user.fname}!", "primary")
+                return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
+            else:
+                flash("Something went wrong. Please check your email and password and try again", "danger")
+
+    else:
         flash("Something went wrong. Please check your email and password and try again", "danger")
-        return redirect('/')
-    
-    elif user and user.password == password:
-        user_id = user.user_id
-        session["user_email"] = user.email
-        flash(f"Welcome, {user.fname}!", "primary")
         
-        
-        return redirect(url_for("get_user_dashboard", user_id=user_id, fname=user.fname))
+    return redirect('/')    
 
 
 @app.route('/user_dashboard/<user_id>')
@@ -220,7 +229,7 @@ def get_user_dashboard(user_id):
                     booking1['date'] = booking.start_time.strftime("%A:" "%m/%d/%Y")
                     booking1['hour'] = booking.start_time.strftime("%H:%M")
                     booking1['sitter'] = booking.sitter.user.fname = " " + booking.sitter.user.lname
-                    
+
                     next_pet_bookings.append(booking1)
             
             if not pet_owner_bookings:
@@ -235,9 +244,10 @@ def get_user_dashboard(user_id):
                 if booking.start_time >= current_datetime and booking.start_date <= current_datetime + timedelta(days=7):
                     booking2['pet_name'] = booking.pet.name
                     booking2['date'] = booking.start_date.strftime("%m/%d/%Y")
-                    booking2['day'] = booking.start_date.strftime("%A:")
-                    booking2['hour'] = booking.start_date.strftime("%H:%M")
+                    booking2['day'] = booking.start_time.strftime("%A:")
+                    booking2['hour'] = booking.start_time.strftime("%H:%M")
                     booking2['address'] = booking.pet_owner.user.address + booking.pet_owner.user.city
+
                     week_sitter_bookings.append(booking2)
                     
             if not sitter_bookings:
@@ -630,14 +640,9 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
             "dateTime": end_datetime.isoformat(),
             "timeZone": 'US/Pacific',
         },
-        
-        "attendes": [
+        "attendees": [
             {'email': user.email},
             {'email': sitter_user.email},
-            
-            {'petname': pet_name},
-            {'petOwner': pet_owner_name},
-            {'Sitter': sitter_name}
         ],
         "reminders": {
             "useDefault": True
@@ -680,7 +685,6 @@ def create_booking(pet_owner_id):
         endtime_with_date=  starttime_datetime + interval
         
         endtime_datetime = endtime_with_date
-
         booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
 
         flash("Booking sucessfully created", "success")
