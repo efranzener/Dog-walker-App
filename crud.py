@@ -45,10 +45,10 @@ def create_pet(name, profile_pic, breed, age, size, allergies, allergies_kind, h
     return pet
 
 
-def create_booking(weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time, start_date, end_date):
+def create_booking(status, weekly, pet_id, sitter_id, pet_owner_id, start_time, end_time, start_date, end_date):
     """Create and return a new booking"""
 
-    booking = Booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly)
+    booking = Booking(status=status, pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=start_time, end_time=end_time, weekly=weekly)
    
     db.session.add(booking)
     db.session.commit() 
