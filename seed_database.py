@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 
 # from model import db, User, Sitter, PetOwner, Pet, Vet, Booking, connect_to_db
-from random import random, randrange
+from random import random, randrange, choice
 from datetime import timedelta, datetime
 import datetime as dt
 
@@ -27,6 +27,7 @@ from flask_bcrypt import generate_password_hash
 
 os.system("dropdb dog_walkers")
 os.system("createdb dog_walkers")
+print("database dropped")
 
 model.connect_to_db(server.app)
 model.db.create_all()
@@ -130,32 +131,39 @@ def creating_datetimes(start_today, end_date):
 
     return random_datetime
 
-  
+def pick_status(Status):
+    """pick a random status"""
+
+    booking_status = choice(list(Status))
+
+    print("Im the current status", booking_status.name)
+    return booking_status
+
 start_date = creating_datetimes(start_today, end_date)
 start_time = start_date
 end_time = (start_date + timedelta(minutes=30)) 
     
-booking1 = crud.create_booking(weekly=False, pet_id=pet1.pet_id, pet_owner_id=3, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking1 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet1.pet_id, pet_owner_id=3, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 start_date = creating_datetimes(start_today, end_date)
 end_time = (start_date + timedelta(minutes=30))  
 
-booking2 = crud.create_booking(weekly=False, pet_id=pet2.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking2 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet2.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 start_date = creating_datetimes(start_today, end_date)
 end_time = (start_date + timedelta(minutes=30))  
 
-booking3 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=2, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking3 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet3.pet_id, pet_owner_id=2, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 start_date = creating_datetimes(start_today, end_date)
 end_time = (start_date + timedelta(minutes=30))  
 
-booking4 = crud.create_booking(weekly=False, pet_id=pet4.pet_id, pet_owner_id=4, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking4 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet4.pet_id, pet_owner_id=4, sitter_id=1,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 start_date = creating_datetimes(start_today, end_date)
 end_time = (start_date + timedelta(minutes=30))  
 
-booking5 = crud.create_booking(weekly=False, pet_id=pet5.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking5 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet5.pet_id, pet_owner_id=1, sitter_id=2,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 start_date = creating_datetimes(start_today, end_date)
 end_time = (start_date + timedelta(minutes=30))  
 
-booking6 = crud.create_booking(weekly=False, pet_id=pet3.pet_id, pet_owner_id=4, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
+booking6 = crud.create_booking(status=pick_status(model.Status), weekly=False, pet_id=pet3.pet_id, pet_owner_id=4, sitter_id=3,  start_date=start_date, end_date=start_date, start_time=start_time, end_time=end_time)
 
     
 model.db.session.add_all([booking1, booking2, booking3, booking4, booking6]) 

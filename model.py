@@ -5,6 +5,7 @@ from flask import Flask
 from datetime import datetime, timedelta
 import os
 
+from enum import Enum
 
 app = Flask(__name__)
 db = SQLAlchemy()
@@ -125,6 +126,15 @@ def __repr__(self):
     return f"<Pet id={self.pet_id}, name = {self.name}, profile_pic = {self.profile_pic}, breed = {self.breed}, age = {self.age}, size = {self.age}, allergies = {self.allergies}, house_trained = {self.house_trainded}, friendly_w_dogs = {self.friendly_w_dogs}, friendly_w_kids = {self.friendly_w_kids}, spayed_neutured = {self.spayed_neutered}, microchipped = {self.microchipped}, emergency_phone = {self.emergency_phone}, emergency_contact_name = {self.emergency_contact_name}, emergency_contact_relationship = {self.emergency_contact_relationship} pet>"
 
     
+class Status(Enum):
+    """Class to handle status options """
+    
+    Pending = 'Pending'
+    Confirmed = 'Confirmed'
+    Cancelled = 'Cancelled'
+    Declined = 'Declined'
+    
+    
 
 class Booking(db.Model):
     """A booking info"""
@@ -132,6 +142,7 @@ class Booking(db.Model):
     __tablename__ = "bookings"
 
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    status = db.Column(db.Enum(Status), default="Pending", nullable = False)
     pet_owner_id = db.Column(db.Integer, db.ForeignKey("pet_owners.id"))
     sitter_id = db.Column(db.Integer, db.ForeignKey("sitters.id"))
     pet_id = db.Column(db.Integer, db.ForeignKey("pets.pet_id"))
