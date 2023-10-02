@@ -19,57 +19,189 @@
         </ul>
       </nav>
     </div>
-      <div class = "card-grid">
-        {%if sitter_bookings or pet_owner_bookings%}
-          {%if sitter_bookings %}
-            {% for booking in sitter_bkngs %}
-              <div class="card" style="width: 23rem;">
-                <div>
-                  <h5 class="booking_title"> Sitter Bookings:</h5>
-                </div>
+    
+    <div class = "card-grid">
+      {%if sitter_bookings or pet_owner_bookings%}
+        {%if sitter_bookings %}
+          
+            <div class="card" style="width: 23rem;">
+              
+              <div>
+                <h5 class="booking_title"> Sitter Bookings:</h5>
+              </div>
+              {% for booking in sitter_bkngs %}
+              {%if booking['status'] == 'Pending'%}
+              <form action="/confirm_bkng_status/{{booking['booking_id']}}" method = "POST">
+
                 <div class="form-control mr-sm-2">
                   <img class="round_small_pic" src="{{booking['dog_pic']}}" >
                   <div class="card-body">           
-                      <h6 class="card-title"><strong>Booking Info</strong></h6>
+                    <h6 class="card-title"><strong>Booking Info</strong></h6>
+                    <p>Booking Status:<strong>{{ booking['status'] }}</strong></p>
+                    <ul class="list-group">
+                      <li class="list-group-item"><strong>Dog's Name:</strong>{{booking['dog_name']}}</li>
+                      <li class="list-group-item"><strong>Date</strong> {{booking['date']}} </li>
+                      <li class="list-group-item"><strong>Time</strong> {{booking['time']}} </li>
+                    <ul>
+                  </div>
+                  <div class="card-body">    
+                    <h6 class="card-title"><strong> Additional Info</strong></h6>
+                    <ul class="list-group">
+                      <li class="list-group-item"><strong>Age:</strong> {{ booking["age"] }}</li>
+                      <li class="list-group-item"><strong>Breed:</strong> {{ booking["breed"] }}</li>
+                      <li class="list-group-item"><strong>Size:</strong> {{ booking["size"] }}</li>
+                      <li class="list-group-item"><strong>Allergies:</strong> {{ booking["allergies"] }}: {{ booking["allergies_kind"] }}</li>
+                      <li class="list-group-item"><strong>House Trained:</strong> {{ booking["house_trained"] }}</li>
+                      <li class="list-group-item"><strong>Spayed Neutered:</strong> {{ booking["spayed_neutered"] }}</li>
+                      <li class="list-group-item"><strong>Microchipped:</strong> {{ booking["microchipped"] }}</li>
+                      <li class="list-group-item"><strong>Additional Info:</strong> {{ booking["additional_info"] }}</li>
+                    </ul>
+                  </div>
+                </div>
+                <button name="booking_status" type="submit" class="rounded-pill" value="accept">Accept Booking</button>
+                <button name="booking_status" type="submit" class="rounded-pill" value="decline">Decline Booking</button>
+
+              </form>
+            
+            
+              {%elif booking['status'] == 'Confirmed'%}
+              <div class="form-control mr-sm-2">
+                <p>Booking Status:<strong>{{ booking['status'] }}</strong></p>
+                <img class="round_small_pic" src="{{booking['dog_pic']}}" >
+                <div class="card-body">           
+                    <h6 class="card-title"><strong>Booking Info</strong></h6>
+                    <ul class="list-group">
+                      <li class="list-group-item"><strong>Dog's Name:</strong>{{booking['dog_name']}}</li>
+                      <li class="list-group-item"><strong>Date</strong> {{booking['date']}} </li>
+                      <li class="list-group-item"><strong>Time</strong> {{booking['time']}} </li>
+                      <li class="list-group-item"><strong>Address:</strong> {{booking['address']}}</li>
+                    <ul>
+                  </div>
+                  <div class="card-body">    
+                    <h6 class="card-title"><strong> Additional Info</strong></h6>
+                    <ul class="list-group">
+                      <li class="list-group-item"><strong>Age:</strong> {{ booking["age"] }}</li>
+                      <li class="list-group-item"><strong>Breed:</strong> {{ booking["breed"] }}</li>
+                      <li class="list-group-item"><strong>Size:</strong> {{ booking["size"] }}</li>
+                      <li class="list-group-item"><strong>Allergies:</strong> {{ booking["allergies"] }}: {{ booking["allergies_kind"] }}</li>
+                      <li class="list-group-item"><strong>House Trained:</strong> {{ booking["house_trained"] }}</li>
+                      <li class="list-group-item"><strong>Spayed Neutered:</strong> {{ booking["spayed_neutered"] }}</li>
+                      <li class="list-group-item"><strong>Microchipped:</strong> {{ booking["microchipped"] }}</li>
+                      <li class="list-group-item"><strong>Additional Info:</strong> {{ booking["additional_info"] }}</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{booking["dog_name"]}}">
+                        Emergency Info
+                    </button>
+                  </div>
+                  <div id="{{booking["dog_name"]}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog" id="{{booking["dog_name"]}}">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                          <div class="form-group">
+                            <h6 class="important"><strong>If you have any emergency, please reach out to this person:</strong></h6>
+                              <div class="modal-body">
+                                <ul class="list-group">  
+                                  <li class="list-group-item"><strong>Name:</strong> {{booking['emergency_name']}}</li>
+                                  <li class="list-group-item"><strong>Relationship:</strong> {{booking['emergency_relationship']}}</li>
+                                  <li class="list-group-item"><strong>Phone Number:</strong> {{booking['emergency_phone']}}</li>
+                                <ul>
+                              </div>
+                          </div>
+                          <div class="modal-footer">
+                              <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
+                          </div> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div >
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal{{booking["dog_name"]}}">
+                        Cancel Booking
+                    </button>
+                  </div>
+                  <div id="myModal{{booking["dog_name"]}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                              <div class="form-group">
+                                <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the dog owner directly:</strong></h6>
+                                <div class="modal-body">
+                                  <ul class="list-group">  
+                                    <li class="list-group-item"><strong>Pet Owner Name:</strong> {{booking['owner_name']}}</li>
+                                    <li class="list-group-item"><strong>Phone Number:</strong> {{booking['owner_phone']}}</li>
+                                  <ul>
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
+                              </div> 
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            
+              {%elif booking['status'] == 'Declined'%}
+              <div class="form-control mr-sm-2">
+                <p>Booking Status:<strong>{{ booking['status'] }}</strong></p>
+                <img class="round_small_pic" src="{{booking['dog_pic']}}" >
+                <div class="card-body">           
+                    <h6 class="card-title"><strong>Booking Info</strong></h6>
+                    <ul class="list-group">
+                      <li class="list-group-item"><strong>Dog's Name:</strong>{{booking['dog_name']}}</li>
+                      <li class="list-group-item"><strong>Date</strong> {{booking['date']}} </li>
+                      <li class="list-group-item"><strong>Time</strong> {{booking['time']}} </li>
+                    <ul>
+                </div>
+              </div>
+            </div>
+            {%endif%}
+          {%endfor%}
+        {%endif%}
+    </div>
+    <div class = "card-grid">
+          {%if pet_owner_bookings %}
+              {% for booking in owner_bkngs %}
+                <div class="card" style="width: 23rem;">
+                  <div>
+                    <h5 class="booking_title"> Your Pet's Bookings:</h5>
+                  </div>
+                  <div class="form-control mr-sm-2">
+                    <img class="round_small_pic" src="{{booking["sitter_pic"]}}">
+                    <div class="card-body">
+                      <h6 class="card-title"><strong>Booking info</strong></h6>
                       <ul class="list-group">
-                        <li class="list-group-item"><strong>Dog's Name:</strong>{{booking['dog_name']}}</li>
-                        <li class="list-group-item"><strong>Date</strong> {{booking['date']}} </li>
-                        <li class="list-group-item"><strong>Time</strong> {{booking['time']}} </li>
-                        <li class="list-group-item"><strong>Address:</strong> {{booking['address']}}</li>
+                        <li class="list-group-item"><strong>Dog Name:</strong>{{booking["dog_name"]}}</li> 
+                        <li class="list-group-item"><strong>Date </strong> {{booking["date"]}}</li>  
+                        <li class="list-group-item"><strong>Time </strong> {{booking["time"]}}</li> 
+                        <li class="list-group-item"><strong>Sitter Name:</strong>{{booking["sitter_name"]}}</li>
+                        <li class="list-group-item"><strong>Sitter Experience</strong> {{booking["experience"]}} years of experience</li>
+                        <li class="list-group-item" id = "additional-info"><strong>Additional Info on Them:</strong>{{booking['summary']}}</li>
                       <ul>
                     </div>
-                    <div class="card-body">    
-                      <h6 class="card-title"><strong> Additional Info</strong></h6>
-                      <ul class="list-group">
-                        <li class="list-group-item"><strong>Age:</strong> {{ booking["age"] }}</li>
-                        <li class="list-group-item"><strong>Breed:</strong> {{ booking["breed"] }}</li>
-                        <li class="list-group-item"><strong>Size:</strong> {{ booking["size"] }}</li>
-                        <li class="list-group-item"><strong>Allergies:</strong> {{ booking["allergies"] }}: {{ booking["allergies_kind"] }}</li>
-                        <li class="list-group-item"><strong>House Trained:</strong> {{ booking["house_trained"] }}</li>
-                        <li class="list-group-item"><strong>Spayed Neutered:</strong> {{ booking["spayed_neutered"] }}</li>
-                        <li class="list-group-item"><strong>Microchipped:</strong> {{ booking["microchipped"] }}</li>
-                        <li class="list-group-item"><strong>Additional Info:</strong> {{ booking["additional_info"] }}</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#{{booking["dog_name"]}}">
-                          Emergency Info
+                    <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the sitter directly.</strong></h6>
+                    <div class="cancel">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal2{{booking["dog_name"]}}">
+                        Contact Info
                       </button>
                     </div>
-                    <div id="{{booking["dog_name"]}}" class="modal fade" role="dialog">
-                      <div class="modal-dialog" id="{{booking["dog_name"]}}">
+                    <div id="myModal2{{booking["dog_name"]}}" class="modal fade" role="">
+                      <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-header">
                             <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
                             <div class="form-group">
-                              <h6 class="important"><strong>If you have any emergency, please reach out to this person:</strong></h6>
-                                <div class="modal-body">
-                                  <ul class="list-group">  
-                                    <li class="list-group-item"><strong>Name:</strong> {{booking['emergency_name']}}</li>
-                                    <li class="list-group-item"><strong>Relationship:</strong> {{booking['emergency_relationship']}}</li>
-                                    <li class="list-group-item"><strong>Phone Number:</strong> {{booking['emergency_phone']}}</li>
-                                  <ul>
-                                </div>
+                              <div class="modal-body">
+                                <ul class="list-group">
+                                  <li class="list-group-item"><strong>Sitter Name:</strong> {{booking['sitter_name']}} </li>
+                                  <li class="list-group-item"><strong>Sitter Email:</strong> {{booking['sitter_email']}} </li>
+                                  <li class="list-group-item"><strong>Sitter Phone:</strong>{{booking['sitter_mobile']}}</li>
+                                <ul>
+                              </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
@@ -78,91 +210,14 @@
                         </div>
                       </div>
                     </div>
-                    <div >
-                      <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal{{booking["dog_name"]}}">
-                          Cancel Booking
-                      </button>
-                    </div>
-                    <div id="myModal{{booking["dog_name"]}}" class="modal fade" role="dialog">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                                <div class="form-group">
-                                  <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the dog owner directly:</strong></h6>
-                                  <div class="modal-body">
-                                    <ul class="list-group">  
-                                      <li class="list-group-item"><strong>Pet Owner Name:</strong> {{booking['owner_name']}}</li>
-                                      <li class="list-group-item"><strong>Phone Number:</strong> {{booking['owner_phone']}}</li>
-                                    <ul>
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
-                                </div> 
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-              </div>
-            {%endfor%}
-            {%endif%}
-
-            {%if pet_owner_bookings %}
-                {% for booking in owner_bkngs %}
-                  <div class="card" style="width: 23rem;">
-                    <div>
-                      <h5 class="booking_title"> Your Pet's Bookings:</h5>
-                    </div>
-                    <div class="form-control mr-sm-2">
-                      <img class="round_small_pic" src="{{booking["sitter_pic"]}}">
-                      <div class="card-body">
-                        <h6 class="card-title"><strong>Booking info</strong></h6>
-                        <ul class="list-group">
-                          <li class="list-group-item"><strong>Dog Name:</strong>{{booking["dog_name"]}}</li> 
-                          <li class="list-group-item"><strong>Date </strong> {{booking["date"]}}</li>  
-                          <li class="list-group-item"><strong>Time </strong> {{booking["time"]}}</li> 
-                          <li class="list-group-item"><strong>Sitter Name:</strong>{{booking["sitter_name"]}}</li>
-                          <li class="list-group-item"><strong>Sitter Experience</strong> {{booking["experience"]}} years of experience</li>
-                          <li class="list-group-item" id = "additional-info"><strong>Additional Info on Them:</strong>{{booking['summary']}}</li>
-                        <ul>
-                      </div>
-                      <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the sitter directly.</strong></h6>
-                      <div class="cancel">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#myModal2{{booking["dog_name"]}}">
-                          Contact Info
-                        </button>
-                      </div>
-                      <div id="myModal2{{booking["dog_name"]}}" class="modal fade" role="">
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
-                              <div class="form-group">
-                                <div class="modal-body">
-                                  <ul class="list-group">
-                                    <li class="list-group-item"><strong>Sitter Name:</strong> {{booking['sitter_name']}} </li>
-                                    <li class="list-group-item"><strong>Sitter Email:</strong> {{booking['sitter_email']}} </li>
-                                    <li class="list-group-item"><strong>Sitter Phone:</strong>{{booking['sitter_mobile']}}</li>
-                                  <ul>
-                                </div>
-                              </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
-                                </div> 
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                {% endfor %}
-              </div>
-            {%endif%}
-            {%else%}    
-              <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}">Create new booking</a>
-            {%endif%}
-        {%endif%}
-      </div>
+                </div>
+              {% endfor %}
+            
+          {%endif%}
+          {%else%}    
+            <a class="btn btn-outline-secondary" aria-current="page" href="/create_booking/{{user.user_id}}">Create new booking</a>
+          {%endif%}
+      {%endif%}
+    </div>
 {%endblock body%}%

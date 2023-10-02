@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import os
 import pytz
 
+from model import Status
 import os.path
 import flask
 from flask_bcrypt import generate_password_hash, check_password_hash
@@ -654,9 +655,9 @@ def create_cal_bokng(user_id, sitter_id, pet_id, address, description):
     return event
     
     
-@app.route("/create_booking/<pet_owner_id>", methods=["POST"])
-def create_booking(pet_owner_id):
-    """ create a new booking"""
+@app.route("/request_booking/<pet_owner_id>", methods=["POST"])
+def create_booking_request(pet_owner_id):
+    """ create a new booking request"""
     
     if "user_email" in session:
             
@@ -685,18 +686,49 @@ def create_booking(pet_owner_id):
         endtime_with_date=  starttime_datetime + interval
         
         endtime_datetime = endtime_with_date
-        booking = crud.create_booking(pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
+        
+        booking = crud.create_booking(status=Status.Pending.value, pet_id=pet_id, pet_owner_id=pet_owner_id, sitter_id=sitter_id, start_date=start_date, end_date=end_date, start_time=starttime_datetime, end_time=endtime_datetime, weekly=False)
 
         flash("Booking sucessfully created", "success")
         
-        create_cal_bokng(user_id, sitter_id, pet_id, address = address, description = description)
+        # create_cal_bokng(user_id, sitter_id, pet_id, address = address, description = description)
         
         flash("Booking sucessfully added to your calendar", "success")
 
         return redirect(url_for("get_all_bookings", user_id = user_id))
     return redirect('/')
     
-    
+    # confirm booking
+
+@app.route('/confirm_bkng_status/<booking_id>', methods=["POST"])
+def get_booking_status(booking_id):
+    """confirm """
+
+    if 'user_email' in session:
+
+        booking = crud.get_booking_by_id(booking_id)
+        # sitter_id= booking.sitter_id
+        user = crud.get_user_by_email(session['user_email'])
+        if request.form['booking_status'] == 'accept':
+            status='Confirmed'
+        elif request.form['booking_status'] == 'decline':
+            status='Declined'
+        else:
+            status = booking.status
+        
+        booking.status = status
+
+        print("Im the booking.status", booking.status)
+        db.session.commit()
+
+        return redirect(url_for("get_all_bookings", user_id = user.user_id))
+    return redirect('/')
+
+
+# Cancel Booking
+
+
+
 @app.route('/search_availability/<user_id>', methods=["POST"])
 def display_available_sitters(user_id):
     """display sitters available on a specific time based on user search"""
@@ -841,6 +873,7 @@ def get_all_bookings(user_id):
             for booking in pet_owner_bookings:
             
                 info_sitter={}
+                info_sitter['status'] = booking.status
                 info_sitter['booking_id'] = booking.id
                 info_sitter['dog_name'] = booking.pet.name 
                 info_sitter['sitter_pic'] = booking.sitter.user.profile_pic
@@ -861,8 +894,11 @@ def get_all_bookings(user_id):
       
             
             for booking in sitter_bookings:
+
                 info={}
-                
+                info['booking_id'] =  booking.id
+                info['calendar_id'] = calendar_id
+                info['status'] = booking.status.value
                 info['dog_name'] = booking.pet.name
                 info['dog_pic'] = booking.pet.profile_pic
                 info['age'] = booking.pet.age
@@ -878,8 +914,6 @@ def get_all_bookings(user_id):
                 info['additional_info'] = booking.pet.additional_info
                 info['date'] = booking.start_date.strftime("%m/%d/%Y")
                 info['time'] = booking.start_time.strftime("%I:%M %p")
-                info['booking_id'] =  booking.id
-                info['calendar_id'] = calendar_id
                 info['address'] = booking.pet_owner.user.address +", "+ booking.pet_owner.user.city +"-"+ booking.pet_owner.user.state
                 info['emergency_name'] = booking.pet.emergency_contact_name
                 info['emergency_relationship'] = booking.pet.emergency_contact_relationship
