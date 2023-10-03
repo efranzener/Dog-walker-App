@@ -131,8 +131,8 @@ class Status(Enum):
     
     Pending = 'Pending'
     Confirmed = 'Confirmed'
-    Cancelled = 'Cancelled'
     Declined = 'Declined'
+    Cancelled = 'Cancelled'
     
     
 

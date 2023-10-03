@@ -718,7 +718,6 @@ def get_booking_status(booking_id):
         
         booking.status = status
 
-        print("Im the booking.status", booking.status)
         db.session.commit()
 
         return redirect(url_for("get_all_bookings", user_id = user.user_id))
@@ -726,7 +725,21 @@ def get_booking_status(booking_id):
 
 
 # Cancel Booking
+@app.route('/cancel_booking/<booking_id>', methods=["POST"])
+def cancel_booking(booking_id):
+    """ cancel a booking"""
+    
+    if 'user_email' in session:
+        booking = crud.get_booking_by_id(booking_id)
+        user = crud.get_user_by_email(session['user_email'])
+        if request.form['cancel'] == 'cancel':
+            status = 'Cancelled'
+        
+        booking.status = status
+        db.session.commit()
+        return redirect(url_for("get_all_bookings", user_id = user.user_id))
 
+    return redirect('/')
 
 
 @app.route('/search_availability/<user_id>', methods=["POST"])
