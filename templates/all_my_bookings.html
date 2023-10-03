@@ -128,13 +128,13 @@
                           <div class="modal-header">
                               <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
                               <div class="form-group">
-                                <h6 class="important"><strong>If for some reason you need to cancel this booking, please reach out to the dog owner directly:</strong></h6>
-                                <div class="modal-body">
-                                  <ul class="list-group">  
-                                    <li class="list-group-item"><strong>Pet Owner Name:</strong> {{booking['owner_name']}}</li>
-                                    <li class="list-group-item"><strong>Phone Number:</strong> {{booking['owner_phone']}}</li>
-                                  <ul>
-                                </div>
+                                <form action="/cancel_booking/{{booking['booking_id']}}" method="POST">
+                                  <div class="modal-body">
+                                    <p> Cancel Booking?</p>
+                                    <button name="cancel" type="submit" class="btn btn-outline-secondary"  data-bs-dismiss="modal" value="cancel">Cancel</button>
+
+                                  </div>
+                                </form>
                               </div>
                               <div class="modal-footer">
                                   <button type="button" class="btn btn-outline-secondary"  data-bs-dismiss="modal">Close</button>
